@@ -10,14 +10,14 @@
 //  3. Execute as: Me
 //  4. Who has access: Anyone
 //  5. Click Deploy → Copy the URL → Paste below
-const SHEETS_URL = "YOUR_DEPLOYED_WEBAPP_URL_HERE";
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzdV3T7GnLEE_NEex9KY5F6Kjtnu5DZorokR5JCv4LPh85UfYONJJ2wFv7RHXvQAQU_uA/exec";
 
 /**
  * Central sync function — call this from any page
  * @param {Object} payload - must include `action` field + data fields
  */
 async function syncToSheets(payload) {
-  if (!SHEETS_URL || SHEETS_URL === "YOUR_DEPLOYED_WEBAPP_URL_HERE") {
+  if (!SHEETS_URL || SHEETS_URL === "https://script.google.com/macros/s/AKfycbzdV3T7GnLEE_NEex9KY5F6Kjtnu5DZorokR5JCv4LPh85UfYONJJ2wFv7RHXvQAQU_uA/exec") {
     console.warn("⚠ SwiftStock: Set SHEETS_URL in sheets.js to enable Google Sheets sync.");
     return;
   }
