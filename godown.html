@@ -6,7 +6,6 @@
   <title>SwiftStock — Godown</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <script src="sheets.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
   <style>
@@ -1067,13 +1066,20 @@
 
   /* ── LOAD ENTRIES ── */
   function loadEntries(productId) {
+    // No orderBy — avoids needing a Firestore composite index
+    // We sort client-side after fetching
     const q = query(
       collection(db, 'entries'),
-      where('productId', '==', productId),
-      orderBy('createdAt', 'desc')
+      where('productId', '==', productId)
     );
     onSnapshot(q, snap => {
       entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Sort newest first client-side
+      entries.sort((a, b) => {
+        const ta = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
+        const tb = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
+        return tb - ta;
+      });
       renderEntries();
     });
   }
@@ -1094,11 +1100,10 @@
     // Group by date
     const groups = {};
     entries.forEach(e => {
-      const dateKey = e.createdAt?.toDate
-        ? e.createdAt.toDate().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
-        : 'Unknown Date';
+      const d = e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt || Date.now());
+      const dateKey = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
       if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(e);
+      groups[dateKey].push({ ...e, _date: d });
     });
 
     Object.entries(groups).forEach(([date, es]) => {
@@ -1112,10 +1117,7 @@
         card.className = `entry-card ${e.type}`;
         card.style.animationDelay = `${i * 0.04}s`;
 
-        const time = e.createdAt?.toDate
-          ? e.createdAt.toDate().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
-          : '';
-
+        const time = e._date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
         const dirWord = e.type === 'in' ? 'added to' : 'removed from';
         const symbol = e.type === 'in' ? '+' : '-';
         const note = e.note ? ` — ${e.note}` : '';
@@ -1127,7 +1129,7 @@
             <div class="ec-meta">${time}</div>
           </div>
           <div class="ec-qty">
-            <div class="ec-qty-num">${symbol}${formatNum(e.qtyInBase)} </div>
+            <div class="ec-qty-num">${symbol}${formatNum(e.qtyInBase)}</div>
             <div class="ec-qty-unit">${currentProduct?.unit || ''}</div>
             ${e.enteredUnit && e.enteredUnit !== currentProduct?.unit
               ? `<div class="ec-qty-unit">(${formatNum(e.enteredQty)} ${e.enteredUnit})</div>` : ''}
