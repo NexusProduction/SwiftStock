@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-  <!-- Firebase Compat SDK (no "type=module" issues) -->
+  <!-- Firebase Compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -33,14 +33,12 @@
     }
 
     html, body { min-height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; transition: background 0.4s, color 0.4s; }
-
     #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-    body::after { content: ''; position: fixed; inset: 0; opacity: 0.5; pointer-events: none; z-index: 1; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); }
 
-    .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 2rem; backdrop-filter: blur(20px); background: rgba(6,12,16,0.65); border-bottom: 1px solid var(--card-border); transition: background 0.4s; }
+    .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 2rem; backdrop-filter: blur(20px); background: rgba(6,12,16,0.65); border-bottom: 1px solid var(--card-border); }
     [data-theme="light"] .topbar { background: rgba(238,247,242,0.8); }
-    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.35rem; color: var(--green); text-decoration: none; display: flex; align-items: center; gap: 0.45rem; text-shadow: 0 0 25px var(--green-glow); }
-    .theme-btn { background: var(--card); border: 1px solid var(--card-border); border-radius: 999px; padding: 0.35rem 0.9rem; font-size: 0.82rem; cursor: pointer; color: var(--text2); transition: all 0.25s; font-family: 'DM Sans', sans-serif; }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.35rem; color: var(--green); text-decoration: none; display: flex; align-items: center; gap: 0.45rem; }
+    .theme-btn { background: var(--card); border: 1px solid var(--card-border); border-radius: 999px; padding: 0.35rem 0.9rem; font-size: 0.82rem; cursor: pointer; color: var(--text2); font-family: 'DM Sans', sans-serif; }
     .theme-btn:hover { border-color: var(--green); color: var(--green); }
 
     .page { position: relative; z-index: 2; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 6.5rem 1.5rem 4rem; }
@@ -48,7 +46,7 @@
 
     .page-head { text-align: center; margin-bottom: 2rem; animation: fadeUp 0.7s ease both; }
     .page-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--green-dim); border: 1px solid var(--card-border); border-radius: 999px; padding: 0.3rem 0.9rem; font-size: 0.74rem; color: var(--green); letter-spacing: 0.07em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.9rem; }
-    .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(1.9rem, 5vw, 2.7rem); letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 0.4rem; }
+    .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(1.9rem,5vw,2.7rem); letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 0.4rem; }
     .page-sub { color: var(--text2); font-size: 0.9rem; }
 
     .steps-indicator { display: flex; align-items: center; justify-content: center; margin-bottom: 2.2rem; animation: fadeUp 0.7s 0.1s ease both; }
@@ -69,7 +67,7 @@
     .step-panel.active { display: block; animation: panelIn 0.4s ease both; }
     @keyframes panelIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
 
-    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.35rem; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
+    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.35rem; margin-bottom: 0.25rem; }
     .step-sub { color: var(--text2); font-size: 0.85rem; margin-bottom: 1.8rem; }
 
     .field { margin-bottom: 1.1rem; }
@@ -82,27 +80,22 @@
 
     .pw-strength { display: flex; gap: 4px; margin-top: 0.5rem; }
     .pw-bar { flex: 1; height: 3px; border-radius: 99px; background: var(--input-border); transition: background 0.3s; }
-    .pw-bar.weak { background: #ff5252; }
-    .pw-bar.medium { background: #ffd740; }
-    .pw-bar.strong { background: var(--green); }
-    .pw-eye { position: absolute; right: 1rem; background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text2); padding: 0; transition: color 0.2s; }
+    .pw-bar.weak { background: #ff5252; } .pw-bar.medium { background: #ffd740; } .pw-bar.strong { background: var(--green); }
+    .pw-eye { position: absolute; right: 1rem; background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text2); padding: 0; }
     .pw-eye:hover { color: var(--green); }
-
     .pass-rules { margin-top: 0.5rem; }
     .pass-rule { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text3); margin-bottom: 0.25rem; transition: color 0.3s; }
     .pass-rule.ok { color: var(--green); }
     .rule-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); flex-shrink: 0; transition: background 0.3s; }
     .pass-rule.ok .rule-dot { background: var(--green); }
 
-    .btn-primary { width: 100%; padding: 1rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: #060c10; background: var(--green); border: none; border-radius: 14px; cursor: pointer; position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.3s, opacity 0.2s; box-shadow: 0 4px 25px var(--green-glow); letter-spacing: 0.02em; margin-top: 0.5rem; }
+    .btn-primary { width: 100%; padding: 1rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: #060c10; background: var(--green); border: none; border-radius: 14px; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s, opacity 0.2s; box-shadow: 0 4px 25px var(--green-glow); margin-top: 0.5rem; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--green-glow); }
-    .btn-primary:active { transform: scale(0.98); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .btn-outline { width: 100%; padding: 0.85rem; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--green); background: transparent; border: 1.5px solid var(--card-border); border-radius: 14px; cursor: pointer; transition: all 0.25s; margin-top: 0.7rem; }
     .btn-outline:hover { border-color: var(--green); background: var(--green-dim); }
 
-    .msg-box { font-size: 0.83rem; min-height: 1.2em; text-align: center; font-weight: 500; margin-bottom: 0.8rem; transition: color 0.3s; padding: 0.3rem 0.5rem; border-radius: 8px; }
-
+    .msg-box { font-size: 0.83rem; min-height: 1.2em; text-align: center; font-weight: 500; margin-bottom: 0.8rem; padding: 0.4rem 0.5rem; border-radius: 8px; line-height: 1.4; }
     .login-link { text-align: center; margin-top: 1.5rem; font-size: 0.87rem; color: var(--text2); }
     .login-link a { color: var(--green); text-decoration: none; font-weight: 600; }
 
@@ -115,7 +108,7 @@
     .cred-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: #00e676; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 1.5rem; position: relative; z-index: 1; }
     .cred-badge { position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(0,230,118,0.12); border: 1px solid rgba(0,230,118,0.3); border-radius: 999px; padding: 0.2rem 0.7rem; font-size: 0.68rem; color: #00e676; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; z-index: 1; }
     .cred-row { margin-bottom: 1rem; position: relative; z-index: 1; }
-    .cred-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(0,230,118,0.5); font-weight: 600; margin-bottom: 0.2rem; font-family: 'DM Sans', sans-serif; }
+    .cred-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(0,230,118,0.5); font-weight: 600; margin-bottom: 0.2rem; }
     .cred-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: #e8f5ef; }
     .cred-value.mono { font-family: 'DM Mono', monospace; font-size: 1.3rem; color: #00e676; letter-spacing: 0.08em; }
     .cred-value.pw-val { font-family: 'DM Mono', monospace; font-size: 1rem; color: #80ffbb; letter-spacing: 0.05em; }
@@ -128,7 +121,6 @@
     .cred-corner.tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
     .cred-corner.bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
     .cred-corner.br { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
-
     .cred-actions { display: flex; gap: 1rem; width: 100%; max-width: 420px; }
     .cred-actions button { flex: 1; padding: 0.9rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; border-radius: 14px; cursor: pointer; transition: all 0.25s; }
     .btn-download { background: var(--green); color: #060c10; border: none; box-shadow: 0 4px 20px var(--green-glow); }
@@ -144,13 +136,11 @@
 
     .float-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
     .fli { position: absolute; animation: fliFloat linear infinite; }
-    @keyframes fliFloat { 0% { transform: translateY(105vh) rotate(0deg); opacity: 0; } 5% { opacity: 1; } 95% { opacity: 1; } 100% { transform: translateY(-8vh) rotate(540deg); opacity: 0; } }
-
+    @keyframes fliFloat { 0% { transform: translateY(105vh) rotate(0deg); opacity: 0; } 5% { opacity:1; } 95% { opacity:1; } 100% { transform: translateY(-8vh) rotate(540deg); opacity: 0; } }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
 
     @media (max-width: 480px) {
-      .card { padding: 1.8rem 1.4rem; } .cred-card { padding: 1.5rem; }
-      .cred-actions { flex-direction: column; } .si-line { width: 35px; }
+      .card { padding: 1.8rem 1.4rem; } .cred-actions { flex-direction: column; } .si-line { width: 35px; }
     }
   </style>
 </head>
@@ -181,20 +171,11 @@
     </div>
 
     <div class="steps-indicator" id="stepsIndicator">
-      <div class="si-step">
-        <div class="si-dot active" id="dot-1">1</div>
-        <div class="si-label active" id="lbl-1">Company</div>
-      </div>
+      <div class="si-step"><div class="si-dot active" id="dot-1">1</div><div class="si-label active" id="lbl-1">Company</div></div>
       <div class="si-line" id="line-1"></div>
-      <div class="si-step">
-        <div class="si-dot" id="dot-2">2</div>
-        <div class="si-label" id="lbl-2">Account</div>
-      </div>
+      <div class="si-step"><div class="si-dot" id="dot-2">2</div><div class="si-label" id="lbl-2">Account</div></div>
       <div class="si-line" id="line-2"></div>
-      <div class="si-step">
-        <div class="si-dot" id="dot-3">3</div>
-        <div class="si-label" id="lbl-3">Done</div>
-      </div>
+      <div class="si-step"><div class="si-dot" id="dot-3">3</div><div class="si-label" id="lbl-3">Done</div></div>
     </div>
 
     <div class="card" id="mainCard">
@@ -241,10 +222,8 @@
             <button class="pw-eye" type="button" onclick="togglePw('s2-pw','eye-1')" id="eye-1">👁️</button>
           </div>
           <div class="pw-strength">
-            <div class="pw-bar" id="bar-1"></div>
-            <div class="pw-bar" id="bar-2"></div>
-            <div class="pw-bar" id="bar-3"></div>
-            <div class="pw-bar" id="bar-4"></div>
+            <div class="pw-bar" id="bar-1"></div><div class="pw-bar" id="bar-2"></div>
+            <div class="pw-bar" id="bar-3"></div><div class="pw-bar" id="bar-4"></div>
           </div>
           <div class="pass-rules">
             <div class="pass-rule" id="rule-len"><span class="rule-dot"></span>At least 8 characters</div>
@@ -266,7 +245,7 @@
       </div>
     </div>
 
-    <!-- STEP 3 credential card -->
+    <!-- STEP 3 -->
     <div id="credStep">
       <div class="success-ring">🎉</div>
       <div style="text-align:center;margin-bottom:1.8rem;">
@@ -298,23 +277,22 @@
 </main>
 
 <script>
-// ── FIREBASE INIT ──
+// ══ FIREBASE ══
 const firebaseConfig = {
-  apiKey:            "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
-  authDomain:        "store-management-nexus.firebaseapp.com",
-  projectId:         "store-management-nexus",
-  storageBucket:     "store-management-nexus.firebasestorage.app",
+  apiKey: "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
+  authDomain: "store-management-nexus.firebaseapp.com",
+  projectId: "store-management-nexus",
+  storageBucket: "store-management-nexus.firebasestorage.app",
   messagingSenderId: "263693510395",
-  appId:             "1:263693510395:web:47a0485221405dbb6fb25e"
+  appId: "1:263693510395:web:47a0485221405dbb6fb25e"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
-// ── STEP STATE ──
 let step1Data = {};
 
-// STEP 1
+// ── STEP 1 ──
 function goStep1() {
   const company = document.getElementById('s1-company').value.trim();
   const owner   = document.getElementById('s1-owner').value.trim();
@@ -325,7 +303,7 @@ function goStep1() {
   activateStep(2);
 }
 
-// STEP 2
+// ── STEP 2 ──
 function goStep2() {
   const email = document.getElementById('s2-email').value.trim();
   const pw    = document.getElementById('s2-pw').value;
@@ -336,7 +314,7 @@ function goStep2() {
   doSignup(step1Data.owner, step1Data.company, email, pw);
 }
 
-// ── MAIN SIGNUP ──
+// ══ MAIN SIGNUP ══
 async function doSignup(ownerName, companyName, email, password) {
   const btn = document.getElementById('btn-step2');
   btn.disabled = true;
@@ -344,81 +322,100 @@ async function doSignup(ownerName, companyName, email, password) {
   setMsg(2,'','');
 
   try {
-    // 1. Unique Corp ID
+    // ── STEP A: Generate Corp ID (NO orderBy — just uses timestamp + random) ──
     const corporateId = await generateCorpId();
+    console.log('✅ Corp ID generated:', corporateId);
 
-    // 2. Firebase Auth
+    // ── STEP B: Create Firebase Auth user ──
     const cred = await auth.createUserWithEmailAndPassword(email, password);
     const uid  = cred.user.uid;
+    console.log('✅ Auth user created:', uid);
 
-    // 3. Firestore user doc
+    // ── STEP C: Save to Firestore ──
     const now = new Date();
     const userData = {
       uid, name: ownerName, companyName, email, corporateId,
       role: 'owner', createdAt: now.toISOString(), photoURL: null, companyId: uid
     };
-    await db.collection('users').doc(uid).set(userData);
 
-    // 4. Firestore company doc
+    await db.collection('users').doc(uid).set(userData);
+    console.log('✅ User saved to Firestore');
+
     await db.collection('companies').doc(uid).set({
       companyName, ownerId: uid, ownerName, corporateId,
       createdAt: now.toISOString(), staff: []
     });
+    console.log('✅ Company saved to Firestore');
 
-    // 5. Google Sheets sync (non-critical)
+    // ── STEP D: Google Sheets sync (optional, non-critical) ──
     if (typeof sheets_createOwner === 'function') {
-      sheets_createOwner(userData).catch(e => console.warn('Sheets:', e));
+      sheets_createOwner(userData).catch(e => console.warn('Sheets sync (ignored):', e));
     }
 
-    // 6. Session
+    // ── STEP E: Show credential card ──
     sessionStorage.setItem('swiftUser', JSON.stringify(userData));
+    showCredCard({
+      company: companyName, owner: ownerName, email, password, corporateId,
+      date: now.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'})
+    });
 
-    // 7. Show credential card
-    showCredCard({ company: companyName, owner: ownerName, email, password, corporateId,
-      date: now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) });
+  } catch(err) {
+    console.error('❌ Signup error:', err.code, err.message);
 
-  } catch (err) {
-    console.error('Signup error:', err.code, err.message);
     let msg = 'Something went wrong. Please try again.';
-    if (err.code === 'auth/email-already-in-use')  msg = '⚠ This email is already registered. Try logging in.';
-    if (err.code === 'auth/invalid-email')          msg = '⚠ Please enter a valid email address.';
-    if (err.code === 'auth/weak-password')          msg = '⚠ Password too weak — use at least 6 characters.';
-    if (err.code === 'auth/network-request-failed') msg = '⚠ Network error — check your internet connection.';
-    if (err.code === 'auth/operation-not-allowed')  msg = '⚠ Email sign-in not enabled. Go to Firebase Console → Authentication → Sign-in methods → Enable Email/Password.';
+    if (err.code === 'auth/email-already-in-use')
+      msg = '⚠ This email is already registered. Use a different email or go to Login.';
+    else if (err.code === 'auth/invalid-email')
+      msg = '⚠ Please enter a valid email address.';
+    else if (err.code === 'auth/weak-password')
+      msg = '⚠ Password too weak — use at least 8 characters with numbers.';
+    else if (err.code === 'auth/network-request-failed')
+      msg = '⚠ No internet connection. Please check and try again.';
+    else if (err.code === 'auth/operation-not-allowed')
+      msg = '⚠ Email sign-in not enabled. Go to Firebase Console → Authentication → Sign-in method → Enable Email/Password.';
+    else if (err.code === 'permission-denied' || err.message?.includes('permission'))
+      msg = '⚠ Firestore permission denied. Go to Firebase Console → Firestore → Rules → make sure rules are published.';
+    else
+      msg = '❌ Error: ' + err.message;
+
     setMsg(2, msg, 'error');
     btn.disabled = false;
     btn.textContent = 'Create Account →';
   }
 }
 
-// ── GENERATE UNIQUE CORP ID ──
+// ══ CORP ID GENERATOR ══
+// Uses timestamp + random — NO orderBy so NO index required
 async function generateCorpId() {
-  const snap = await db.collection('users').orderBy('corporateId','desc').limit(1).get();
-  let nextNum = 1;
-  if (!snap.empty) {
-    const last = snap.docs[0].data().corporateId || 'SWFT0000000';
-    nextNum = (parseInt(last.replace('SWFT','')) || 0) + 1;
-  }
-  let candidate, exists = true;
-  while (exists) {
-    candidate = 'SWFT' + String(nextNum).padStart(7,'0');
-    const chk = await db.collection('users').where('corporateId','==',candidate).get();
-    exists = !chk.empty;
-    if (exists) nextNum++;
+  // Generate a candidate using timestamp-based number
+  const baseNum = Date.now() % 9000000 + 1000000; // 7-digit number from timestamp
+  let candidate = 'SWFT' + String(baseNum).slice(0,7);
+
+  // Check if it already exists — if yes, increment until unique
+  let attempts = 0;
+  while (attempts < 10) {
+    const check = await db.collection('users')
+      .where('corporateId', '==', candidate)
+      .get();
+    if (check.empty) return candidate; // unique!
+    // collision (very rare) — add 1 and try again
+    const num = parseInt(candidate.replace('SWFT','')) + 1;
+    candidate = 'SWFT' + String(num).padStart(7,'0');
+    attempts++;
   }
   return candidate;
 }
 
-// ── SHOW CRED CARD ──
+// ══ SHOW CREDENTIAL CARD ══
 function showCredCard(data) {
   document.getElementById('mainCard').style.display       = 'none';
   document.getElementById('stepsIndicator').style.display = 'none';
-  ['dot-1','dot-2'].forEach(id => {
+
+  ['dot-1','dot-2','dot-3'].forEach(id => {
     const d = document.getElementById(id); d.className = 'si-dot done'; d.textContent = '✓';
   });
-  const d3 = document.getElementById('dot-3'); d3.className = 'si-dot done'; d3.textContent = '✓';
-  document.getElementById('lbl-3').className = 'si-label active';
-  document.getElementById('line-1').className = document.getElementById('line-2').className = 'si-line done';
+  ['lbl-1','lbl-2','lbl-3'].forEach(id => document.getElementById(id).className = 'si-label active');
+  ['line-1','line-2'].forEach(id => document.getElementById(id).className = 'si-line done');
 
   document.getElementById('cc-company').textContent = data.company;
   document.getElementById('cc-owner').textContent   = data.owner;
@@ -429,51 +426,55 @@ function showCredCard(data) {
 
   const el = document.getElementById('credStep');
   el.style.display = 'block';
-  el.animate([{opacity:0,transform:'translateY(30px)'},{opacity:1,transform:'none'}],
-    {duration:600,easing:'cubic-bezier(0.16,1,0.3,1)',fill:'forwards'});
+  el.animate(
+    [{opacity:0, transform:'translateY(30px)'},{opacity:1, transform:'none'}],
+    {duration:600, easing:'cubic-bezier(0.16,1,0.3,1)', fill:'forwards'}
+  );
 }
 
-// ── DOWNLOAD CARD ──
+// ══ DOWNLOAD CARD ══
 function downloadCard() {
   const btn = document.querySelector('.btn-download');
   btn.textContent = '⏳ Generating…'; btn.disabled = true;
-  html2canvas(document.getElementById('credCard'),{scale:3,backgroundColor:null,useCORS:true,logging:false})
+  html2canvas(document.getElementById('credCard'), {scale:3, backgroundColor:null, useCORS:true, logging:false})
     .then(canvas => {
       const a = document.createElement('a');
       a.download = 'SwiftStock-' + document.getElementById('cc-corpid').textContent + '.png';
       a.href = canvas.toDataURL('image/png'); a.click();
       btn.textContent = '✓ Downloaded!';
-      setTimeout(()=>{ btn.textContent='⬇ Download Card'; btn.disabled=false; },2500);
-    }).catch(()=>{ btn.textContent='⬇ Download Card'; btn.disabled=false; });
+      setTimeout(()=>{ btn.textContent='⬇ Download Card'; btn.disabled=false; }, 2500);
+    })
+    .catch(()=>{ btn.textContent='⬇ Download Card'; btn.disabled=false; });
 }
 
-// ── STEP UI ──
+// ══ STEP NAVIGATION ══
 function activateStep(n) {
   document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-  const p = document.getElementById('panel-'+n); if (p) p.classList.add('active');
-  for (let i=1;i<=3;i++) {
+  const p = document.getElementById('panel-'+n); if(p) p.classList.add('active');
+  for(let i=1;i<=3;i++){
     const d=document.getElementById('dot-'+i), l=document.getElementById('lbl-'+i);
-    if (!d) continue; d.classList.remove('active','done');
-    if (l) l.classList.remove('active');
-    if (i<n){ d.classList.add('done'); d.textContent='✓'; }
-    else if (i===n){ d.classList.add('active'); d.textContent=i; if(l) l.classList.add('active'); }
+    if(!d) continue; d.classList.remove('active','done'); if(l) l.classList.remove('active');
+    if(i<n){ d.classList.add('done'); d.textContent='✓'; }
+    else if(i===n){ d.classList.add('active'); d.textContent=i; if(l) l.classList.add('active'); }
     else { d.textContent=i; }
   }
-  for (let i=1;i<=2;i++) { const l=document.getElementById('line-'+i); if(l) l.classList.toggle('done',i<n); }
+  for(let i=1;i<=2;i++){ const l=document.getElementById('line-'+i); if(l) l.classList.toggle('done',i<n); }
 }
 
-// ── HELPERS ──
-function setMsg(step,msg,type) {
-  const el=document.getElementById('msg-'+step); if(!el) return;
-  el.textContent=msg; el.style.color=type==='error'?'var(--red)':type==='success'?'var(--green)':'';
+// ══ UI HELPERS ══
+function setMsg(step, msg, type) {
+  const el = document.getElementById('msg-'+step); if(!el) return;
+  el.textContent = msg;
+  el.style.color = type==='error' ? 'var(--red)' : type==='success' ? 'var(--green)' : '';
 }
-function togglePw(inputId,btnId) {
-  const i=document.getElementById(inputId),b=document.getElementById(btnId);
-  i.type=i.type==='password'?'text':'password'; b.textContent=i.type==='password'?'👁️':'🙈';
+function togglePw(inputId, btnId) {
+  const i=document.getElementById(inputId), b=document.getElementById(btnId);
+  i.type = i.type==='password' ? 'text' : 'password';
+  b.textContent = i.type==='password' ? '👁️' : '🙈';
 }
 function checkPwStrength() {
   const pw=document.getElementById('s2-pw').value;
-  const checks=[pw.length>=8,/\d/.test(pw),/[A-Z]/.test(pw),pw.length>=12];
+  const checks=[pw.length>=8, /\d/.test(pw), /[A-Z]/.test(pw), pw.length>=12];
   const score=checks.filter(Boolean).length;
   ['bar-1','bar-2','bar-3','bar-4'].forEach((id,i)=>{
     const el=document.getElementById(id); el.className='pw-bar';
@@ -483,29 +484,33 @@ function checkPwStrength() {
   document.getElementById('rule-num').classList.toggle('ok',checks[1]);
   document.getElementById('rule-upper').classList.toggle('ok',checks[2]);
 }
-document.addEventListener('keydown',e=>{
+document.addEventListener('keydown', e => {
   if(e.key!=='Enter') return;
   if(document.getElementById('panel-1').classList.contains('active')) goStep1();
   else if(document.getElementById('panel-2').classList.contains('active')) goStep2();
 });
 
-// ── THEME ──
-const saved=localStorage.getItem('swiftTheme')||'dark';
-document.documentElement.setAttribute('data-theme',saved);
-document.getElementById('themeBtn').textContent=saved==='dark'?'☀️ Light':'🌙 Dark';
+// ══ THEME ══
+const saved = localStorage.getItem('swiftTheme') || 'dark';
+document.documentElement.setAttribute('data-theme', saved);
+document.getElementById('themeBtn').textContent = saved==='dark' ? '☀️ Light' : '🌙 Dark';
 function toggleTheme(){
-  const cur=document.documentElement.getAttribute('data-theme'),next=cur==='dark'?'light':'dark';
+  const cur=document.documentElement.getAttribute('data-theme'), next=cur==='dark'?'light':'dark';
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('swiftTheme',next);
   document.getElementById('themeBtn').textContent=next==='dark'?'☀️ Light':'🌙 Dark';
 }
 
-// ── CANVAS ──
-const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
-let W,H;
+// ══ BACKGROUND CANVAS ══
+const canvas=document.getElementById('bg-canvas'), ctx=canvas.getContext('2d');
+let W, H;
 function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
 resize(); window.addEventListener('resize',resize);
-const lines=Array.from({length:8},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,len:80+Math.random()*120,angle:Math.random()*Math.PI*2,speed:0.003+Math.random()*0.005,opacity:0.02+Math.random()*0.04}));
+const lines=Array.from({length:8},()=>({
+  x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+  len:80+Math.random()*120, angle:Math.random()*Math.PI*2,
+  speed:0.003+Math.random()*0.005, opacity:0.02+Math.random()*0.04
+}));
 function drawBg(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   ctx.clearRect(0,0,W,H); ctx.fillStyle=dark?'#060c10':'#eef7f2'; ctx.fillRect(0,0,W,H);
@@ -515,7 +520,8 @@ function drawBg(){
     if(l.x<-l.len) l.x=W+l.len; if(l.x>W+l.len) l.x=-l.len;
     if(l.y<-l.len) l.y=H+l.len; if(l.y>H+l.len) l.y=-l.len;
     ctx.strokeStyle=`${g}${l.opacity})`; ctx.lineWidth=1.5; ctx.lineCap='round';
-    ctx.beginPath(); ctx.moveTo(l.x,l.y); ctx.lineTo(l.x+Math.cos(l.angle)*l.len,l.y+Math.sin(l.angle)*l.len); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(l.x,l.y);
+    ctx.lineTo(l.x+Math.cos(l.angle)*l.len, l.y+Math.sin(l.angle)*l.len); ctx.stroke();
   });
   requestAnimationFrame(drawBg);
 }
