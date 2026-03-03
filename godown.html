@@ -42,36 +42,6 @@
       --out-border: rgba(255,82,82,0.2);
       --sticky-bg: rgba(6,13,18,0.96);
     }
-    [data-theme="light"] {
-      --bg: #edf6f0;
-      --surface: #ffffff;
-      --surface2: #f2fbf6;
-      --card: #ffffff;
-      --card2: #f6fdf9;
-      --border: rgba(0,140,70,0.18);
-      --border2: rgba(0,0,0,0.06);
-      --text: #071510;
-      --text2: #3a7a58;
-      --text3: #8ab09a;
-      --green: #009e55;
-      --green-dim: rgba(0,140,70,0.07);
-      --green-glow: rgba(0,140,70,0.18);
-      --red: #e53935;
-      --red-dim: rgba(229,57,53,0.08);
-      --amber: #f59f00;
-      --amber-dim: rgba(245,159,0,0.1);
-      --blue: #0288d1;
-      --shadow: rgba(0,40,20,0.1);
-      --input-bg: #f3fbf7;
-      --input-border: rgba(0,140,70,0.22);
-      --topbar-bg: rgba(237,246,240,0.93);
-      --overlay: rgba(0,0,0,0.5);
-      --in-bg: rgba(0,140,70,0.06);
-      --in-border: rgba(0,140,70,0.2);
-      --out-bg: rgba(229,57,53,0.06);
-      --out-border: rgba(229,57,53,0.2);
-      --sticky-bg: rgba(237,246,240,0.97);
-    }
 
     html, body {
       min-height: 100%; font-family: 'DM Sans', sans-serif;
@@ -158,9 +128,8 @@
     }
     .ps-title {
       font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.02em; color: var(--green);
     }
-    .ps-title span { color: var(--green); }
 
     .add-product-btn {
       display: flex; align-items: center; gap: 0.4rem;
@@ -350,10 +319,10 @@
       display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem;
     }
     .ae-btn {
-      display: flex; align-items: center; gap: 0.4rem;
-      padding: 0.55rem 1rem;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
-      border-radius: 10px; cursor: pointer; border: none; transition: all 0.2s;
+      display: flex; align-items: center; gap: 0.35rem;
+      padding: 0.5rem 0.9rem;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem;
+      border-radius: 9px; cursor: pointer; border: none; transition: all 0.2s;
     }
     .ae-btn.in { background: var(--green); color: #060d12; box-shadow: 0 3px 14px var(--green-glow); }
     .ae-btn.in:hover { transform: translateY(-1px); box-shadow: 0 5px 20px var(--green-glow); }
@@ -644,8 +613,37 @@
     /* ── MOBILE ── */
     @media (max-width: 480px) {
       .tb-godown-name { max-width: 120px; }
-      .pv-name { font-size: 1rem; }
+      .pv-name { font-size: 0.95rem; }
+      .pv-actions { gap: 0.35rem; }
+      .ae-btn { padding: 0.45rem 0.65rem; font-size: 0.78rem; }
+      .ps-stats { gap: 0.5rem; }
+      .ps-chip { font-size: 0.72rem; padding: 0.3rem 0.65rem; }
+      .product-card { padding: 0.9rem 1rem; }
+      .pc-stock-num { font-size: 1.1rem; }
+      .modal { border-radius: 20px 20px 0 0; }
+      .modal-body { padding: 1rem 1.1rem 2rem; }
+      .stock-banner { flex-wrap: wrap; gap: 0.4rem; }
+      .entries-list { padding: 0.6rem 0.8rem 5rem; }
+      .entry-card { padding: 0.75rem 0.9rem; }
     }
+    @media (max-width: 360px) {
+      .pv-actions .ae-btn span { display: none; }
+      .ae-btn { padding: 0.45rem 0.55rem; }
+    }
+
+    /* ── PV ACTIONS (IN/OUT + edit/delete inline) ── */
+    .pv-actions {
+      display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0;
+    }
+    .pv-icon-btn {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.95rem; color: var(--text2);
+      transition: all 0.2s; flex-shrink: 0;
+    }
+    .pv-icon-btn:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+    .pv-icon-btn.red:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
   </style>
 </head>
 <body>
@@ -653,12 +651,9 @@
 <!-- ══════ TOP BAR ══════ -->
 <header class="topbar">
   <div class="topbar-left">
-    <a href="dashboard.html" class="back-btn" title="Back to Dashboard">←</a>
+    <a href="dashboard.html" class="back-btn" id="topbarBack" title="Back">←</a>
     <a href="dashboard.html" class="tb-logo">⚡</a>
     <div class="tb-godown-name" id="tbGodownName">Loading…</div>
-  </div>
-  <div class="topbar-right">
-    <button class="theme-pill" onclick="toggleTheme()" id="themeBtn">☀️ Light</button>
   </div>
 </header>
 
@@ -670,7 +665,7 @@
   <!-- Sticky header -->
   <div class="products-sticky">
     <div class="ps-top">
-      <div class="ps-title">Products <span id="psTitle">—</span></div>
+      <div class="ps-title" id="psTitle">Godown</div>
       <button class="add-product-btn" id="addProductTopBtn" onclick="openAddProduct()">＋ Add Product</button>
     </div>
     <div class="search-wrap">
@@ -704,15 +699,20 @@
   <!-- Sticky product header -->
   <div class="product-sticky">
 
-    <!-- Name + edit -->
+    <!-- Name row: back + name + IN/OUT + edit/delete -->
     <div class="pv-header">
       <button class="pv-back" onclick="backToProducts()">←</button>
       <div class="pv-title-wrap">
         <div class="pv-name" id="pvName">Product</div>
         <div class="pv-sub" id="pvSub">—</div>
       </div>
-      <button class="pv-edit-btn" onclick="openEditProduct()" title="Edit product">✏️</button>
-      <button id="pvDeleteBtn" onclick="confirmDeleteProduct()" class="pv-edit-btn" title="Delete product" style="margin-left:0.3rem;color:var(--red);border-color:rgba(255,82,82,0.25);">🗑</button>
+      <!-- IN/OUT inline with name on desktop -->
+      <div class="pv-actions">
+        <button class="ae-btn in" onclick="openEntry('in')">📥 IN</button>
+        <button class="ae-btn out" onclick="openEntry('out')">📤 OUT</button>
+        <button class="pv-icon-btn" onclick="openEditProduct()" title="Edit">✏️</button>
+        <button id="pvDeleteBtn" class="pv-icon-btn red" onclick="confirmDeleteProduct()" title="Delete">🗑</button>
+      </div>
     </div>
 
     <!-- Stock banner -->
@@ -725,12 +725,6 @@
         </div>
       </div>
       <div class="sb-conversions" id="sbConversions"></div>
-    </div>
-
-    <!-- Add entry bar -->
-    <div class="add-entry-bar">
-      <button class="ae-btn in" onclick="openEntry('in')">📥 Stock IN</button>
-      <button class="ae-btn out" onclick="openEntry('out')">📤 Stock OUT</button>
     </div>
   </div>
 
@@ -956,7 +950,7 @@
 
     // Set godown name in topbar
     document.getElementById('tbGodownName').textContent = godownData.name;
-    document.getElementById('psTitle').textContent = '— ' + godownData.name;
+    document.getElementById('psTitle').textContent = godownData.name;
 
     // Role-based UI
     const canManage = currentUser.role === 'owner' || currentUser.role === 'manager';
@@ -1074,11 +1068,14 @@
     );
     onSnapshot(q, snap => {
       entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      // Sort newest first client-side
+    // Sort newest first — handle serverTimestamp() that is null during pending writes
       entries.sort((a, b) => {
-        const ta = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
-        const tb = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
-        return tb - ta;
+        const getMs = (e) => {
+          if (!e.createdAt) return Date.now(); // pending write — treat as now
+          if (e.createdAt.toDate) return e.createdAt.toDate().getTime();
+          return new Date(e.createdAt).getTime();
+        };
+        return getMs(b) - getMs(a);
       });
       renderEntries();
     });
@@ -1409,23 +1406,23 @@
 
 <!-- NON-MODULE HELPERS -->
 <script>
-  /* ── THEME ── */
-  const t = localStorage.getItem('swiftTheme') || 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️ Light' : '🌙 Dark';
-  function toggleTheme() {
-    const cur = document.documentElement.getAttribute('data-theme');
-    const next = cur === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('swiftTheme', next);
-    document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
-  }
+  /* ── THEME: Dark only ── */
+  document.documentElement.setAttribute('data-theme', 'dark');
 
   /* ── VIEWS ── */
   function showView(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
+    // Update topbar back button behaviour
+    const backBtn = document.getElementById('topbarBack');
+    if (id === 'productView') {
+      backBtn.href = '#';
+      backBtn.onclick = (e) => { e.preventDefault(); backToProducts(); };
+    } else {
+      backBtn.href = 'dashboard.html';
+      backBtn.onclick = null;
+    }
   }
 
   /* ── MODALS ── */
