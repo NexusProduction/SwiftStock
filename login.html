@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SwiftStock — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
+      authDomain: "store-management-nexus.firebaseapp.com",
+      projectId: "store-management-nexus",
+      storageBucket: "store-management-nexus.firebasestorage.app",
+      messagingSenderId: "263693510395",
+      appId: "1:263693510395:web:47a0485221405dbb6fb25e",
+      measurementId: "G-LSVZ5C6KDH"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ── LOGIN ──
+    window.handleLogin = async function() {
+      const name = document.getElementById('inp-name').value.trim();
+      const corpId = document.getElementById('inp-corpid').value.trim().toUpperCase();
+      const password = document.getElementById('inp-password').value;
+      const btn = document.getElementById('login-btn');
+      const errEl = document.getElementById('login-error');
+
+      errEl.textContent = '';
+      if (!name || !corpId || !password) {
+        showError('Please fill in all fields.'); return;
+      }
+      if (!/^SWFT\d{7}$/.test(corpId)) {
+        showError('Corporate ID format: SWFT0000001'); return;
+      }
+
+      btn.classList.add('loading');
+      btn.textContent = 'Signing in…';
+
+      try {
+        // Find user by corporateId + name in Firestore
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('corporateId', '==', corpId));
+        const snap = await getDocs(q);
+
+        if (snap.empty) { showError('Corporate ID not found.'); btn.classList.remove('loading'); btn.textContent = 'Enter'; return; }
+
+        const userDoc = snap.docs[0];
+        const userData = userDoc.data();
+
+        if (userData.name.toLowerCase() !== name.toLowerCase()) {
+          showError('Name does not match this Corporate ID.'); btn.classList.remove('loading'); btn.textContent = 'Enter'; return;
+        }
+
+        // Firebase Auth sign in using stored email
+        await signInWithEmailAndPassword(auth, userData.email, password);
+
+        // Store session
+        sessionStorage.setItem('swiftUser', JSON.stringify({ ...userData, uid: userDoc.id }));
+
+        // Redirect
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        let msg = 'Login failed. Please try again.';
+        if (err.code === 'auth/wrong-password') msg = 'Incorrect password.';
+        if (err.code === 'auth/too-many-requests') msg = 'Too many attempts. Try later.';
+        showError(msg);
+        btn.classList.remove('loading');
+        btn.textContent = 'Enter';
+      }
+    };
+
+    // ── FORGOT PASSWORD ──
+    window.handleForgotPassword = async function() {
+      const email = prompt('Enter your registered email address:');
+      if (!email) return;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showSuccess('Password reset link sent to ' + email);
+      } catch (e) {
+        showError('Could not send reset email. Check the address.');
+      }
+    };
+
+    function showError(msg) {
+      const el = document.getElementById('login-error');
+      el.textContent = msg;
+      el.style.color = '#ff5252';
+    }
+    function showSuccess(msg) {
+      const el = document.getElementById('login-error');
+      el.textContent = msg;
+      el.style.color = '#00e676';
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── THEMES ── */
+    [data-theme="dark"] {
+      --bg: #060c10;
+      --surface: #0d1a21;
+      --surface2: #142030;
+      --card: #0f1e28;
+      --card-border: rgba(0,230,118,0.15);
+      --text: #e8f5ef;
+      --text2: #8aada0;
+      --input-bg: #081520;
+      --input-border: rgba(0,230,118,0.2);
+      --input-focus: rgba(0,230,118,0.5);
+      --green: #00e676;
+      --green-glow: rgba(0,230,118,0.25);
+      --shadow: rgba(0,0,0,0.6);
+    }
+    [data-theme="light"] {
+      --bg: #f0f7f4;
+      --surface: #ffffff;
+      --surface2: #e8f2ee;
+      --card: #ffffff;
+      --card-border: rgba(0,160,80,0.25);
+      --text: #0d2018;
+      --text2: #4a7a60;
+      --input-bg: #f5fbf7;
+      --input-border: rgba(0,160,80,0.3);
+      --input-focus: rgba(0,160,80,0.6);
+      --green: #00a050;
+      --green-glow: rgba(0,160,80,0.2);
+      --shadow: rgba(0,60,30,0.12);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.5rem;
+      z-index: 200;
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--text2);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .theme-toggle:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── CANVAS ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── FLOATING ICONS ── */
+    .float-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .fi {
+      position: absolute;
+      font-size: 2rem;
+      animation: fiFloat linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes fiFloat {
+      0%   { transform: translateY(110vh) rotate(0deg) scale(0.8); opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(720deg) scale(1.1); opacity: 0; }
+    }
+
+    /* ── LOGO BAR ── */
+    .logo-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(6,12,16,0.6);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    [data-theme="light"] .logo-bar {
+      background: rgba(240,247,244,0.8);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--green);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-shadow: 0 0 20px var(--green-glow);
+    }
+
+    /* ── PAGE LAYOUT ── */
+    .page {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 1.5rem 3rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 2.8rem 2.4rem;
+      box-shadow: 0 40px 80px var(--shadow), 0 0 0 1px var(--card-border);
+      position: relative;
+      overflow: hidden;
+      animation: cardIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(40px) scale(0.97); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* top accent line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 0%, var(--green) 50%, transparent 100%);
+    }
+
+    /* soft glow inside card */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 250px; height: 150px;
+      background: radial-gradient(ellipse, var(--green-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.3rem;
+      position: relative;
+    }
+
+    .card-sub {
+      color: var(--text2);
+      font-size: 0.88rem;
+      margin-bottom: 2rem;
+    }
+
+    /* ── INPUTS ── */
+    .field {
+      margin-bottom: 1.1rem;
+      position: relative;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text2);
+      margin-bottom: 0.45rem;
+    }
+
+    .field-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .field-icon {
+      position: absolute;
+      left: 1rem;
+      font-size: 1rem;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.8rem;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.3s;
+    }
+
+    .field input::placeholder { color: var(--text2); opacity: 0.6; }
+
+    .field input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-glow);
+      background: var(--surface);
+    }
+
+    /* password toggle */
+    .pw-toggle {
+      position: absolute;
+      right: 1rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text2);
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: var(--green); }
+
+    /* ── CORP ID HELPER ── */
+    .corp-hint {
+      font-size: 0.72rem;
+      color: var(--text2);
+      margin-top: 0.3rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── ERROR ── */
+    #login-error {
+      font-size: 0.85rem;
+      min-height: 1.2em;
+      margin-bottom: 0.8rem;
+      text-align: center;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    /* ── LOGIN BUTTON ── */
+    .login-btn {
+      width: 100%;
+      padding: 1rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #060c10;
+      background: var(--green);
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 4px 30px var(--green-glow);
+      letter-spacing: 0.03em;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 40px var(--green-glow);
+    }
+
+    .login-btn:active { transform: scale(0.98); }
+
+    .login-btn.loading {
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    /* ripple effect on button click */
+    .login-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: translateX(-100%);
+    }
+    .login-btn:hover::after {
+      animation: shimmer 1.2s ease infinite;
+    }
+    @keyframes shimmer {
+      to { transform: translateX(100%); }
+    }
+
+    /* ── LINKS ROW ── */
+    .links-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.2rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text2);
+      font-family: 'DM Sans', sans-serif;
+      transition: color 0.2s;
+      padding: 0;
+    }
+
+    .link-btn:hover { color: var(--green); }
+
+    .link-btn.primary {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+      color: var(--text2);
+      font-size: 0.78rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--input-border);
+    }
+
+    /* ── SIGNUP LINK ── */
+    .signup-row {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.88rem;
+      color: var(--text2);
+    }
+    .signup-row a {
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .signup-row a:hover { text-decoration: underline; }
+
+    /* ── SUCCESS STATE ── */
+    .success-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: var(--card);
+      border-radius: 28px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      z-index: 10;
+    }
+    .success-overlay.show { display: flex; }
+
+    .success-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(0,230,118,0.1);
+      border: 2px solid var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem; border-radius: 20px; }
+      .card-title { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="float-layer" id="floatLayer"></div>
+
+<!-- Logo bar -->
+<div class="logo-bar">
+  <a href="index.html" class="logo">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+      <rect x="2" y="8" width="28" height="18" rx="3" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2"/>
+      <path d="M12 16h8M12 20h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    SwiftStock
+  </a>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+</div>
+
+<!-- Theme toggle -->
+<button class="theme-toggle" onclick="toggleTheme()" style="top:1.2rem;right:1.5rem;">🌙 Dark</button>
+
+<!-- Main -->
+<main class="page">
+  <div class="card">
+    <!-- Success overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-icon">✓</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;">Welcome back!</div>
+      <div style="color:var(--text2);font-size:0.9rem;">Redirecting to dashboard…</div>
+    </div>
+
+    <h1 class="card-title">Login</h1>
+    <p class="card-sub">Enter your credentials to access your godowns</p>
+
+    <!-- Fields -->
+    <div class="field">
+      <label>Your Name</label>
+      <div class="field-wrap">
+        <span class="field-icon">👤</span>
+        <input type="text" id="inp-name" placeholder="e.g. Rahul Sharma" autocomplete="name"
+          onkeydown="if(event.key==='Enter')document.getElementById('inp-corpid').focus()" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Corporate ID</label>
+      <div class="field-wrap">
+        <span class="field-icon">🏷️</span>
+        <input type="text" id="inp-corpid" placeholder="SWFT0000001" maxlength="11"
+          style="text-transform:uppercase;letter-spacing:0.05em;"
+          onkeydown="if(event.key==='Enter')document.getElementById('inp-password').focus()"
+          oninput="this.value=this.value.toUpperCase()" />
+      </div>
+      <div class="corp-hint">Format: SWFT followed by 7 digits</div>
+    </div>
+
+    <div class="field" style="margin-bottom:1.5rem;">
+      <label>Password</label>
+      <div class="field-wrap">
+        <span class="field-icon">🔒</span>
+        <input type="password" id="inp-password" placeholder="Your password"
+          onkeydown="if(event.key==='Enter')handleLogin()" />
+        <button class="pw-toggle" type="button" onclick="togglePw()" id="pw-btn">👁️</button>
+      </div>
+    </div>
+
+    <div id="login-error"></div>
+
+    <button class="login-btn" id="login-btn" onclick="handleLogin()">Enter</button>
+
+    <div class="links-row">
+      <button class="link-btn" onclick="handleForgotPassword()">Forgot password?</button>
+      <button class="link-btn primary" onclick="window.location.href='signup.html'">Create account →</button>
+    </div>
+
+    <div class="divider">or</div>
+
+    <div class="signup-row">
+      New company? <a href="signup.html">Sign up as Owner</a>
+    </div>
+  </div>
+</main>
+
+<script>
+  /* ── THEME ── */
+  const savedTheme = localStorage.getItem('swiftTheme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateToggleBtn(savedTheme);
+
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('swiftTheme', next);
+    updateToggleBtn(next);
+  }
+
+  function updateToggleBtn(theme) {
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+      btn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+    });
+  }
+
+  /* ── PASSWORD TOGGLE ── */
+  function togglePw() {
+    const inp = document.getElementById('inp-password');
+    const btn = document.getElementById('pw-btn');
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else { inp.type = 'password'; btn.textContent = '👁️'; }
+  }
+
+  /* ── BACKGROUND CANVAS ── */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Subtle animated particles
+  const particles = Array.from({length: 60}, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 0.5 + Math.random() * 1.5,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    opacity: 0.05 + Math.random() * 0.12
+  }));
+
+  // Connections between close particles
+  function drawBg() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    ctx.clearRect(0, 0, W, H);
+
+    // Background gradient
+    const g = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
+    if (isDark) {
+      g.addColorStop(0, 'rgba(13,30,40,1)');
+      g.addColorStop(1, 'rgba(6,12,16,1)');
+    } else {
+      g.addColorStop(0, 'rgba(224,242,234,1)');
+      g.addColorStop(1, 'rgba(240,247,244,1)');
+    }
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    const green = isDark ? 'rgba(0,230,118,' : 'rgba(0,160,80,';
+
+    // Draw connections
+    particles.forEach((p, i) => {
+      particles.slice(i + 1).forEach(p2 => {
+        const dx = p.x - p2.x, dy = p.y - p2.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.strokeStyle = `${green}${0.06 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      });
+    });
+
+    // Draw particles
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+
+      ctx.fillStyle = `${green}${p.opacity})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    requestAnimationFrame(drawBg);
+  }
+  drawBg();
+
+  /* ── FLOATING INVENTORY ICONS ── */
+  const iconData = [
+    { emoji: '📦', size: 2.2, speed: 18 },
+    { emoji: '🏪', size: 1.8, speed: 22 },
+    { emoji: '📊', size: 1.6, speed: 16 },
+    { emoji: '🗂️', size: 2, speed: 20 },
+    { emoji: '🔄', size: 1.5, speed: 25 },
+    { emoji: '📋', size: 1.9, speed: 19 },
+    { emoji: '⚡', size: 1.4, speed: 14 },
+    { emoji: '🏷️', size: 2.1, speed: 23 },
+    { emoji: '📈', size: 1.7, speed: 17 },
+    { emoji: '🔑', size: 1.6, speed: 21 },
+    { emoji: '📦', size: 1.5, speed: 26 },
+    { emoji: '🏪', size: 2, speed: 15 },
+  ];
+
+  const floatLayer = document.getElementById('floatLayer');
+  iconData.forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'fi';
+    el.textContent = d.emoji;
+    el.style.cssText = `
+      left: ${(i * 8.5) % 95}%;
+      font-size: ${d.size}rem;
+      opacity: ${document.documentElement.getAttribute('data-theme') === 'dark' ? 0.06 : 0.1};
+      animation-duration: ${d.speed}s;
+      animation-delay: -${Math.random() * d.speed}s;
+    `;
+    floatLayer.appendChild(el);
+  });
+
+  // Update icon opacity on theme change
+  const origToggle = window.toggleTheme;
+  window.toggleTheme = function() {
+    origToggle();
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('.fi').forEach(fi => {
+      fi.style.opacity = isDark ? '0.06' : '0.1';
+    });
+  };
+
+  /* ── INPUT ANIMATIONS ── */
+  document.querySelectorAll('.field input').forEach(inp => {
+    inp.addEventListener('focus', () => {
+      inp.closest('.field').querySelector('.field-icon').style.opacity = '1';
+    });
+    inp.addEventListener('blur', () => {
+      inp.closest('.field').querySelector('.field-icon').style.opacity = '0.5';
+    });
+  });
+
+  /* ── CARD TILT ON MOUSE MOVE (desktop) ── */
+  const card = document.querySelector('.card');
+  document.addEventListener('mousemove', (e) => {
+    if (window.innerWidth < 768) return;
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / window.innerWidth;
+    const dy = (e.clientY - cy) / window.innerHeight;
+    card.style.transform = `perspective(800px) rotateY(${dx * 4}deg) rotateX(${-dy * 4}deg)`;
+  });
+
+  document.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(800px) rotateY(0) rotateX(0)';
+    card.style.transition = 'transform 0.6s ease';
+  });
+</script>
+</body>
+</html>

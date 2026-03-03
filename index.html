@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SwiftStock — Inventory Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #00e676;
+      --green-dark: #00b34a;
+      --green-glow: rgba(0,230,118,0.25);
+      --bg: #060c10;
+      --surface: #0d1a21;
+      --surface2: #102030;
+      --text: #e8f5ef;
+      --muted: #567a6a;
+      --border: rgba(0,230,118,0.12);
+    }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── CANVAS BG ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.45;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 3rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(6,12,16,0.7);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      color: var(--green);
+      text-shadow: 0 0 30px var(--green-glow);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-logo svg { width: 28px; height: 28px; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      gap: 2rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0,230,118,0.08);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.4rem 1rem;
+      font-size: 0.78rem;
+      color: var(--green);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 600;
+      animation: fadeDown 0.8s ease both;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      animation: fadeUp 0.9s 0.1s ease both;
+    }
+
+    .hero-title .line2 {
+      color: var(--green);
+      text-shadow: 0 0 60px rgba(0,230,118,0.3);
+      display: block;
+    }
+
+    .hero-sub {
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      font-weight: 300;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+
+    /* ── LIQUID BUTTON ── */
+    .btn-wrap {
+      position: relative;
+      animation: fadeUp 0.9s 0.35s ease both;
+      margin-top: 0.5rem;
+    }
+
+    .liquid-btn {
+      position: relative;
+      padding: 1.1rem 3.2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.03em;
+      color: #060c10;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      z-index: 0;
+      box-shadow: 0 0 40px rgba(0,230,118,0.2);
+    }
+
+    .liquid-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 60px rgba(0,230,118,0.4);
+    }
+
+    .liquid-btn:active { transform: scale(0.98); }
+
+    /* Static green base */
+    .liquid-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--green);
+      border-radius: 999px;
+      z-index: -2;
+    }
+
+    /* Liquid blob that follows cursor */
+    .liquid-blob {
+      position: absolute;
+      width: 120%;
+      height: 400%;
+      background: radial-gradient(ellipse at center, #80ffc2 0%, #00e676 40%, #00b34a 100%);
+      border-radius: 45% 55% 60% 40% / 40% 50% 50% 60%;
+      top: -150%;
+      left: -10%;
+      pointer-events: none;
+      z-index: -1;
+      transition: transform 0.08s linear;
+      animation: blobMorph 4s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    @keyframes blobMorph {
+      0%   { border-radius: 45% 55% 60% 40% / 40% 50% 50% 60%; }
+      25%  { border-radius: 60% 40% 45% 55% / 55% 45% 60% 40%; }
+      50%  { border-radius: 40% 60% 55% 45% / 60% 40% 45% 55%; }
+      75%  { border-radius: 55% 45% 40% 60% / 45% 55% 40% 60%; }
+      100% { border-radius: 50% 50% 60% 40% / 50% 60% 40% 50%; }
+    }
+
+    .btn-label { position: relative; z-index: 1; pointer-events: none; }
+
+    .btn-secondary {
+      margin-left: 1rem;
+      padding: 1.1rem 2.4rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--green);
+      background: transparent;
+      border: 1.5px solid rgba(0,230,118,0.35);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,230,118,0.08);
+      border-color: var(--green);
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      animation: fadeUp 0.9s 0.35s ease both;
+    }
+
+    /* ── FLOATING STATS ── */
+    .stats-row {
+      display: flex;
+      gap: 3rem;
+      margin-top: 1rem;
+      animation: fadeUp 0.9s 0.5s ease both;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .stat { text-align: center; }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.2rem;
+    }
+
+    .stat-divider {
+      width: 1px;
+      background: var(--border);
+      align-self: stretch;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--green);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      text-align: center;
+      margin-bottom: 3.5rem;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0,230,118,0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(0,230,118,0.08);
+    }
+
+    .feat-card:hover::before { opacity: 1; }
+
+    .feat-icon {
+      width: 48px; height: 48px;
+      background: rgba(0,230,118,0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid rgba(0,230,118,0.2);
+    }
+
+    .feat-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .feat-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 2rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .how-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 3rem;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      left: 23px;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--green), transparent);
+    }
+
+    .step {
+      display: flex;
+      gap: 2rem;
+      padding-bottom: 3rem;
+      position: relative;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.5s, transform 0.5s;
+    }
+
+    .step.visible { opacity: 1; transform: none; }
+
+    .step-num {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      color: var(--green);
+      font-size: 1rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 20px rgba(0,230,118,0.2);
+    }
+
+    .step-content { padding-top: 0.6rem; }
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+    }
+    .step-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.65; }
+
+    /* ── ROLES ── */
+    .roles {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .role-card {
+      border-radius: 20px;
+      padding: 2rem 1.8rem;
+      border: 1px solid;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+
+    .role-card:hover { transform: translateY(-5px); }
+
+    .role-card.owner {
+      background: linear-gradient(135deg, #1a0a2e 0%, #0d0518 100%);
+      border-color: rgba(160,80,255,0.35);
+    }
+
+    .role-card.manager {
+      background: linear-gradient(135deg, #1f1600 0%, #120e00 100%);
+      border-color: rgba(255,180,0,0.35);
+    }
+
+    .role-card.staff {
+      background: linear-gradient(135deg, #0f1a1a 0%, #081212 100%);
+      border-color: rgba(180,180,180,0.25);
+    }
+
+    .role-ring {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+      border: 3px solid;
+    }
+
+    .owner .role-ring {
+      border-color: #a050ff;
+      background: rgba(160,80,255,0.1);
+      box-shadow: 0 0 25px rgba(160,80,255,0.3);
+    }
+
+    .manager .role-ring {
+      border-color: #ffd700;
+      background: rgba(255,215,0,0.1);
+      box-shadow: 0 0 25px rgba(255,215,0,0.3);
+    }
+
+    .staff .role-ring {
+      border-color: #c0c0c0;
+      background: rgba(192,192,192,0.1);
+      box-shadow: 0 0 25px rgba(192,192,192,0.2);
+    }
+
+    .role-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .owner .role-name { color: #b060ff; }
+    .manager .role-name { color: #ffd700; }
+    .staff .role-name { color: #c0c0c0; }
+
+    .role-perms {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .role-perms li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .perm-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .owner .perm-dot { background: #b060ff; }
+    .manager .perm-dot { background: #ffd700; }
+    .staff .perm-dot { background: #c0c0c0; }
+
+    /* ── FOOTER CTA ── */
+    .cta-section {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 2rem;
+      text-align: center;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(0,230,118,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 1rem;
+      letter-spacing: -0.03em;
+    }
+
+    .cta-sub {
+      color: var(--muted);
+      max-width: 440px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 2;
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--green);
+      font-size: 1rem;
+    }
+
+    /* ── FLOATING INVENTORY ICONS ── */
+    .float-icons {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .float-icon {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0.04;
+      animation: floatUp linear infinite;
+      color: var(--green);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.04; }
+      90% { opacity: 0.04; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 7rem 1.5rem 3rem; }
+      .stat-divider { display: none; }
+      footer { flex-direction: column; text-align: center; }
+      .btn-secondary { margin-left: 0; }
+      .steps::before { left: 21px; }
+    }
+
+    /* Scroll fade-in for sections */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Animated background canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Floating inventory icons -->
+<div class="float-icons" id="floatIcons"></div>
+
+<!-- Navbar -->
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="8" width="28" height="18" rx="3" stroke="#00e676" stroke-width="2"/>
+      <path d="M8 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" stroke="#00e676" stroke-width="2"/>
+      <path d="M12 16h8M12 20h5" stroke="#00e676" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="23" cy="19" r="1.5" fill="#00e676"/>
+    </svg>
+    SwiftStock
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#how">How It Works</a></li>
+  </ul>
+  <a href="login.html" class="liquid-btn" style="padding:0.6rem 1.6rem; font-size:0.9rem; box-shadow:none;">
+    <div class="liquid-blob" id="navBlob"></div>
+    <span class="btn-label">Login</span>
+  </a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge"><span class="badge-dot"></span> Inventory Management Platform</div>
+
+  <h1 class="hero-title">
+    Manage Every<br>
+    <span class="line2">Godown. Instantly.</span>
+  </h1>
+
+  <p class="hero-sub">
+    SwiftStock gives your team real-time inventory control across warehouses, roles, and devices — with powerful analytics built right in.
+  </p>
+
+  <div class="hero-cta-row">
+    <a href="signup.html" class="liquid-btn" id="mainBtn">
+      <div class="liquid-blob" id="mainBlob"></div>
+      <span class="btn-label">Get Started Free</span>
+    </a>
+    <a href="login.html" class="btn-secondary">Already have account</a>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num" data-count="500">0</div>
+      <div class="stat-label">Companies</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num" data-count="50">0</div>
+      <div class="stat-label">Godowns Tracked</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num" data-count="99">0</div>
+      <div class="stat-label">% Accuracy</div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <p class="section-label reveal">What You Get</p>
+  <h2 class="section-title reveal">Everything you need to<br>run your warehouse.</h2>
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon">🏪</div>
+      <div class="feat-title">Multi-Godown Management</div>
+      <p class="feat-desc">Create unlimited godowns and assign custom staff access per warehouse. Full control over who sees what.</p>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">📦</div>
+      <div class="feat-title">Smart Product Entries</div>
+      <p class="feat-desc">Log every IN/OUT entry with timestamps, quantities, and unit conversions. Full audit trail, always.</p>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">🔄</div>
+      <div class="feat-title">Unit Conversions</div>
+      <p class="feat-desc">Define custom conversions like 1 kg = 20 pieces. SwiftStock auto-calculates stock across any unit.</p>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">👥</div>
+      <div class="feat-title">Role-Based Access</div>
+      <p class="feat-desc">Owners, Managers, and Staff each see exactly what they need. Built-in permission layers, zero config.</p>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">Google Sheets Backup</div>
+      <p class="feat-desc">Every transaction syncs to your Google Sheet in real time. Audit from anywhere, even offline.</p>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">🔔</div>
+      <div class="feat-title">Owner Notifications</div>
+      <p class="feat-desc">Get notified instantly when staff change credentials, entries are made, or key events happen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <p class="section-label reveal">Simple by Design</p>
+    <h2 class="section-title reveal">Up and running in<br>minutes.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Sign Up as Owner</div>
+          <p class="step-desc">Create your company profile with name, email, and password. A unique 10-digit Corporate ID is generated automatically for your team.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Add Your Staff</div>
+          <p class="step-desc">Create manager, employee, or viewer accounts from your dashboard. Share credentials via WhatsApp, Gmail, or any app — in text or image.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Create Godowns</div>
+          <p class="step-desc">Add warehouse locations and assign custom staff access per godown. Toggle individual staff on or off for each warehouse.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Track Everything</div>
+          <p class="step-desc">Add products, log IN/OUT entries, set unit conversions, and watch your stock update in real time — synced to Firebase and your Google Sheet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Roles -->
+<section class="roles" id="roles">
+  <p class="section-label reveal">Access Levels</p>
+  <h2 class="section-title reveal">The right permissions<br>for every role.</h2>
+  <div class="roles-grid">
+    <div class="role-card owner reveal">
+      <div class="role-ring">👑</div>
+      <div class="role-name">Owner</div>
+      <ul class="role-perms">
+        <li><span class="perm-dot"></span>Full platform access</li>
+        <li><span class="perm-dot"></span>Create & remove any staff</li>
+        <li><span class="perm-dot"></span>View all IDs & passwords</li>
+        <li><span class="perm-dot"></span>Delete products & entries</li>
+        <li><span class="perm-dot"></span>Receive all notifications</li>
+        <li><span class="perm-dot"></span>Manage all godowns</li>
+      </ul>
+    </div>
+    <div class="role-card manager reveal">
+      <div class="role-ring">🛡️</div>
+      <div class="role-name">Manager</div>
+      <ul class="role-perms">
+        <li><span class="perm-dot"></span>Create & manage staff</li>
+        <li><span class="perm-dot"></span>Create & manage godowns</li>
+        <li><span class="perm-dot"></span>Add & delete products</li>
+        <li><span class="perm-dot"></span>View assigned godowns</li>
+        <li><span class="perm-dot"></span>Log IN/OUT entries</li>
+        <li><span class="perm-dot"></span>Cannot remove Owner</li>
+      </ul>
+    </div>
+    <div class="role-card staff reveal">
+      <div class="role-ring">🧑‍💼</div>
+      <div class="role-name">Staff / Viewer</div>
+      <ul class="role-perms">
+        <li><span class="perm-dot"></span>View assigned godowns only</li>
+        <li><span class="perm-dot"></span>Add product entries</li>
+        <li><span class="perm-dot"></span>View own profile</li>
+        <li><span class="perm-dot"></span>No account management</li>
+        <li><span class="perm-dot"></span>No staff creation</li>
+        <li><span class="perm-dot"></span>Viewers: read only</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title reveal">Start managing smarter,<br>today.</h2>
+  <p class="cta-sub reveal">No credit card. No setup fee. Your first godown is live in under 2 minutes.</p>
+  <a href="signup.html" class="liquid-btn" id="ctaBtn">
+    <div class="liquid-blob" id="ctaBlob"></div>
+    <span class="btn-label">Create Free Account →</span>
+  </a>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">⚡ SwiftStock</div>
+  <span>© 2025 SwiftStock. Built for teams that move fast.</span>
+  <span>Firebase + Google Sheets Powered</span>
+</footer>
+
+<script>
+  /* ── BACKGROUND CANVAS: animated grid + orbs ── */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, mouse = { x: -1000, y: -1000 };
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Orbs
+  const orbs = Array.from({ length: 4 }, (_, i) => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 200 + Math.random() * 300,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    hue: i === 0 ? 150 : (i === 1 ? 145 : 155),
+  }));
+
+  function drawCanvas() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw grid
+    ctx.strokeStyle = 'rgba(0,230,118,0.04)';
+    ctx.lineWidth = 1;
+    const gridSize = 60;
+    for (let x = 0; x < W; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, H);
+      ctx.stroke();
+    }
+    for (let y = 0; y < H; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+
+    // Draw orbs
+    orbs.forEach(o => {
+      o.x += o.vx;
+      o.y += o.vy;
+      if (o.x < -o.r || o.x > W + o.r) o.vx *= -1;
+      if (o.y < -o.r || o.y > H + o.r) o.vy *= -1;
+
+      const g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+      g.addColorStop(0, `hsla(${o.hue},100%,50%,0.08)`);
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    requestAnimationFrame(drawCanvas);
+  }
+  drawCanvas();
+
+  /* ── LIQUID BUTTON: cursor-following blob ── */
+  function setupLiquidBtn(btnId, blobId) {
+    const btn = document.getElementById(btnId);
+    const blob = document.getElementById(blobId);
+    if (!btn || !blob) return;
+
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left; // 0 to rect.width
+      const y = e.clientY - rect.top;
+      // Map to blob position: blob is 120% wide, 400% tall
+      const blobX = (x / rect.width) * 100 - 60; // shift by -60 to -10 range
+      const blobY = (y / rect.height) * 100 - 200;
+      blob.style.transform = `translate(${blobX * 0.3}px, ${blobY * 0.15}px)`;
+    });
+
+    btn.addEventListener('mouseleave', () => {
+      blob.style.transform = 'translate(0, 0)';
+    });
+  }
+
+  // For any anchor with liquid-btn class — handle all blobs
+  const liquidBtns = document.querySelectorAll('.liquid-btn');
+  liquidBtns.forEach(btn => {
+    const blob = btn.querySelector('.liquid-blob');
+    if (!blob) return;
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const blobX = (x / rect.width * 100 - 60) * 0.3;
+      const blobY = (y / rect.height * 100 - 200) * 0.15;
+      blob.style.transform = `translate(${blobX}px, ${blobY}px)`;
+      blob.style.transition = 'transform 0.06s linear';
+    });
+    btn.addEventListener('mouseleave', () => {
+      blob.style.transform = 'translate(0, 0)';
+      blob.style.transition = 'transform 0.5s ease';
+    });
+  });
+
+  /* ── MOBILE: auto-oscillating liquid ── */
+  if ('ontouchstart' in window) {
+    let t = 0;
+    function mobileOscillate() {
+      t += 0.02;
+      document.querySelectorAll('.liquid-blob').forEach(blob => {
+        blob.style.transform = `translate(${Math.sin(t) * 15}px, ${Math.cos(t * 0.7) * 8}px)`;
+        blob.style.transition = 'none';
+      });
+      requestAnimationFrame(mobileOscillate);
+    }
+    mobileOscillate();
+  }
+
+  /* ── FLOATING ICONS ── */
+  const icons = ['📦', '🏪', '📊', '🔄', '📋', '⚡', '🏷️', '📈', '🗂️', '🔑'];
+  const floatContainer = document.getElementById('floatIcons');
+  icons.forEach((icon, i) => {
+    const el = document.createElement('div');
+    el.className = 'float-icon';
+    el.textContent = icon;
+    el.style.left = `${5 + (i * 10) % 90}%`;
+    el.style.animationDuration = `${12 + Math.random() * 15}s`;
+    el.style.animationDelay = `${Math.random() * 12}s`;
+    el.style.fontSize = `${1 + Math.random()}rem`;
+    floatContainer.appendChild(el);
+  });
+
+  /* ── SCROLL REVEALS ── */
+  const reveals = document.querySelectorAll('.reveal, .step');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, idx) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), idx * 80);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => revealObserver.observe(el));
+
+  /* ── COUNTER ANIMATION ── */
+  const counters = document.querySelectorAll('[data-count]');
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.count);
+        const suffix = el.dataset.count === '99' ? '%' : '+';
+        let start = 0;
+        const duration = 1500;
+        const step = (timestamp) => {
+          if (!start) start = timestamp;
+          const progress = Math.min((timestamp - start) / duration, 1);
+          el.textContent = Math.floor(progress * target) + (progress === 1 ? suffix : '');
+          if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+        counterObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => counterObserver.observe(el));
+</script>
+</body>
+</html>

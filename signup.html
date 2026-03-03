@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SwiftStock — Create Your Company</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- html2canvas for card download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── THEMES ── */
+    [data-theme="dark"] {
+      --bg: #060c10;
+      --surface: #0d1a21;
+      --card: #0f1e28;
+      --card-border: rgba(0,230,118,0.15);
+      --text: #e8f5ef;
+      --text2: #7aad97;
+      --text3: #3d6655;
+      --input-bg: #081520;
+      --input-border: rgba(0,230,118,0.18);
+      --green: #00e676;
+      --green-dim: rgba(0,230,118,0.08);
+      --green-glow: rgba(0,230,118,0.25);
+      --shadow: rgba(0,0,0,0.7);
+      --step-done: rgba(0,230,118,0.15);
+    }
+    [data-theme="light"] {
+      --bg: #eef7f2;
+      --surface: #ffffff;
+      --card: #ffffff;
+      --card-border: rgba(0,140,70,0.22);
+      --text: #091a10;
+      --text2: #3d7a5a;
+      --text3: #8ab09a;
+      --input-bg: #f4fbf7;
+      --input-border: rgba(0,140,70,0.25);
+      --green: #009e55;
+      --green-dim: rgba(0,140,70,0.07);
+      --green-glow: rgba(0,140,70,0.18);
+      --shadow: rgba(0,40,20,0.12);
+      --step-done: rgba(0,140,70,0.1);
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* ── CANVAS ── */
+    #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* ── NOISE ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 2rem;
+      backdrop-filter: blur(20px);
+      background: rgba(6,12,16,0.65);
+      border-bottom: 1px solid var(--card-border);
+      transition: background 0.4s;
+    }
+    [data-theme="light"] .topbar { background: rgba(238,247,242,0.8); }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.35rem;
+      color: var(--green); text-decoration: none;
+      display: flex; align-items: center; gap: 0.45rem;
+      text-shadow: 0 0 25px var(--green-glow);
+    }
+
+    .theme-btn {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.82rem; cursor: pointer;
+      color: var(--text2);
+      transition: all 0.25s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .theme-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── PAGE ── */
+    .page {
+      position: relative; z-index: 2;
+      min-height: 100vh;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 6.5rem 1.5rem 4rem;
+    }
+
+    /* ── STEPPER ── */
+    .signup-wrap {
+      width: 100%; max-width: 520px;
+    }
+
+    .page-head {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.7s ease both;
+    }
+    .page-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--green-dim);
+      border: 1px solid var(--card-border);
+      border-radius: 999px; padding: 0.3rem 0.9rem;
+      font-size: 0.74rem; color: var(--green);
+      letter-spacing: 0.07em; text-transform: uppercase; font-weight: 600;
+      margin-bottom: 0.9rem;
+    }
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: clamp(1.9rem, 5vw, 2.7rem);
+      letter-spacing: -0.03em; line-height: 1.1;
+      margin-bottom: 0.4rem;
+    }
+    .page-sub { color: var(--text2); font-size: 0.9rem; }
+
+    /* Steps indicator */
+    .steps-indicator {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin-bottom: 2.2rem;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .si-step {
+      display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    }
+    .si-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid var(--input-border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem;
+      color: var(--text3);
+      transition: all 0.4s;
+      position: relative;
+    }
+    .si-dot.active {
+      border-color: var(--green);
+      background: var(--green-dim);
+      color: var(--green);
+      box-shadow: 0 0 15px var(--green-glow);
+    }
+    .si-dot.done {
+      border-color: var(--green);
+      background: var(--green);
+      color: #060c10;
+    }
+    .si-label {
+      font-size: 0.68rem; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      transition: color 0.3s;
+    }
+    .si-step .si-label.active { color: var(--green); }
+    .si-line {
+      width: 60px; height: 2px;
+      background: var(--input-border);
+      margin: 0 0.3rem; margin-bottom: 1.4rem;
+      transition: background 0.4s;
+    }
+    .si-line.done { background: var(--green); }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 26px;
+      padding: 2.5rem 2.2rem;
+      box-shadow: 0 30px 80px var(--shadow);
+      position: relative; overflow: hidden;
+      animation: fadeUp 0.7s 0.15s ease both;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+    }
+    .card::after {
+      content: '';
+      position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+      width: 300px; height: 200px;
+      background: radial-gradient(ellipse, var(--green-glow) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* Step panels */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; animation: panelIn 0.4s ease both; }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 1.35rem;
+      margin-bottom: 0.25rem; letter-spacing: -0.02em;
+    }
+    .step-sub { color: var(--text2); font-size: 0.85rem; margin-bottom: 1.8rem; }
+
+    /* ── FIELDS ── */
+    .field { margin-bottom: 1.1rem; }
+    .field label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--text2); margin-bottom: 0.4rem;
+    }
+    .field-wrap { position: relative; display: flex; align-items: center; }
+    .fi { position: absolute; left: 1rem; font-size: 0.95rem; pointer-events: none; opacity: 0.45; transition: opacity 0.2s; }
+    .field input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.8rem;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+      color: var(--text); outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.3s;
+    }
+    .field input::placeholder { color: var(--text3); }
+    .field input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-glow);
+      background: var(--surface);
+    }
+    .field input:focus + .field-icon, .field-wrap:focus-within .fi { opacity: 1; }
+
+    /* password strength bar */
+    .pw-strength {
+      display: flex; gap: 4px; margin-top: 0.5rem;
+    }
+    .pw-bar {
+      flex: 1; height: 3px; border-radius: 99px;
+      background: var(--input-border);
+      transition: background 0.3s;
+    }
+    .pw-bar.weak   { background: #ff5252; }
+    .pw-bar.medium { background: #ffd740; }
+    .pw-bar.strong { background: var(--green); }
+
+    .pw-hint { font-size: 0.72rem; color: var(--text3); margin-top: 0.3rem; }
+
+    /* pw toggle */
+    .pw-eye {
+      position: absolute; right: 1rem;
+      background: none; border: none; cursor: pointer;
+      font-size: 1rem; color: var(--text2); padding: 0;
+      transition: color 0.2s;
+    }
+    .pw-eye:hover { color: var(--green); }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      width: 100%;
+      padding: 1rem;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+      color: #060c10;
+      background: var(--green);
+      border: none; border-radius: 14px;
+      cursor: pointer; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s, opacity 0.2s;
+      box-shadow: 0 4px 25px var(--green-glow);
+      letter-spacing: 0.02em; margin-top: 0.5rem;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--green-glow); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary.loading { pointer-events: none; }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+      transform: translateX(-100%);
+    }
+    .btn-primary:hover::after { animation: shimmer 1.2s infinite; }
+    @keyframes shimmer { to { transform: translateX(100%); } }
+
+    .btn-outline {
+      width: 100%; padding: 0.85rem;
+      font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
+      color: var(--green);
+      background: transparent;
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px; cursor: pointer;
+      transition: all 0.25s; margin-top: 0.7rem;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-outline:hover { border-color: var(--green); background: var(--green-dim); }
+
+    /* ── ERROR / SUCCESS ── */
+    .msg-box {
+      font-size: 0.83rem; min-height: 1.1em;
+      text-align: center; font-weight: 500;
+      margin-bottom: 0.8rem; transition: color 0.3s;
+      border-radius: 8px; padding: 0 0.5rem;
+    }
+
+    .login-link {
+      text-align: center; margin-top: 1.5rem;
+      font-size: 0.87rem; color: var(--text2);
+    }
+    .login-link a { color: var(--green); text-decoration: none; font-weight: 600; }
+
+    /* ── PASSWORD STEP ── */
+    .pass-rules { margin-top: 0.5rem; }
+    .pass-rule {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.78rem; color: var(--text3); margin-bottom: 0.25rem;
+      transition: color 0.3s;
+    }
+    .pass-rule.ok { color: var(--green); }
+    .rule-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text3); flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .pass-rule.ok .rule-dot { background: var(--green); }
+
+    /* ── CREDENTIAL CARD ── */
+    #cred-step { display: none; }
+    #cred-step.active { display: block; }
+
+    .cred-card-wrap {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 1.5rem;
+    }
+
+    /* The actual downloadable card */
+    .cred-card {
+      width: 100%; max-width: 420px;
+      background: linear-gradient(135deg, #061510 0%, #0a2018 50%, #061510 100%);
+      border: 1px solid rgba(0,230,118,0.3);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,230,118,0.1);
+    }
+
+    .cred-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #00e676, #00b34a, #00e676);
+    }
+
+    /* Grid pattern overlay */
+    .cred-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,230,118,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,230,118,0.03) 1px, transparent 1px);
+      background-size: 30px 30px;
+      pointer-events: none;
+    }
+
+    .cred-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.1rem;
+      color: #00e676;
+      display: flex; align-items: center; gap: 0.4rem;
+      margin-bottom: 1.5rem;
+      position: relative; z-index: 1;
+    }
+
+    .cred-badge {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      background: rgba(0,230,118,0.12);
+      border: 1px solid rgba(0,230,118,0.3);
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.68rem;
+      color: #00e676;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+      z-index: 1;
+    }
+
+    .cred-row {
+      margin-bottom: 1rem;
+      position: relative; z-index: 1;
+    }
+    .cred-label {
+      font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(0,230,118,0.5);
+      font-weight: 600; margin-bottom: 0.2rem;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .cred-value {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 1.1rem;
+      color: #e8f5ef;
+    }
+    .cred-value.mono {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.3rem;
+      color: #00e676;
+      letter-spacing: 0.08em;
+    }
+    .cred-value.pw {
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      color: #80ffbb;
+      letter-spacing: 0.05em;
+    }
+
+    .cred-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,230,118,0.2), transparent);
+      margin: 1.2rem 0;
+      position: relative; z-index: 1;
+    }
+
+    .cred-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 1;
+    }
+    .cred-date { font-size: 0.72rem; color: rgba(0,230,118,0.4); }
+    .cred-warn {
+      font-size: 0.68rem; color: rgba(255,180,0,0.7);
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+
+    /* Corner accents */
+    .cred-corner {
+      position: absolute; width: 20px; height: 20px;
+      border-color: rgba(0,230,118,0.4); border-style: solid;
+      z-index: 2;
+    }
+    .cred-corner.tl { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
+    .cred-corner.tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
+    .cred-corner.bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
+    .cred-corner.br { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+
+    /* Glow orb inside card */
+    .cred-orb {
+      position: absolute; bottom: -40px; right: -40px;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,230,118,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Action buttons */
+    .cred-actions {
+      display: flex; gap: 1rem; width: 100%; max-width: 420px;
+    }
+    .cred-actions button {
+      flex: 1; padding: 0.9rem;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      border-radius: 14px; cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-download {
+      background: var(--green); color: #060c10;
+      border: none;
+      box-shadow: 0 4px 20px var(--green-glow);
+    }
+    .btn-download:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--green-glow); }
+
+    .btn-goto {
+      background: transparent; color: var(--green);
+      border: 1.5px solid var(--card-border);
+    }
+    .btn-goto:hover { border-color: var(--green); background: var(--green-dim); }
+
+    /* success confetti ring */
+    .success-ring {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: rgba(0,230,118,0.1);
+      border: 2px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1.2rem;
+      box-shadow: 0 0 30px var(--green-glow);
+      animation: popIn 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0) rotate(-180deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    /* ── LOADING SPINNER ── */
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(6,12,16,0.3);
+      border-top-color: #060c10;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 0.4rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FLOAT ICONS ── */
+    .float-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+    .fli {
+      position: absolute;
+      animation: fliFloat linear infinite;
+      will-change: transform;
+    }
+    @keyframes fliFloat {
+      0%   { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { transform: translateY(-8vh) rotate(540deg); opacity: 0; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      .card { padding: 1.8rem 1.4rem; border-radius: 20px; }
+      .cred-card { padding: 1.5rem; }
+      .cred-actions { flex-direction: column; }
+      .si-line { width: 35px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="float-layer" id="floatLayer"></div>
+
+<!-- Top bar -->
+<div class="topbar">
+  <a href="index.html" class="logo">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+      <rect x="2" y="8" width="28" height="18" rx="3" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2"/>
+      <path d="M12 16h8M12 20h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    SwiftStock
+  </a>
+  <button class="theme-btn" onclick="toggleTheme()">☀️ Light</button>
+</div>
+
+<!-- Page -->
+<main class="page">
+  <div class="signup-wrap">
+
+    <!-- Header -->
+    <div class="page-head">
+      <div class="page-badge">✦ New Company</div>
+      <h1 class="page-title">Create Your<br>Company Account</h1>
+      <p class="page-sub">Sign up as Owner — your team joins through you</p>
+    </div>
+
+    <!-- Steps indicator -->
+    <div class="steps-indicator" id="stepsIndicator">
+      <div class="si-step">
+        <div class="si-dot active" id="dot-1">1</div>
+        <div class="si-label active" id="lbl-1">Company</div>
+      </div>
+      <div class="si-line" id="line-1"></div>
+      <div class="si-step">
+        <div class="si-dot" id="dot-2">2</div>
+        <div class="si-label" id="lbl-2">Account</div>
+      </div>
+      <div class="si-line" id="line-2"></div>
+      <div class="si-step">
+        <div class="si-dot" id="dot-3">✓</div>
+        <div class="si-label" id="lbl-3">Done</div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="card" id="mainCard">
+
+      <!-- ── STEP 1: Company Info ── -->
+      <div class="step-panel active" id="panel-1">
+        <div class="step-title">Company Details</div>
+        <p class="step-sub">Tell us about your business</p>
+
+        <div class="field">
+          <label>Company Name</label>
+          <div class="field-wrap">
+            <span class="fi">🏢</span>
+            <input type="text" id="s1-company" placeholder="e.g. Sharma Enterprises"
+              onkeydown="if(event.key==='Enter')document.getElementById('s1-owner').focus()" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Your Name (Owner)</label>
+          <div class="field-wrap">
+            <span class="fi">👤</span>
+            <input type="text" id="s1-owner" placeholder="e.g. Rahul Sharma"
+              onkeydown="if(event.key==='Enter')nextStep(1)" />
+          </div>
+        </div>
+
+        <div id="msg-1" class="msg-box"></div>
+        <button class="btn-primary" onclick="nextStep(1)">Continue →</button>
+        <div class="login-link">Already have an account? <a href="login.html">Login</a></div>
+      </div>
+
+      <!-- ── STEP 2: Account Credentials ── -->
+      <div class="step-panel" id="panel-2">
+        <div class="step-title">Set Your Credentials</div>
+        <p class="step-sub">This will be your owner login</p>
+
+        <div class="field">
+          <label>Email Address</label>
+          <div class="field-wrap">
+            <span class="fi">📧</span>
+            <input type="email" id="s2-email" placeholder="rahul@company.com"
+              onkeydown="if(event.key==='Enter')document.getElementById('s2-pw').focus()" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="field-wrap">
+            <span class="fi">🔒</span>
+            <input type="password" id="s2-pw" placeholder="Min 8 characters"
+              oninput="checkPwStrength()" />
+            <button class="pw-eye" type="button" onclick="togglePw('s2-pw','eye-1')" id="eye-1">👁️</button>
+          </div>
+          <div class="pw-strength">
+            <div class="pw-bar" id="bar-1"></div>
+            <div class="pw-bar" id="bar-2"></div>
+            <div class="pw-bar" id="bar-3"></div>
+            <div class="pw-bar" id="bar-4"></div>
+          </div>
+          <div class="pass-rules">
+            <div class="pass-rule" id="rule-len"><span class="rule-dot"></span>At least 8 characters</div>
+            <div class="pass-rule" id="rule-num"><span class="rule-dot"></span>Contains a number</div>
+            <div class="pass-rule" id="rule-upper"><span class="rule-dot"></span>Contains uppercase letter</div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:1.5rem">
+          <label>Confirm Password</label>
+          <div class="field-wrap">
+            <span class="fi">🔐</span>
+            <input type="password" id="s2-pw2" placeholder="Re-enter password"
+              onkeydown="if(event.key==='Enter')nextStep(2)" />
+            <button class="pw-eye" type="button" onclick="togglePw('s2-pw2','eye-2')" id="eye-2">👁️</button>
+          </div>
+        </div>
+
+        <div id="msg-2" class="msg-box"></div>
+        <button class="btn-primary" id="btn-step2" onclick="nextStep(2)">Create Account →</button>
+        <button class="btn-outline" onclick="goBack(1)">← Back</button>
+      </div>
+
+    </div><!-- end .card -->
+
+    <!-- ── STEP 3: Credential Card (outside main card) ── -->
+    <div id="cred-step">
+      <div class="success-ring">🎉</div>
+      <div style="text-align:center;margin-bottom:1.8rem;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:0.3rem;">You're all set!</div>
+        <div style="color:var(--text2);font-size:0.9rem;">Save your Corporate ID — you'll need it to log in</div>
+      </div>
+
+      <!-- THE DOWNLOADABLE CARD -->
+      <div class="cred-card-wrap">
+        <div class="cred-card" id="credCard">
+          <!-- Corner accents -->
+          <div class="cred-corner tl"></div>
+          <div class="cred-corner tr"></div>
+          <div class="cred-corner bl"></div>
+          <div class="cred-corner br"></div>
+          <div class="cred-orb"></div>
+
+          <div class="cred-logo">
+            ⚡ SwiftStock
+            <div class="cred-badge">Owner</div>
+          </div>
+
+          <div class="cred-row">
+            <div class="cred-label">Company Name</div>
+            <div class="cred-value" id="cc-company">—</div>
+          </div>
+
+          <div class="cred-row">
+            <div class="cred-label">Owner Name</div>
+            <div class="cred-value" id="cc-owner">—</div>
+          </div>
+
+          <div class="cred-divider"></div>
+
+          <div class="cred-row">
+            <div class="cred-label">Corporate ID</div>
+            <div class="cred-value mono" id="cc-corpid">SWFT·———·———</div>
+          </div>
+
+          <div class="cred-row">
+            <div class="cred-label">Email</div>
+            <div class="cred-value" id="cc-email" style="font-size:0.95rem;">—</div>
+          </div>
+
+          <div class="cred-row">
+            <div class="cred-label">Password</div>
+            <div class="cred-value pw" id="cc-pw">—</div>
+          </div>
+
+          <div class="cred-divider"></div>
+
+          <div class="cred-footer">
+            <div class="cred-date" id="cc-date">—</div>
+            <div class="cred-warn">⚠️ Keep this safe</div>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="cred-actions">
+          <button class="btn-download" onclick="downloadCard()">⬇ Download Card</button>
+          <button class="btn-goto" onclick="goToDashboard()">Go to Dashboard →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, doc, setDoc, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
+    authDomain: "store-management-nexus.firebaseapp.com",
+    projectId: "store-management-nexus",
+    storageBucket: "store-management-nexus.firebasestorage.app",
+    messagingSenderId: "263693510395",
+    appId: "1:263693510395:web:47a0485221405dbb6fb25e",
+    measurementId: "G-LSVZ5C6KDH"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  /* ── Generate unique SWFT ID ── */
+  async function generateCorpId() {
+    const usersRef = collection(db, 'users');
+    // Get highest existing ID
+    const q = query(usersRef, orderBy('corporateId', 'desc'), limit(1));
+    const snap = await getDocs(q);
+
+    let nextNum = 1;
+    if (!snap.empty) {
+      const lastId = snap.docs[0].data().corporateId || 'SWFT0000000';
+      const lastNum = parseInt(lastId.replace('SWFT', '')) || 0;
+      nextNum = lastNum + 1;
+    }
+
+    // Ensure uniqueness with a loop
+    let candidateId, exists = true;
+    while (exists) {
+      candidateId = 'SWFT' + String(nextNum).padStart(7, '0');
+      const checkQ = query(usersRef, where('corporateId', '==', candidateId));
+      const checkSnap = await getDocs(checkQ);
+      exists = !checkSnap.empty;
+      if (exists) nextNum++;
+    }
+    return candidateId;
+  }
+
+  /* ── Sync to Google Sheets via Apps Script ── */
+  async function syncToSheets(data) {
+    // Replace with your deployed Google Apps Script web app URL
+    const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'createOwner', ...data })
+      });
+    } catch (e) {
+      console.warn('Google Sheets sync skipped (set up Apps Script URL):', e);
+    }
+  }
+
+  /* ── Main signup function ── */
+  window.doSignup = async function(ownerName, companyName, email, password) {
+    const btn = document.getElementById('btn-step2');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Creating account…';
+    setMsg(2, '', '');
+
+    try {
+      // 1. Generate unique Corporate ID
+      const corporateId = await generateCorpId();
+
+      // 2. Create Firebase Auth user
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = cred.user.uid;
+
+      // 3. Save to Firestore
+      const now = new Date();
+      const userData = {
+        uid,
+        name: ownerName,
+        companyName,
+        email,
+        corporateId,
+        role: 'owner',
+        createdAt: now.toISOString(),
+        photoURL: null,
+        godowns: [],
+        companyId: uid, // owner's uid = companyId for their company
+      };
+
+      await setDoc(doc(db, 'users', uid), userData);
+
+      // Also store company document
+      await setDoc(doc(db, 'companies', uid), {
+        companyName,
+        ownerId: uid,
+        ownerName,
+        corporateId,
+        createdAt: now.toISOString(),
+        staff: [],
+      });
+
+      // 4. Sync to Google Sheets
+      await syncToSheets({ ...userData });
+
+      // 5. Store session
+      sessionStorage.setItem('swiftUser', JSON.stringify(userData));
+
+      // 6. Show credential card
+      showCredCard({
+        company: companyName,
+        owner: ownerName,
+        email,
+        password,
+        corporateId,
+        date: now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+      });
+
+    } catch (err) {
+      let msg = 'Something went wrong. Please try again.';
+      if (err.code === 'auth/email-already-in-use') msg = 'This email is already registered. Try logging in.';
+      if (err.code === 'auth/invalid-email') msg = 'Please enter a valid email address.';
+      if (err.code === 'auth/network-request-failed') msg = 'Network error. Check your connection.';
+      setMsg(2, msg, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Create Account →';
+    }
+  };
+
+  function showCredCard(data) {
+    // Hide the main card and steps
+    document.getElementById('mainCard').style.display = 'none';
+    document.getElementById('stepsIndicator').style.display = 'none';
+
+    // Mark step 3 active
+    markStep(3);
+
+    // Populate credential card
+    document.getElementById('cc-company').textContent = data.company;
+    document.getElementById('cc-owner').textContent = data.owner;
+    document.getElementById('cc-corpid').textContent = data.corporateId;
+    document.getElementById('cc-email').textContent = data.email;
+    document.getElementById('cc-pw').textContent = data.password;
+    document.getElementById('cc-date').textContent = 'Created ' + data.date;
+
+    document.getElementById('cred-step').style.display = 'block';
+    document.getElementById('cred-step').classList.add('active');
+
+    // Animate in
+    document.getElementById('cred-step').animate([
+      { opacity: 0, transform: 'translateY(30px)' },
+      { opacity: 1, transform: 'none' }
+    ], { duration: 600, easing: 'cubic-bezier(0.16,1,0.3,1)', fill: 'forwards' });
+  }
+}
+</script>
+
+<script>
+  /* ── NON-MODULE SCRIPTS ── */
+
+  let currentStep = 1;
+  const s1Data = {};
+
+  /* Step navigation */
+  function nextStep(from) {
+    if (from === 1) {
+      const company = document.getElementById('s1-company').value.trim();
+      const owner = document.getElementById('s1-owner').value.trim();
+      if (!company) { setMsg(1, '⚠ Please enter your company name.', 'error'); return; }
+      if (!owner) { setMsg(1, '⚠ Please enter your name.', 'error'); return; }
+      s1Data.company = company;
+      s1Data.owner = owner;
+      setMsg(1, '', '');
+      activateStep(2);
+    } else if (from === 2) {
+      const email = document.getElementById('s2-email').value.trim();
+      const pw = document.getElementById('s2-pw').value;
+      const pw2 = document.getElementById('s2-pw2').value;
+
+      if (!email || !email.includes('@')) { setMsg(2, '⚠ Enter a valid email address.', 'error'); return; }
+      if (pw.length < 8) { setMsg(2, '⚠ Password must be at least 8 characters.', 'error'); return; }
+      if (pw !== pw2) { setMsg(2, '⚠ Passwords do not match.', 'error'); return; }
+
+      // Trigger Firebase signup (module function)
+      window.doSignup(s1Data.owner, s1Data.company, email, pw);
+    }
+  }
+
+  function goBack(to) {
+    activateStep(to);
+  }
+
+  function activateStep(n) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`panel-${n}`).classList.add('active');
+    currentStep = n;
+    markStep(n);
+  }
+
+  function markStep(n) {
+    for (let i = 1; i <= 3; i++) {
+      const dot = document.getElementById(`dot-${i}`);
+      const lbl = document.getElementById(`lbl-${i}`);
+      if (!dot) continue;
+      dot.classList.remove('active', 'done');
+      lbl && lbl.classList.remove('active');
+      if (i < n) { dot.classList.add('done'); dot.textContent = '✓'; }
+      else if (i === n) { dot.classList.add('active'); dot.textContent = i; lbl && lbl.classList.add('active'); }
+      else { dot.textContent = i; }
+    }
+    for (let i = 1; i <= 2; i++) {
+      const line = document.getElementById(`line-${i}`);
+      if (!line) continue;
+      line.classList.toggle('done', i < n);
+    }
+  }
+
+  function setMsg(step, msg, type) {
+    const el = document.getElementById(`msg-${step}`);
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = type === 'error' ? '#ff5252' : type === 'success' ? 'var(--green)' : '';
+  }
+
+  /* Password toggle */
+  function togglePw(inputId, btnId) {
+    const inp = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+  }
+
+  /* Password strength */
+  function checkPwStrength() {
+    const pw = document.getElementById('s2-pw').value;
+    const hasLen = pw.length >= 8;
+    const hasNum = /\d/.test(pw);
+    const hasUpper = /[A-Z]/.test(pw);
+    const score = [hasLen, hasNum, hasUpper, pw.length >= 12].filter(Boolean).length;
+
+    const bars = ['bar-1','bar-2','bar-3','bar-4'];
+    bars.forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.className = 'pw-bar';
+      if (i < score) {
+        if (score <= 1) el.classList.add('weak');
+        else if (score <= 2) el.classList.add('medium');
+        else el.classList.add('strong');
+      }
+    });
+
+    const ruleEl = (id, ok) => {
+      const el = document.getElementById(id);
+      el.classList.toggle('ok', ok);
+    };
+    ruleEl('rule-len', hasLen);
+    ruleEl('rule-num', hasNum);
+    ruleEl('rule-upper', hasUpper);
+  }
+
+  /* Download credential card as image */
+  function downloadCard() {
+    const card = document.getElementById('credCard');
+    const btn = document.querySelector('.btn-download');
+    btn.textContent = '⏳ Generating…';
+    btn.disabled = true;
+
+    html2canvas(card, {
+      scale: 3,
+      backgroundColor: null,
+      useCORS: true,
+      logging: false,
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `SwiftStock-${document.getElementById('cc-corpid').textContent}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      btn.textContent = '✓ Downloaded!';
+      setTimeout(() => { btn.textContent = '⬇ Download Card'; btn.disabled = false; }, 2500);
+    }).catch(err => {
+      btn.textContent = '⬇ Download Card';
+      btn.disabled = false;
+      alert('Download failed. Try screenshotting instead.');
+    });
+  }
+
+  /* Go to dashboard */
+  function goToDashboard() {
+    window.location.href = 'dashboard.html';
+  }
+
+  /* ── THEME ── */
+  const savedTheme = localStorage.getItem('swiftTheme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.querySelector('.theme-btn').textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('swiftTheme', next);
+    document.querySelector('.theme-btn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  }
+
+  /* ── BACKGROUND CANVAS ── */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Hexagon grid + flowing lines
+  const lines = Array.from({ length: 8 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    len: 80 + Math.random() * 120,
+    angle: Math.random() * Math.PI * 2,
+    speed: 0.003 + Math.random() * 0.005,
+    opacity: 0.02 + Math.random() * 0.04
+  }));
+
+  const bgOrbs = [
+    { x: 0.2, y: 0.3, r: 0.35 },
+    { x: 0.8, y: 0.7, r: 0.3 },
+    { x: 0.5, y: 0.1, r: 0.25 },
+  ];
+
+  function drawBg() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    ctx.clearRect(0, 0, W, H);
+
+    const green = isDark ? 'rgba(0,230,118,' : 'rgba(0,140,70,';
+
+    // BG fill
+    ctx.fillStyle = isDark ? '#060c10' : '#eef7f2';
+    ctx.fillRect(0, 0, W, H);
+
+    // Orbs
+    bgOrbs.forEach(o => {
+      const g = ctx.createRadialGradient(o.x*W, o.y*H, 0, o.x*W, o.y*H, o.r*W);
+      g.addColorStop(0, `${green}0.07)`);
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    });
+
+    // Moving lines
+    lines.forEach(l => {
+      l.angle += l.speed;
+      l.x += Math.cos(l.angle) * 0.3;
+      l.y += Math.sin(l.angle) * 0.3;
+      if (l.x < -l.len) l.x = W + l.len;
+      if (l.x > W + l.len) l.x = -l.len;
+      if (l.y < -l.len) l.y = H + l.len;
+      if (l.y > H + l.len) l.y = -l.len;
+
+      ctx.strokeStyle = `${green}${l.opacity})`;
+      ctx.lineWidth = 1.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(l.x, l.y);
+      ctx.lineTo(l.x + Math.cos(l.angle) * l.len, l.y + Math.sin(l.angle) * l.len);
+      ctx.stroke();
+    });
+
+    requestAnimationFrame(drawBg);
+  }
+  drawBg();
+
+  /* ── FLOATING ICONS ── */
+  const iconSet = ['📦','🏪','🗂️','🔄','📊','🔑','⚡','📋','🏷️','📈','✅','🏗️'];
+  const fl = document.getElementById('floatLayer');
+  iconSet.forEach((ic, i) => {
+    const el = document.createElement('div');
+    el.className = 'fli';
+    el.textContent = ic;
+    el.style.cssText = `
+      left:${(i * 8.7 + 2) % 94}%;
+      font-size:${1.3 + Math.random() * 1.2}rem;
+      opacity:0.055;
+      animation-duration:${14 + Math.random() * 14}s;
+      animation-delay:-${Math.random() * 20}s;
+    `;
+    fl.appendChild(el);
+  });
+
+  /* ── CARD TILT ── */
+  const mainCard = document.getElementById('mainCard');
+  document.addEventListener('mousemove', e => {
+    if (window.innerWidth < 768) return;
+    const rect = mainCard.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / window.innerWidth;
+    const dy = (e.clientY - cy) / window.innerHeight;
+    mainCard.style.transform = `perspective(900px) rotateY(${dx * 5}deg) rotateX(${-dy * 5}deg)`;
+    mainCard.style.transition = 'transform 0.1s linear';
+  });
+  document.addEventListener('mouseleave', () => {
+    mainCard.style.transform = 'none';
+    mainCard.style.transition = 'transform 0.6s ease';
+  });
+</script>
+</body>
+</html>
