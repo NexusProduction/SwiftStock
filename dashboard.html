@@ -6,69 +6,44 @@
   <title>SwiftStock — Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     [data-theme="dark"] {
-      --bg: #07111a;
-      --surface: #0d1c26;
-      --surface2: #112030;
-      --card: #0f1e2a;
-      --card2: #132535;
-      --border: rgba(0,230,118,0.13);
-      --border2: rgba(255,255,255,0.06);
-      --text: #dff2e8;
-      --text2: #6ea88a;
-      --text3: #3a6050;
-      --green: #00e676;
-      --green-dim: rgba(0,230,118,0.08);
-      --green-glow: rgba(0,230,118,0.22);
-      --red: #ff5252;
-      --amber: #ffd740;
-      --blue: #40c4ff;
-      --purple: #c77dff;
-      --gold: #ffd700;
-      --silver: #c0c0c0;
-      --shadow: rgba(0,0,0,0.6);
-      --input-bg: #081420;
-      --input-border: rgba(0,230,118,0.17);
-      --topbar-bg: rgba(7,17,26,0.88);
+      --bg: #080e0b;
+      --surface: #0d1510;
+      --surface2: #111a14;
+      --card: #0f1812;
+      --card2: #131e16;
+      --border: rgba(34,197,94,0.14);
+      --border2: rgba(34,197,94,0.07);
+      --text: #e8f5ee;
+      --text2: #6b9e82;
+      --text3: #38604a;
+      --green: #16db65;
+      --green-dim: rgba(22,219,101,0.1);
+      --green-glow: rgba(22,219,101,0.28);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.09);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245,158,11,0.1);
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+      --gold: #f59e0b;
+      --silver: #9ca3af;
+      --shadow: rgba(0,0,0,0.85);
+      --input-bg: #0f0f0f;
+      --input-border: rgba(255,255,255,0.1);
+      --topbar-bg: rgba(10,10,10,0.92);
       --overlay-bg: rgba(0,0,0,0.75);
-      --scrollbar: rgba(0,230,118,0.15);
-    }
-    [data-theme="light"] {
-      --bg: #edf6f1;
-      --surface: #ffffff;
-      --surface2: #f0f9f4;
-      --card: #ffffff;
-      --card2: #f5faf7;
-      --border: rgba(0,140,70,0.18);
-      --border2: rgba(0,0,0,0.06);
-      --text: #071510;
-      --text2: #3d7a5a;
-      --text3: #8ab09a;
-      --green: #009e55;
-      --green-dim: rgba(0,140,70,0.07);
-      --green-glow: rgba(0,140,70,0.18);
-      --red: #e53935;
-      --amber: #f9a825;
-      --blue: #0288d1;
-      --purple: #7b1fa2;
-      --gold: #c79100;
-      --silver: #757575;
-      --shadow: rgba(0,40,20,0.1);
-      --input-bg: #f4fbf7;
-      --input-border: rgba(0,140,70,0.22);
-      --topbar-bg: rgba(237,246,241,0.92);
-      --overlay-bg: rgba(0,0,0,0.5);
-      --scrollbar: rgba(0,140,70,0.2);
+      --scrollbar: rgba(255,255,255,0.08);
     }
 
     html, body {
-      height: 100%; font-family: 'DM Sans', sans-serif;
+      height: 100%; font-family: 'Inter', sans-serif;
       background: var(--bg); color: var(--text);
       overflow-x: hidden; transition: background 0.35s, color 0.35s;
     }
@@ -93,7 +68,7 @@
     }
 
     .topbar-logo {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.25rem;
       color: var(--green); display: flex; align-items: center; gap: 0.4rem;
       text-decoration: none; text-shadow: 0 0 20px var(--green-glow);
       letter-spacing: -0.01em;
@@ -106,7 +81,7 @@
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 999px; padding: 0.3rem 0.8rem;
       font-size: 0.78rem; cursor: pointer; color: var(--text2);
-      transition: all 0.25s; font-family: 'DM Sans', sans-serif;
+      transition: all 0.25s; font-family: 'Inter', sans-serif;
     }
     .theme-pill:hover { border-color: var(--green); color: var(--green); }
 
@@ -138,7 +113,7 @@
       font-size: 1rem; font-weight: 700;
       border: 2.5px solid var(--purple);
       background: rgba(160,80,255,0.12);
-      color: var(--purple); font-family: 'Syne', sans-serif;
+      color: var(--purple); font-family: 'Space Grotesk', sans-serif;
       transition: all 0.2s; overflow: hidden;
       box-shadow: 0 0 12px rgba(160,80,255,0.2);
     }
@@ -165,11 +140,17 @@
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
     }
-    .dash-title {
-      font-family: 'Syne', sans-serif; font-weight: 800;
-      font-size: 1.6rem; letter-spacing: -0.03em;
+    .dash-eyebrow {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 500;
+      color: var(--green); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 0.35rem; opacity: 0.85;
     }
-    .dash-subtitle { color: var(--text2); font-size: 0.85rem; margin-top: 0.15rem; }
+    .dash-title {
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+      font-size: 1.65rem; letter-spacing: -0.02em; color: var(--text);
+      line-height: 1.15;
+    }
+    .dash-subtitle { color: var(--text3); font-size: 0.78rem; margin-top: 0.3rem; font-family: 'Inter', sans-serif; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 500; }
 
     /* Stats mini row */
     .stats-mini {
@@ -184,8 +165,8 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .stat-chip:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--shadow); }
-    .stat-icon { font-size: 1.5rem; }
-    .stat-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; line-height: 1; }
+    .stat-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--green-dim); border: 1px solid var(--border); border-radius: 10px; color: var(--green); flex-shrink: 0; }
+    .stat-num { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.3rem; line-height: 1; }
     .stat-lbl { color: var(--text2); font-size: 0.75rem; margin-top: 0.15rem; }
 
     /* ── GODOWN GRID ── */
@@ -194,7 +175,7 @@
       margin-bottom: 1.2rem;
     }
     .section-label {
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem;
       display: flex; align-items: center; gap: 0.5rem;
     }
     .count-pill {
@@ -232,7 +213,7 @@
       font-size: 1.6rem; transition: all 0.25s;
     }
     .add-card:hover .add-icon { border-color: var(--green); background: rgba(0,230,118,0.15); }
-    .add-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .add-label { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem; }
 
     /* GODOWN CARD */
     .godown-card {
@@ -276,14 +257,14 @@
     }
     .gd-menu-btn:hover { background: var(--surface2); border-color: var(--border); color: var(--text); }
 
-    .gd-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 0.25rem; }
+    .gd-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 0.25rem; }
     .gd-location { color: var(--text2); font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem; }
 
     .gd-divider { height: 1px; background: var(--border2); margin: 1rem 0; }
 
     .gd-stats { display: flex; gap: 1rem; }
     .gd-stat { flex: 1; }
-    .gd-stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; }
+    .gd-stat-val { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.1rem; }
     .gd-stat-lbl { color: var(--text2); font-size: 0.72rem; margin-top: 0.1rem; }
 
     .gd-staff-row {
@@ -310,7 +291,7 @@
     }
     .empty-state.show { display: block; }
     .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
-    .empty-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--text); }
+    .empty-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--text); }
 
     /* ══════════════════════════════════
        NOTIFICATION PANEL
@@ -329,9 +310,9 @@
     .notif-head {
       padding: 1rem 1.2rem; border-bottom: 1px solid var(--border2);
       display: flex; align-items: center; justify-content: space-between;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem;
     }
-    .notif-clear { font-size: 0.75rem; color: var(--text2); cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+    .notif-clear { font-size: 0.75rem; color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 400; }
     .notif-clear:hover { color: var(--green); }
     .notif-list { overflow-y: auto; max-height: 340px; }
     .notif-item {
@@ -398,7 +379,7 @@
       background: var(--green-dim); overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       font-size: 2rem; font-weight: 700;
-      font-family: 'Syne', sans-serif; color: var(--green);
+      font-family: 'Space Grotesk', sans-serif; color: var(--green);
     }
     .photo-inner img { width: 100%; height: 100%; object-fit: cover; }
     .photo-upload-badge {
@@ -409,7 +390,7 @@
       font-size: 0.7rem; cursor: pointer;
     }
 
-    .profile-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; }
+    .profile-name { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.2rem; }
     .profile-role-badge {
       margin-top: 0.3rem; padding: 0.2rem 0.8rem;
       border-radius: 999px; font-size: 0.72rem; font-weight: 700;
@@ -430,7 +411,7 @@
       font-size: 0.85rem; font-weight: 600;
       color: var(--text2); cursor: pointer; text-align: center;
       border-bottom: 2px solid transparent;
-      transition: all 0.2s; font-family: 'Syne', sans-serif;
+      transition: all 0.2s; font-family: 'Space Grotesk', sans-serif;
     }
     .sb-tab.active { color: var(--green); border-bottom-color: var(--green); }
 
@@ -447,8 +428,8 @@
     }
     .pf-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 0.2rem; }
     .pf-value { font-size: 0.92rem; font-weight: 500; }
-    .pf-value.mono { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--green); }
-    .pf-value.pw { font-family: 'DM Mono', monospace; letter-spacing: 0.1em; }
+    .pf-value.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--green); }
+    .pf-value.pw { font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; }
     .pf-edit { width: 28px; height: 28px; border-radius: 8px; background: none; border: 1px solid var(--border); cursor: pointer; color: var(--text2); font-size: 0.85rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .pf-edit:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
 
@@ -459,7 +440,7 @@
     .staff-search input {
       width: 100%; padding: 0.7rem 1rem 0.7rem 2.4rem;
       background: var(--input-bg); border: 1.5px solid var(--input-border);
-      border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif;
+      border-radius: 10px; color: var(--text); font-family: 'Inter', sans-serif;
       font-size: 0.88rem; outline: none; transition: all 0.2s;
     }
     .staff-search input:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-glow); }
@@ -476,7 +457,7 @@
       width: 38px; height: 38px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
-      font-family: 'Syne', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
     }
     .staff-av.manager { background: rgba(255,215,0,0.12); color: var(--gold); border: 2px solid rgba(255,215,0,0.3); }
     .staff-av.employee { background: rgba(64,196,255,0.1); color: var(--blue); border: 2px solid rgba(64,196,255,0.25); }
@@ -485,7 +466,7 @@
     .staff-info { flex: 1; min-width: 0; }
     .staff-name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .staff-role-chip { font-size: 0.7rem; color: var(--text2); text-transform: capitalize; }
-    .staff-id { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); }
+    .staff-id { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text3); }
 
     .staff-actions { display: flex; gap: 0.4rem; }
     .sa-btn {
@@ -499,7 +480,7 @@
 
     .add-staff-btn {
       width: 100%; padding: 0.8rem;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.9rem;
       color: #060c10; background: var(--green);
       border: none; border-radius: 12px; cursor: pointer;
       transition: all 0.25s; margin-top: 0.5rem;
@@ -538,7 +519,7 @@
       padding: 1.5rem 1.5rem 0;
       display: flex; align-items: flex-start; justify-content: space-between;
     }
-    .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; }
+    .modal-title { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.25rem; }
     .modal-sub { color: var(--text2); font-size: 0.82rem; margin-top: 0.2rem; }
     .modal-close {
       width: 32px; height: 32px; border-radius: 9px;
@@ -559,7 +540,7 @@
     .mf input, .mf select {
       width: 100%; padding: 0.8rem 1rem 0.8rem 2.6rem;
       background: var(--input-bg); border: 1.5px solid var(--input-border);
-      border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+      border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem;
       color: var(--text); outline: none; transition: all 0.2s;
       -webkit-appearance: none;
     }
@@ -625,14 +606,14 @@
     .modal-actions { display: flex; gap: 0.8rem; }
     .btn-modal-primary {
       flex: 1; padding: 0.9rem;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem;
       color: #060c10; background: var(--green); border: none; border-radius: 12px;
       cursor: pointer; transition: all 0.25s; box-shadow: 0 4px 20px var(--green-glow);
     }
     .btn-modal-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 28px var(--green-glow); }
     .btn-modal-secondary {
       padding: 0.9rem 1.4rem;
-      font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.9rem;
       color: var(--text2); background: var(--surface2); border: 1px solid var(--border);
       border-radius: 12px; cursor: pointer; transition: all 0.25s;
     }
@@ -647,16 +628,16 @@
       padding: 1.5rem; position: relative; overflow: hidden;
       margin-bottom: 1rem;
     }
-    .sc-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #00e676, transparent); }
+    .sc-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--green), transparent); }
     .sc-card-row { margin-bottom: 0.8rem; }
     .sc-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(0,230,118,0.45); margin-bottom: 0.15rem; }
-    .sc-value { font-size: 0.95rem; font-weight: 600; color: #e8f5ef; font-family: 'Syne', sans-serif; }
-    .sc-value.mono { font-family: 'DM Mono', monospace; color: #00e676; letter-spacing: 0.05em; }
+    .sc-value { font-size: 0.95rem; font-weight: 600; color: #e8f5ef; font-family: 'Space Grotesk', sans-serif; }
+    .sc-value.mono { font-family: 'JetBrains Mono', monospace; color: var(--green); letter-spacing: 0.05em; }
     .sc-share-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .sc-share-btn {
       flex: 1; min-width: 80px; padding: 0.6rem 0.8rem;
       border-radius: 10px; border: none; cursor: pointer; font-size: 0.82rem;
-      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700;
       transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.3rem;
     }
     .sc-share-btn.img { background: var(--green); color: #060c10; }
@@ -672,7 +653,7 @@
       flex: 1; padding: 0.7rem 1rem;
       background: var(--input-bg); border: 1.5px solid var(--input-border);
       border-radius: 10px; color: var(--text); font-size: 0.9rem;
-      font-family: 'DM Sans', sans-serif; outline: none;
+      font-family: 'Inter', sans-serif; outline: none;
     }
     .pf-edit-field input:focus { border-color: var(--green); }
 
@@ -706,9 +687,8 @@
     SwiftStock
   </a>
   <div class="topbar-right">
-    <button class="theme-pill" onclick="toggleTheme()" id="themeBtn">☀️ Light</button>
     <div class="notif-btn" onclick="toggleNotif()" id="notifBtn">
-      🔔
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <div class="notif-badge" id="notifBadge"></div>
     </div>
     <div class="profile-btn owner" id="profileBtn" onclick="openSidebar()"></div>
@@ -733,36 +713,37 @@
     <!-- Dashboard header -->
     <div class="dash-header" style="animation:fadeUp 0.5s ease both;">
       <div>
-        <div class="dash-title" id="dashTitle">Welcome back 👋</div>
-        <div class="dash-subtitle" id="dashSubtitle">Loading your company…</div>
+        <div class="dash-eyebrow" id="dashEyebrow">Loading…</div>
+        <div class="dash-title" id="dashTitle">Dashboard</div>
+        <div class="dash-subtitle" id="dashSubtitle">Owner</div>
       </div>
     </div>
 
     <!-- Stats -->
     <div class="stats-mini" id="statsMini" style="animation:fadeUp 0.5s 0.05s ease both;">
       <div class="stat-chip">
-        <div class="stat-icon">🏪</div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
         <div>
           <div class="stat-num" id="statGodowns">0</div>
           <div class="stat-lbl">Godowns</div>
         </div>
       </div>
       <div class="stat-chip">
-        <div class="stat-icon">👥</div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
         <div>
           <div class="stat-num" id="statStaff">0</div>
           <div class="stat-lbl">Staff</div>
         </div>
       </div>
       <div class="stat-chip">
-        <div class="stat-icon">📦</div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
         <div>
           <div class="stat-num" id="statProducts">0</div>
           <div class="stat-lbl">Products</div>
         </div>
       </div>
       <div class="stat-chip">
-        <div class="stat-icon">📋</div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/></svg></div>
         <div>
           <div class="stat-num" id="statEntries">0</div>
           <div class="stat-lbl">Entries Today</div>
@@ -773,7 +754,7 @@
     <!-- Godowns section -->
     <div class="godown-section-header" style="animation:fadeUp 0.5s 0.1s ease both;">
       <div class="section-label">
-        🏪 My Godowns
+        My Godowns
         <span class="count-pill" id="godownCount">0</span>
       </div>
     </div>
@@ -849,7 +830,7 @@
         <div><div class="pf-label">Joined</div><div class="pf-value" id="pf-joined">—</div></div>
       </div>
       <div style="margin-top:1.5rem;">
-        <button onclick="doLogout()" style="width:100%;padding:0.8rem;border:1.5px solid var(--red);color:var(--red);background:rgba(255,82,82,0.07);border-radius:12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,82,82,0.15)'" onmouseout="this.style.background='rgba(255,82,82,0.07)'">🚪 Logout</button>
+        <button onclick="doLogout()" style="width:100%;padding:0.8rem;border:1.5px solid var(--red);color:var(--red);background:rgba(255,82,82,0.07);border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.9rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,82,82,0.15)'" onmouseout="this.style.background='rgba(255,82,82,0.07)'">🚪 Logout</button>
       </div>
     </div>
 
@@ -1054,7 +1035,7 @@
     <div class="modal-body">
       <div class="modal-actions">
         <button class="btn-modal-secondary" onclick="closeModal('deleteStaffModal')">Cancel</button>
-        <button style="flex:1;padding:0.9rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:white;background:var(--red);border:none;border-radius:12px;cursor:pointer;" id="confirmDeleteBtn">Remove</button>
+        <button style="flex:1;padding:0.9rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.95rem;color:white;background:var(--red);border:none;border-radius:12px;cursor:pointer;" id="confirmDeleteBtn">Remove</button>
       </div>
     </div>
   </div>
@@ -1072,7 +1053,7 @@
     </div>
     <div class="modal-body">
       <div style="display:flex;gap:1rem;margin-bottom:1.5rem;" id="gdDetailStats"></div>
-      <div style="margin-bottom:0.8rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;">Staff Access</div>
+      <div style="margin-bottom:0.8rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.9rem;">Staff Access</div>
       <div id="gdDetailStaff"></div>
       <div style="margin-top:1.5rem;">
         <button class="btn-modal-primary" onclick="openGodown(currentGodownId)">📦 Open Godown →</button>
@@ -1151,8 +1132,9 @@
     const role = u.role;
 
     // Topbar greeting
-    document.getElementById('dashTitle').textContent = `Welcome, ${u.name} 👋`;
-    document.getElementById('dashSubtitle').textContent = `${companyData.companyName} · ${capitalize(role)}`;
+    document.getElementById('dashEyebrow').textContent = companyData.companyName || 'My Company';
+    document.getElementById('dashTitle').textContent = u.name;
+    document.getElementById('dashSubtitle').textContent = capitalize(role);
 
     // Profile button
     const pb = document.getElementById('profileBtn');
@@ -1183,9 +1165,7 @@
     }
 
     // Theme
-    const t = localStorage.getItem('swiftTheme') || 'dark';
-    document.documentElement.setAttribute('data-theme', t);
-    document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️ Light' : '🌙 Dark';
+    document.documentElement.setAttribute('data-theme', 'dark');
   }
 
   /* ── LOAD GODOWNS ── */
@@ -1619,7 +1599,7 @@
     // Owner-only delete button
     const ownerActs = document.getElementById('ownerOnlyGdActions');
     if (currentUser.role === 'owner') {
-      ownerActs.innerHTML = `<button onclick="deleteGodown('${gdId}')" style="width:100%;margin-top:0.8rem;padding:0.75rem;border:1.5px solid var(--red);color:var(--red);background:rgba(255,82,82,0.07);border-radius:12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;">🗑 Delete Godown</button>`;
+      ownerActs.innerHTML = `<button onclick="deleteGodown('${gdId}')" style="width:100%;margin-top:0.8rem;padding:0.75rem;border:1.5px solid var(--red);color:var(--red);background:rgba(255,82,82,0.07);border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.9rem;">🗑 Delete Godown</button>`;
     } else {
       ownerActs.innerHTML = '';
     }
@@ -1652,17 +1632,8 @@
 
 <!-- NON-MODULE HELPERS -->
 <script>
-  /* ── THEME ── */
-  const savedTheme = localStorage.getItem('swiftTheme') || 'dark';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-
-  function toggleTheme() {
-    const cur = document.documentElement.getAttribute('data-theme');
-    const next = cur === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('swiftTheme', next);
-    document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
-  }
+  /* ── THEME: Dark only ── */
+  document.documentElement.setAttribute('data-theme', 'dark');
 
   /* ── MODAL HELPERS ── */
   function openModal(id) {
