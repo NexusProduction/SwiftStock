@@ -11,94 +11,102 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── THEMES ── */
     [data-theme="dark"] {
-      --bg: #080e0b;
-      --surface: #0d1510;
-      --surface2: #111a14;
-      --card: #0f1812;
-      --card2: #131e16;
-      --border: rgba(34,197,94,0.14);
-      --border2: rgba(34,197,94,0.07);
-      --text: #e8f5ee;
-      --text2: #6b9e82;
-      --text3: #38604a;
-      --green: #16db65;
-      --green-dim: rgba(22,219,101,0.1);
-      --green-glow: rgba(22,219,101,0.28);
-      --red: #ef4444;
-      --red-dim: rgba(239,68,68,0.09);
-      --amber: #f59e0b;
-      --amber-dim: rgba(245,158,11,0.1);
-      --blue: #3b82f6;
-      --shadow: rgba(0,0,0,0.85);
-      --input-bg: #0b1410;
-      --input-border: rgba(22,219,101,0.18);
-      --topbar-bg: rgba(8,14,11,0.94);
-      --overlay: rgba(0,0,0,0.75);
-      --in-bg: rgba(34,197,94,0.07);
-      --in-border: rgba(34,197,94,0.2);
-      --out-bg: rgba(239,68,68,0.07);
-      --out-border: rgba(239,68,68,0.2);
-      --sticky-bg: rgba(8,14,11,0.97);
+      --bg: #030508;
+      --surface: rgba(255,255,255,0.04);
+      --surface2: rgba(255,255,255,0.07);
+      --card: rgba(255,255,255,0.04);
+      --card2: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.06);
+      --text: #f4f8ff;
+      --text2: #7a8ea8;
+      --text3: #3d4d62;
+      --green: #00ffa3;
+      --green-dim: rgba(0,255,163,0.12);
+      --green-glow: rgba(0,255,163,0.4);
+      --red: #ff4d6d;
+      --red-dim: rgba(255,77,109,0.12);
+      --amber: #fbbf24;
+      --amber-dim: rgba(251,191,36,0.14);
+      --blue: #4d9fff;
+      --shadow: rgba(0,0,0,0.95);
+      --input-bg: rgba(255,255,255,0.05);
+      --input-border: rgba(255,255,255,0.12);
+      --topbar-bg: rgba(3,5,8,0.9);
+      --overlay: rgba(0,0,0,0.8);
+      --in-bg: rgba(0,255,163,0.08);
+      --in-border: rgba(0,255,163,0.25);
+      --out-bg: rgba(255,77,109,0.08);
+      --out-border: rgba(255,77,109,0.25);
+      --sticky-bg: rgba(3,5,8,0.97);
     }
 
     html, body {
       min-height: 100%; font-family: 'Inter', sans-serif;
       background: var(--bg); color: var(--text);
-      overflow-x: hidden; transition: background 0.35s, color 0.35s;
+      overflow-x: hidden;
     }
 
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+    /* Aurora blobs — matching dashboard */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 900px 600px at -8% -5%, rgba(0,255,163,0.14) 0%, transparent 65%),
+        radial-gradient(ellipse 700px 500px at 108% 98%, rgba(77,159,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 600px 400px at 50% 20%, rgba(192,132,252,0.06) 0%, transparent 55%),
+        #030508;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
 
-    /* ══════════════════════════════════
-       TOP BAR — green stripe, always visible
-    ══════════════════════════════════ */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+
     .topbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 300;
       height: 54px; display: flex; align-items: center;
       justify-content: space-between; padding: 0 1.2rem;
       background: var(--topbar-bg);
-      backdrop-filter: blur(20px);
-      border-bottom: 2px solid var(--green);
-      box-shadow: 0 2px 24px rgba(0,230,118,0.07);
+      backdrop-filter: blur(30px) saturate(180%);
+      border-bottom: 1px solid rgba(0,255,163,0.2);
+      box-shadow: 0 1px 40px rgba(0,255,163,0.07);
     }
 
     .topbar-left { display: flex; align-items: center; gap: 0.7rem; }
 
     .back-btn {
       width: 34px; height: 34px; border-radius: 9px;
-      background: var(--surface); border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; color: var(--text2); font-size: 1rem;
-      text-decoration: none; transition: all 0.2s;
+      text-decoration: none; transition: all 0.25s;
     }
-    .back-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+    .back-btn:hover { border-color: var(--green); color: var(--green); background: rgba(0,255,163,0.08); box-shadow: 0 0 20px rgba(0,255,163,0.2); }
 
     .tb-logo {
       font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.2rem;
       color: var(--green); text-decoration: none;
-      text-shadow: 0 0 18px var(--green-glow); letter-spacing: -0.01em;
+      filter: drop-shadow(0 0 16px rgba(0,255,163,0.6)); letter-spacing: -0.01em;
     }
 
     .tb-godown-name {
       font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem;
       color: var(--text2); padding-left: 0.7rem;
-      border-left: 1px solid var(--border2);
+      border-left: 1px solid rgba(255,255,255,0.08);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       max-width: 180px;
     }
 
     .topbar-right { display: flex; align-items: center; gap: 0.6rem; }
-
-    .theme-pill {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 999px; padding: 0.28rem 0.8rem;
-      font-size: 0.78rem; cursor: pointer; color: var(--text2);
-      transition: all 0.2s; font-family: 'Inter', sans-serif;
-    }
-    .theme-pill:hover { border-color: var(--green); color: var(--green); }
+    .theme-pill { display: none; }
 
     /* ══════════════════════════════════
        TWO-VIEW SYSTEM: Products / Product Detail
@@ -160,10 +168,11 @@
       display: flex; gap: 0.8rem; margin-top: 0.65rem; flex-wrap: wrap;
     }
     .ps-chip {
-      background: var(--surface); border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px; padding: 0.35rem 0.85rem;
       font-size: 0.78rem; color: var(--text2);
       display: flex; align-items: center; gap: 0.4rem;
+      backdrop-filter: blur(12px);
     }
     .ps-chip b { color: var(--text); font-weight: 700; }
 
@@ -175,12 +184,13 @@
 
     /* Product row card */
     .product-card {
-      background: var(--card);
-      border: 1px solid var(--border2);
+      background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(255,255,255,0.09);
       border-radius: 16px; padding: 1.1rem 1.2rem;
       display: flex; align-items: center; gap: 1rem;
-      cursor: pointer; transition: all 0.22s;
+      cursor: pointer; transition: all 0.28s cubic-bezier(.16,1,.3,1);
       position: relative; overflow: hidden;
+      backdrop-filter: blur(20px);
       animation: slideIn 0.35s ease both;
     }
     @keyframes slideIn {
@@ -188,20 +198,23 @@
       to   { opacity: 1; transform: none; }
     }
     .product-card:hover {
-      border-color: var(--border);
-      box-shadow: 0 8px 30px var(--shadow);
-      transform: translateX(4px);
+      border-color: rgba(0,255,163,0.3);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,255,163,0.1);
+      transform: translateX(5px);
     }
     .product-card::before {
       content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-      background: var(--green); opacity: 0; transition: opacity 0.22s;
+      background: linear-gradient(180deg, var(--green), rgba(0,255,163,0.4));
+      opacity: 0; transition: opacity 0.28s;
+      box-shadow: 2px 0 20px rgba(0,255,163,0.4);
     }
     .product-card:hover::before { opacity: 1; }
 
     .pc-icon {
       width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
-      background: var(--green-dim); border: 1px solid var(--border);
+      background: rgba(0,255,163,0.1); border: 1px solid rgba(0,255,163,0.2);
       display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+      box-shadow: 0 0 16px rgba(0,255,163,0.1);
     }
     .pc-info { flex: 1; min-width: 0; }
     .pc-name {
@@ -351,17 +364,24 @@
       border-radius: 14px; padding: 0.9rem 1.1rem;
       display: flex; align-items: center; gap: 0.9rem;
       border: 1px solid; position: relative; overflow: hidden;
+      backdrop-filter: blur(16px);
       animation: entryIn 0.3s ease both;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
+    .entry-card:hover { transform: translateX(4px); }
     @keyframes entryIn {
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: none; }
     }
     .entry-card.in {
-      background: var(--in-bg); border-color: var(--in-border);
+      background: linear-gradient(135deg, rgba(0,255,163,0.08) 0%, rgba(0,255,163,0.03) 100%);
+      border-color: rgba(0,255,163,0.22);
+      box-shadow: 0 4px 20px rgba(0,255,163,0.04), inset 0 0 30px rgba(0,255,163,0.02);
     }
     .entry-card.out {
-      background: var(--out-bg); border-color: var(--out-border);
+      background: linear-gradient(135deg, rgba(255,77,109,0.08) 0%, rgba(255,77,109,0.03) 100%);
+      border-color: rgba(255,77,109,0.22);
+      box-shadow: 0 4px 20px rgba(255,77,109,0.04), inset 0 0 30px rgba(255,77,109,0.02);
     }
 
     .ec-type {
@@ -369,8 +389,8 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 1.1rem; flex-shrink: 0;
     }
-    .entry-card.in .ec-type { background: rgba(0,230,118,0.12); }
-    .entry-card.out .ec-type { background: rgba(255,82,82,0.12); }
+    .entry-card.in .ec-type { background: rgba(0,255,163,0.14); border: 1px solid rgba(0,255,163,0.2); }
+    .entry-card.out .ec-type { background: rgba(255,77,109,0.14); border: 1px solid rgba(255,77,109,0.2); }
 
     .ec-info { flex: 1; min-width: 0; }
     .ec-text { font-size: 0.88rem; font-weight: 500; line-height: 1.4; }
@@ -384,9 +404,27 @@
       font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.1rem;
       line-height: 1;
     }
-    .entry-card.in  .ec-qty-num { color: var(--green); }
-    .entry-card.out .ec-qty-num { color: var(--red); }
+    .entry-card.in  .ec-qty-num { color: var(--green); text-shadow: 0 0 16px rgba(0,255,163,0.5); }
+    .entry-card.out .ec-qty-num { color: var(--red); text-shadow: 0 0 16px rgba(255,77,109,0.5); }
     .ec-qty-unit { font-size: 0.7rem; color: var(--text2); margin-top: 0.1rem; }
+
+    /* Delete button on entry */
+    .ec-del-btn {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      background: none; border: 1px solid rgba(255,77,109,0.2);
+      cursor: pointer; color: var(--text3); display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; margin-left: 0.4rem;
+    }
+    .ec-del-btn:hover { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+    /* Deleted / audit-log entry style */
+    .entry-deleted {
+      background: rgba(255,255,255,0.02) !important;
+      border-color: rgba(255,255,255,0.06) !important;
+      opacity: 0.65;
+      cursor: default;
+    }
+    .entry-deleted:hover { transform: none !important; }
 
     /* Empty entries */
     .empty-entries {
@@ -399,29 +437,31 @@
        MODALS (shared)
     ══════════════════════════════════ */
     .modal-overlay {
-      position: fixed; inset: 0; background: var(--overlay);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
       z-index: 500; display: flex; align-items: flex-end; justify-content: center;
       padding: 0; opacity: 0; pointer-events: none;
       transition: opacity 0.25s;
     }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
 
-    /* Bottom sheet style */
     .modal {
-      background: var(--card); border-radius: 24px 24px 0 0;
+      background: rgba(5,8,18,0.99);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-top: 1px solid rgba(0,255,163,0.15);
+      border-radius: 24px 24px 0 0;
       width: 100%; max-width: 540px; max-height: 92vh;
       overflow-y: auto; padding: 0;
-      box-shadow: 0 -20px 60px var(--shadow);
+      box-shadow: 0 -30px 80px rgba(0,0,0,0.95), 0 0 0 1px rgba(0,255,163,0.04);
       transform: translateY(100%);
       transition: transform 0.38s cubic-bezier(0.16,1,0.3,1);
       position: relative;
     }
     .modal-overlay.open .modal { transform: translateY(0); }
 
-    /* drag handle */
     .modal-handle {
       width: 36px; height: 4px; border-radius: 2px;
-      background: var(--border); margin: 0.9rem auto 0;
+      background: rgba(255,255,255,0.12); margin: 0.9rem auto 0;
     }
 
     .modal-head {
@@ -432,7 +472,7 @@
     .modal-sub { color: var(--text2); font-size: 0.8rem; margin-top: 0.2rem; }
     .modal-close {
       width: 30px; height: 30px; border-radius: 8px;
-      background: var(--surface2); border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
       cursor: pointer; color: var(--text2); font-size: 1rem;
       display: flex; align-items: center; justify-content: center;
       transition: all 0.2s; flex-shrink: 0;
@@ -1060,39 +1100,61 @@
 
   /* ── LOAD ENTRIES ── */
   function loadEntries(productId) {
-    // No orderBy — avoids needing a Firestore composite index
-    // We sort client-side after fetching
+    // Fetch all entries for this product (including deleted — they become audit log)
     const q = query(
       collection(db, 'entries'),
       where('productId', '==', productId)
     );
     onSnapshot(q, snap => {
       entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    // Sort newest first — handle serverTimestamp() that is null during pending writes
       entries.sort((a, b) => {
         const getMs = (e) => {
-          if (!e.createdAt) return Date.now(); // pending write — treat as now
+          if (!e.createdAt) return Date.now();
           if (e.createdAt.toDate) return e.createdAt.toDate().getTime();
           return new Date(e.createdAt).getTime();
         };
         return getMs(b) - getMs(a);
       });
       renderEntries();
+      // Update current product stock display
+      if (currentProduct) {
+        const liveProduct = products.find(p => p.id === currentProductId);
+        if (liveProduct) {
+          currentProduct = liveProduct;
+          renderProductHeader();
+        }
+      }
+    }, (err) => {
+      console.error('Entries listener error:', err);
+      showToast('Failed to load entries. Please reload.', 'error');
     });
   }
 
   function renderEntries() {
     const list = document.getElementById('entriesList');
-    const empty = document.getElementById('emptyEntries');
 
-    list.innerHTML = '';
+    // Remove all children EXCEPT emptyEntries (don't use innerHTML='' which destroys the element)
+    Array.from(list.children).forEach(child => {
+      if (child.id !== 'emptyEntries') child.remove();
+    });
+
+    // Re-create emptyEntries if it got destroyed somehow
+    let empty = document.getElementById('emptyEntries');
+    if (!empty) {
+      empty = document.createElement('div');
+      empty.id = 'emptyEntries';
+      empty.className = 'empty-entries';
+      empty.innerHTML = '<span class="ep-icon">📭</span>No entries yet — add your first stock movement above';
+      list.appendChild(empty);
+    }
 
     if (entries.length === 0) {
-      list.appendChild(empty);
       empty.style.display = 'block';
       return;
     }
     empty.style.display = 'none';
+
+    const canDelete = currentUser?.role === 'owner' || currentUser?.role === 'manager';
 
     // Group by date
     const groups = {};
@@ -1111,6 +1173,25 @@
 
       es.forEach((e, i) => {
         const card = document.createElement('div');
+
+        // Deleted entries render as permanent audit log — not deletable again
+        if (e.deleted) {
+          card.className = 'entry-card entry-deleted';
+          card.style.animationDelay = `${i * 0.04}s`;
+          const time = e._date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+          card.innerHTML = `
+            <div class="ec-type" style="opacity:0.5;">🗑</div>
+            <div class="ec-info">
+              <div class="ec-text" style="color:var(--text3);text-decoration:line-through;">
+                <b>${e.deletedBy || e.staffName}</b> deleted ${formatNum(e.qtyInBase)} ${currentProduct?.unit || ''} in <b>${currentProduct?.name || ''}</b> from godam
+              </div>
+              <div class="ec-meta">${time} · Originally by ${e.staffName}</div>
+            </div>
+          `;
+          list.appendChild(card);
+          return;
+        }
+
         card.className = `entry-card ${e.type}`;
         card.style.animationDelay = `${i * 0.04}s`;
 
@@ -1131,6 +1212,9 @@
             ${e.enteredUnit && e.enteredUnit !== currentProduct?.unit
               ? `<div class="ec-qty-unit">(${formatNum(e.enteredQty)} ${e.enteredUnit})</div>` : ''}
           </div>
+          ${canDelete ? `<button class="ec-del-btn" title="Delete entry" onclick="confirmDeleteEntry('${e.id}',${e.qtyInBase},'${e.type}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>` : ''}
         `;
         list.appendChild(card);
       });
@@ -1386,6 +1470,53 @@
     const el = document.getElementById('entryModalMsg');
     el.textContent = msg;
     el.style.color = type === 'error' ? 'var(--red)' : 'var(--green)';
+  }
+
+  /* ── DELETE ENTRY (with permanent audit log) ── */
+  window.confirmDeleteEntry = function(entryId, qty, type) {
+    const p = currentProduct;
+    if (!p) return;
+    const dirWord = type === 'in' ? 'added' : 'removed';
+    if (!confirm(`Delete this entry? This will reverse the stock change (${dirWord} ${formatNum(qty)} ${p.unit}).\n\nA permanent audit record will remain.`)) return;
+    deleteEntry(entryId, qty, type);
+  };
+
+  async function deleteEntry(entryId, qty, type) {
+    const p = currentProduct;
+    if (!p) return;
+    try {
+      // Reverse the stock
+      const delta = type === 'in' ? -qty : qty; // reverse the original operation
+      const newStock = Math.max(0, (p.currentStock || 0) + delta);
+
+      // Mark entry as deleted (permanent audit — do NOT hard delete)
+      await updateDoc(doc(db, 'entries', entryId), {
+        deleted: true,
+        deletedBy: currentUser.name,
+        deletedAt: serverTimestamp(),
+      });
+
+      // Reverse stock on product
+      await updateDoc(doc(db, 'products', currentProductId), {
+        currentStock: newStock,
+        totalIn: type === 'in' ? Math.max(0, (p.totalIn || 0) - qty) : (p.totalIn || 0),
+        totalOut: type === 'out' ? Math.max(0, (p.totalOut || 0) - qty) : (p.totalOut || 0),
+        entryCount: Math.max(0, (p.entryCount || 0) - 1),
+      });
+
+      // Notify
+      const compId = currentUser.companyId || currentUser.uid;
+      await addDoc(collection(db, 'notifications'), {
+        message: `${currentUser.name} deleted ${formatNum(qty)} ${p.unit} entry in "${p.name}" from godam.`,
+        companyId: compId,
+        createdAt: serverTimestamp(),
+      });
+
+      showToast('Entry deleted. Audit record saved.', 'success');
+    } catch (e) {
+      console.error(e);
+      showToast('Failed to delete entry.', 'error');
+    }
   }
 
   /* ── UNIT CONVERSION MATH ── */
