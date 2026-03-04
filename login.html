@@ -274,9 +274,9 @@ function togglePw() {
   b.textContent = i.type==='password'?'👁️':'🙈';
 }
 
-// Already logged in? Go to dashboard
+// Already logged in? Go to dashboard immediately (no sessionStorage check needed)
 auth.onAuthStateChanged(u => {
-  if (u && sessionStorage.getItem('swiftUser')) window.location.href = 'dashboard.html';
+  if (u) window.location.href = 'dashboard.html';
 });
 
 // ═══════ BACKGROUND ═══════
