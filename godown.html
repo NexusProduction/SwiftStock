@@ -1,222 +1,498 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SwiftStock — Godown</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
+    /* ══ DESIGN TOKENS ══ */
     :root{
-      --bg:#000;--bg2:#0a0a0a;
-      --card:#111;--card2:#161616;--card3:#1c1c1e;
-      --border:#222;--border2:#2c2c2e;
-      --text:#f5f5f7;--text2:#86868b;--text3:#48484a;
-      --green:#30d158;--green-dim:rgba(48,209,88,0.1);
-      --blue:#0a84ff;
-      --amber:#ff9f0a;--amber-dim:rgba(255,159,10,.1);
-      --red:#ff453a;--red-dim:rgba(255,69,58,.1);
-      --silver:#636366;
-      --in-bg:rgba(48,209,88,0.06);--in-border:rgba(48,209,88,0.2);
-      --out-bg:rgba(255,69,58,0.06);--out-border:rgba(255,69,58,0.2);
-      --input-bg:#0d0d0d;--input-border:#2c2c2e;
+      --bg:       #000000;
+      --card:     #111111;
+      --card2:    #161616;
+      --card3:    #1c1c1e;
+      --border:   #222222;
+      --border2:  #2c2c2e;
+      --text:     #f5f5f7;
+      --text2:    #aeaeb2;   /* readable secondary */
+      --text3:    #6e6e73;   /* readable tertiary */
+      --green:    #30d158;
+      --green-dim:rgba(48,209,88,0.1);
+      --red:      #ff453a;
+      --red-dim:  rgba(255,69,58,0.1);
+      --amber:    #ff9f0a;
+      --blue:     #0a84ff;
+      --in-bg:    rgba(48,209,88,0.06);
+      --in-border:rgba(48,209,88,0.22);
+      --out-bg:   rgba(255,69,58,0.06);
+      --out-border:rgba(255,69,58,0.22);
+      --input-bg: #0d0d0d;
+      --input-border:#2c2c2e;
+      --sticky-bg:rgba(0,0,0,0.96);
       --topbar-bg:rgba(0,0,0,0.92);
-      --sticky-bg:rgba(0,0,0,0.97);
-      --overlay:rgba(0,0,0,.82);
+      --overlay:  rgba(0,0,0,0.82);
     }
 
-    html,body{min-height:100%;font-family:-apple-system,'Inter','SF Pro Text',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2c2c2e;border-radius:99px}
-    >*{position:relative;z-index:1}
+    html,body{
+      min-height:100%; font-family:-apple-system,'Inter','SF Pro Text',sans-serif;
+      background:var(--bg); color:var(--text);
+      overflow-x:hidden; -webkit-font-smoothing:antialiased;
+    }
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-thumb{background:#2c2c2e;border-radius:99px}
 
-    /* TOPBAR */
-    .topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;background:var(--topbar-bg);border-bottom:1px solid var(--border);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
-    .topbar-left{display:flex;align-items:center;gap:.65rem}
-    .back-btn{width:32px;height:32px;border-radius:9px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:.9rem;text-decoration:none;transition:all .15s}
-    .back-btn:hover{border-color:var(--border2);color:var(--text);background:var(--card2)}
-    .tb-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:-.02em;color:var(--text);text-decoration:none}
-    .tb-godown-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.9rem;color:var(--text2);padding-left:.65rem;border-left:1px solid var(--border);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
-    .topbar-right{display:flex;align-items:center;gap:.5rem}
+    /* ══ TOPBAR ══ */
+    .topbar{
+      position:fixed;top:0;left:0;right:0;z-index:300;
+      height:52px;display:flex;align-items:center;justify-content:space-between;
+      padding:0 1rem;
+      background:var(--topbar-bg);border-bottom:1px solid var(--border);
+      -webkit-backdrop-filter:blur(20px) saturate(180%);
+      backdrop-filter:blur(20px) saturate(180%);
+    }
+    .tb-left{display:flex;align-items:center;gap:.6rem}
+    .back-btn{
+      width:32px;height:32px;border-radius:9px;
+      background:var(--card);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--text2);font-size:.95rem;
+      text-decoration:none;transition:all .15s;flex-shrink:0;
+    }
+    .back-btn:hover{background:var(--card2);color:var(--text);border-color:var(--border2)}
+    .tb-logo{
+      font-family:'Space Grotesk',sans-serif;font-weight:700;
+      font-size:1.1rem;letter-spacing:-.02em;color:var(--text);text-decoration:none;
+    }
+    .tb-sep{width:1px;height:18px;background:var(--border);flex-shrink:0}
+    .tb-godown{
+      font-family:'Space Grotesk',sans-serif;font-weight:600;
+      font-size:.88rem;color:var(--text2);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;
+    }
 
-    /* VIEWS */
-    .view{display:none}
+    /* ══ VIEWS ══ */
+    .view{display:none;padding-top:52px;min-height:100vh}
     .view.active{display:block}
-    #productsView{padding-top:52px;min-height:100vh}
 
-    /* STICKY HEADER */
-    .products-sticky{position:sticky;top:52px;z-index:200;background:var(--sticky-bg);border-bottom:1px solid var(--border);padding:.85rem 1.1rem;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
-    .ps-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;flex-wrap:wrap;gap:.55rem}
-    .ps-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:-.03em;color:var(--text)}
-    .add-product-btn{display:flex;align-items:center;gap:.38rem;padding:.5rem 1rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.84rem;color:#000;background:var(--green);border:none;border-radius:9px;cursor:pointer;transition:opacity .15s,transform .15s}
-    .add-product-btn:hover{opacity:.88;transform:translateY(-1px)}
+    /* ══════════════════════════════
+       VIEW 1 — PRODUCTS LIST
+    ══════════════════════════════ */
 
-    .search-wrap{position:relative;display:flex;align-items:center}
-    .search-icon{position:absolute;left:.82rem;font-size:.82rem;opacity:.3;pointer-events:none}
-    .search-inp{width:100%;padding:.6rem 1rem .6rem 2.3rem;background:var(--input-bg);border:1px solid var(--input-border);border-radius:10px;font-family:inherit;font-size:.86rem;color:var(--text);outline:none;transition:border-color .15s}
+    /* Sticky header */
+    .ps-sticky{
+      position:sticky;top:52px;z-index:200;
+      background:var(--sticky-bg);border-bottom:1px solid var(--border);
+      padding:.9rem 1.1rem;
+      -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+    }
+    .ps-top{
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:.75rem;gap:.6rem;flex-wrap:wrap;
+    }
+    .ps-name{
+      font-family:'Space Grotesk',sans-serif;font-weight:700;
+      font-size:1.25rem;letter-spacing:-.03em;color:var(--text);
+    }
+    .add-btn{
+      display:flex;align-items:center;gap:.38rem;
+      padding:.52rem 1rem;
+      font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.84rem;
+      color:#000;background:var(--green);border:none;border-radius:9px;
+      cursor:pointer;transition:opacity .15s,transform .15s;flex-shrink:0;
+    }
+    .add-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+    .search-wrap{position:relative;margin-bottom:.7rem}
+    .search-icon{position:absolute;left:.82rem;top:50%;transform:translateY(-50%);font-size:.82rem;opacity:.28;pointer-events:none}
+    .search-inp{
+      width:100%;padding:.6rem 1rem .6rem 2.3rem;
+      background:var(--card);border:1px solid var(--border);border-radius:10px;
+      font-family:inherit;font-size:.86rem;color:var(--text);outline:none;
+      transition:border-color .15s;
+    }
     .search-inp::placeholder{color:var(--text3)}
-    .search-inp:focus{border-color:var(--green)}
-    .ps-stats{display:flex;gap:.7rem;margin-top:.6rem;flex-wrap:wrap}
-    .ps-chip{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:.3rem .75rem;font-size:.75rem;color:var(--text2);display:flex;align-items:center;gap:.35rem}
+    .search-inp:focus{border-color:var(--green);background:var(--card2)}
+
+    .ps-chips{display:flex;gap:.55rem;flex-wrap:wrap}
+    .ps-chip{
+      background:var(--card);border:1px solid var(--border);border-radius:7px;
+      padding:.28rem .7rem;font-size:.75rem;color:var(--text2);
+      display:flex;align-items:center;gap:.32rem;
+    }
     .ps-chip b{color:var(--text);font-weight:700}
 
-    .products-list{padding:.9rem 1.1rem 6rem;display:flex;flex-direction:column;gap:0;border-top:none}
-    .product-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;animation:slideIn .3s ease both;margin-bottom:.55rem}
-    @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+    /* Products list */
+    .products-wrap{padding:.85rem 1.1rem 6rem;display:flex;flex-direction:column;gap:.5rem}
+
+    .product-card{
+      background:var(--card);border:1px solid var(--border);border-radius:12px;
+      padding:1rem 1.1rem;display:flex;align-items:center;gap:.9rem;
+      cursor:pointer;transition:background .15s,border-color .15s;
+      position:relative;overflow:hidden;
+      animation:slideIn .3s ease both;
+    }
+    @keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
     .product-card:hover{background:var(--card2);border-color:var(--border2)}
-    .product-card::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--green);opacity:0;transition:opacity .15s}
-    .product-card:hover::before{opacity:1}
-    .pc-icon{width:40px;height:40px;border-radius:10px;flex-shrink:0;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+    .product-card::after{
+      content:'';position:absolute;left:0;top:22%;bottom:22%;
+      width:2px;background:var(--green);opacity:0;transition:opacity .15s;
+    }
+    .product-card:hover::after{opacity:1}
+
+    .pc-icon{
+      width:40px;height:40px;border-radius:10px;flex-shrink:0;
+      background:var(--card2);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+    }
     .pc-info{flex:1;min-width:0}
-    .pc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .pc-desc{color:var(--text2);font-size:.75rem;margin-top:.08rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .pc-entries{font-size:.7rem;color:var(--text3);margin-top:.08rem}
-    .pc-stock{text-align:right;flex-shrink:0}
-    .pc-stock-num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:var(--text)}
-    .pc-stock-unit{font-size:.65rem;color:var(--text2);margin-top:.06rem}
-    .pc-arrows{display:flex;flex-direction:column;gap:.28rem;flex-shrink:0}
-    .pc-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--text2)}
-    .pc-btn.in:hover{border-color:var(--green);color:var(--green);background:var(--green-dim)}
-    .pc-btn.out:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+    .pc-name{
+      font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;
+      color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .pc-desc{color:var(--text2);font-size:.75rem;margin-top:.06rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pc-unit{color:var(--text3);font-size:.72rem;margin-top:.04rem}
 
-    /* PRODUCT DETAIL */
-    #productView{padding-top:0;min-height:100vh}
-    .product-detail-sticky{position:sticky;top:52px;z-index:200;background:var(--sticky-bg);border-bottom:1px solid var(--border);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
-    .pv-inner{padding:.9rem 1.1rem}
-    .pv-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem}
-    .pv-name-row{display:flex;align-items:center;gap:.65rem}
-    .pv-icon{width:38px;height:38px;border-radius:10px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-    .pv-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:-.02em}
-    .pv-sub{font-size:.73rem;color:var(--text3);margin-top:.1rem}
-    .pv-actions{display:flex;gap:.5rem}
-    .pv-btn{padding:.48rem .85rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.78rem;border:none;border-radius:8px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.3rem}
-    .pv-btn.in{background:var(--green);color:#000}
-    .pv-btn.out{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,69,58,.25)}
-    .pv-btn.edit{background:var(--card2);color:var(--text2);border:1px solid var(--border)}
-    .pv-btn.del{background:none;color:var(--text3);border:1px solid var(--border)}
-    .pv-btn:hover{opacity:.85;transform:translateY(-1px)}
-    .pv-stats{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
-    .pv-stat{flex:1;padding:.6rem .7rem;background:var(--card);border-right:1px solid var(--border);text-align:center}
-    .pv-stat:last-child{border-right:none}
-    .pv-stat-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem}
-    .pv-stat-val.green{color:var(--green)}
-    .pv-stat-val.red{color:var(--red)}
-    .pv-stat-lbl{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:.08rem}
+    .pc-right{text-align:right;flex-shrink:0;min-width:60px}
+    .pc-stock{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;line-height:1}
+    .pc-unit-lbl{color:var(--text2);font-size:.66rem;margin-top:.06rem}
+    .pc-entries-lbl{color:var(--text3);font-size:.65rem;margin-top:.04rem}
 
-    /* ADD ENTRY BAR */
-    .add-entry-bar{padding:.75rem 1.1rem;border-bottom:1px solid var(--border);display:flex;gap:.5rem;align-items:center;background:var(--card)}
-    .aeb-label{font-size:.72rem;color:var(--text3);font-weight:500;flex-shrink:0}
-    .aeb-btn{padding:.45rem .85rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.78rem;border-radius:8px;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:.28rem}
-    .aeb-btn.in{background:var(--green);color:#000}
-    .aeb-btn.out{background:var(--red-dim);border:1px solid rgba(255,69,58,.25);color:var(--red)}
-    .aeb-btn:hover{opacity:.85}
+    .pc-chevron{color:var(--text3);font-size:1rem;flex-shrink:0;transition:transform .15s,color .15s;margin-left:.18rem}
+    .product-card:hover .pc-chevron{transform:translateX(2px);color:var(--text2)}
 
-    /* ENTRIES LIST */
-    .entries-list{padding:.85rem 1.1rem 6rem;display:flex;flex-direction:column;gap:.5rem}
-    .date-group-header{font-size:.65rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:600;padding:.55rem .2rem .28rem;margin-top:.3rem}
-    .entry-card{border-radius:11px;padding:.85rem 1rem;display:flex;align-items:center;gap:.85rem;border:1px solid;position:relative;overflow:hidden;animation:entryIn .28s ease both;transition:transform .15s}
-    .entry-card:hover{transform:translateX(3px)}
+    /* Empty products state */
+    .empty-products{
+      display:none;text-align:center;
+      padding:4rem 2rem;
+    }
+    .empty-products.show{display:block}
+    .ep-icon{font-size:2.4rem;opacity:.1;display:block;margin-bottom:.9rem}
+    .ep-title{
+      font-family:'Space Grotesk',sans-serif;font-weight:700;
+      font-size:.98rem;color:var(--text2);margin-bottom:.35rem;
+    }
+    .ep-sub{font-size:.8rem;color:var(--text3);margin-bottom:1.2rem;line-height:1.5}
+    .ep-add-btn{
+      padding:.6rem 1.4rem;font-family:'Space Grotesk',sans-serif;font-weight:700;
+      font-size:.85rem;color:#000;background:var(--green);border:none;
+      border-radius:9px;cursor:pointer;transition:opacity .15s;
+    }
+    .ep-add-btn:hover{opacity:.88}
+
+    /* ══════════════════════════════
+       VIEW 2 — PRODUCT DETAIL
+    ══════════════════════════════ */
+
+    /* Product sticky header */
+    .pd-sticky{
+      position:sticky;top:52px;z-index:200;
+      background:var(--sticky-bg);border-bottom:1px solid var(--border);
+      -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+    }
+
+    /* Name row */
+    .pd-name-row{
+      display:flex;align-items:center;gap:.65rem;
+      padding:.85rem 1.1rem;flex-wrap:wrap;
+    }
+    .pd-back{
+      width:32px;height:32px;border-radius:9px;
+      background:var(--card);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--text2);font-size:.95rem;flex-shrink:0;
+      transition:all .15s;font-family:inherit;
+    }
+    .pd-back:hover{background:var(--card2);color:var(--text)}
+    .pd-title-block{flex:1;min-width:0}
+    .pd-name{
+      font-family:'Space Grotesk',sans-serif;font-weight:700;
+      font-size:1.1rem;letter-spacing:-.02em;
+      color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .pd-sub{font-size:.72rem;color:var(--text3);margin-top:.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .pd-actions{display:flex;gap:.45rem;flex-shrink:0}
+    .pd-btn{
+      padding:.48rem .82rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.78rem;
+      border:none;border-radius:8px;cursor:pointer;transition:all .15s;
+      display:flex;align-items:center;gap:.3rem;
+    }
+    .pd-btn.in{background:var(--green);color:#000}
+    .pd-btn.out{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,69,58,.25)}
+    .pd-btn:hover{opacity:.85;transform:translateY(-1px)}
+    .pd-icon-btn{
+      width:30px;height:30px;border-radius:8px;
+      background:var(--card);border:1px solid var(--border);
+      cursor:pointer;font-size:.85rem;
+      display:flex;align-items:center;justify-content:center;
+      color:var(--text2);transition:all .15s;font-family:inherit;
+    }
+    .pd-icon-btn:hover{background:var(--card2);border-color:var(--border2);color:var(--text)}
+    .pd-icon-btn.del:hover{background:var(--red-dim);border-color:rgba(255,69,58,.35);color:var(--red)}
+
+    /* Stock banner */
+    .pd-stock-banner{
+      display:flex;align-items:flex-end;justify-content:space-between;
+      padding:.5rem 1.1rem 1rem;flex-wrap:wrap;gap:.6rem;
+    }
+    .stock-label{
+      font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;
+      color:var(--text3);font-weight:500;margin-bottom:.2rem;
+    }
+    .stock-row{display:flex;align-items:baseline;gap:.32rem}
+    .stock-num{
+      font-family:'Space Grotesk',sans-serif;font-weight:700;
+      font-size:2.2rem;letter-spacing:-.05em;color:var(--green);line-height:1;
+    }
+    .stock-unit{font-size:.88rem;color:var(--text2);font-weight:500}
+    .conv-chips{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:flex-end;align-items:flex-end}
+    .conv-chip{
+      background:var(--card2);border:1px solid var(--border2);border-radius:6px;
+      padding:.2rem .55rem;font-size:.67rem;color:var(--text2);
+      font-family:'JetBrains Mono',monospace;
+    }
+
+    /* Entries list */
+    .entries-wrap{padding:.85rem 1.1rem 6rem;display:flex;flex-direction:column;gap:0}
+
+    .date-hdr{
+      font-size:.64rem;text-transform:uppercase;letter-spacing:.09em;
+      color:var(--text3);font-weight:600;padding:.55rem .2rem .28rem;margin-top:.3rem;
+    }
+
+    .entry-card{
+      border-radius:11px;padding:.85rem 1rem;
+      display:flex;align-items:center;gap:.8rem;
+      border:1px solid;position:relative;overflow:hidden;
+      animation:entryIn .28s ease both;transition:transform .15s;
+      margin-bottom:.5rem;
+    }
     @keyframes entryIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .entry-card:hover{transform:translateX(3px)}
     .entry-card.in{background:var(--in-bg);border-color:var(--in-border)}
     .entry-card.out{background:var(--out-bg);border-color:var(--out-border)}
-    .ec-type{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-    .entry-card.in .ec-type{background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.2)}
-    .entry-card.out .ec-type{background:rgba(255,69,58,.12);border:1px solid rgba(255,69,58,.2)}
+    .entry-card.deleted-entry{
+      background:var(--card)!important;border-color:var(--border)!important;
+      opacity:.55;cursor:default;
+    }
+    .entry-card.deleted-entry:hover{transform:none!important}
+
+    .ec-icon{
+      width:34px;height:34px;border-radius:9px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.05rem;flex-shrink:0;
+    }
+    .entry-card.in .ec-icon{background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.2)}
+    .entry-card.out .ec-icon{background:rgba(255,69,58,.1);border:1px solid rgba(255,69,58,.2)}
+    .entry-card.deleted-entry .ec-icon{background:var(--card2);border:1px solid var(--border);opacity:.5}
+
     .ec-info{flex:1;min-width:0}
-    .ec-text{font-size:.84rem;font-weight:500;line-height:1.4}
+    .ec-text{font-size:.85rem;color:var(--text);font-weight:500;line-height:1.45}
     .ec-text b{font-weight:700}
     .ec-meta{font-size:.7rem;color:var(--text3);margin-top:.18rem}
+
     .ec-qty{text-align:right;flex-shrink:0}
     .ec-qty-num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;line-height:1}
     .entry-card.in .ec-qty-num{color:var(--green)}
     .entry-card.out .ec-qty-num{color:var(--red)}
-    .ec-qty-unit{font-size:.68rem;color:var(--text2);margin-top:.08rem}
-    .ec-del-btn{width:26px;height:26px;border-radius:7px;flex-shrink:0;background:none;border:1px solid rgba(255,69,58,.18);cursor:pointer;color:var(--text3);display:flex;align-items:center;justify-content:center;transition:all .15s;margin-left:.3rem}
-    .ec-del-btn:hover{background:var(--red-dim);border-color:var(--red);color:var(--red)}
-    .entry-deleted{background:var(--card)!important;border-color:var(--border)!important;opacity:.55;cursor:default}
-    .entry-deleted:hover{transform:none!important}
-    .empty-entries{text-align:center;padding:3.5rem 1rem;color:var(--text2);font-size:.88rem}
-    .empty-entries .ep-icon{font-size:2.2rem;opacity:.1;display:block;margin-bottom:.7rem}
+    .ec-qty-unit{font-size:.67rem;color:var(--text2);margin-top:.08rem}
+    .ec-qty-conv{font-size:.65rem;color:var(--text3);margin-top:.04rem}
 
-    /* MODALS */
-    .modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:500;display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .22s}
+    .ec-del{
+      width:26px;height:26px;border-radius:7px;flex-shrink:0;
+      background:none;border:1px solid rgba(255,69,58,.18);
+      cursor:pointer;color:var(--text3);
+      display:flex;align-items:center;justify-content:center;
+      transition:all .15s;margin-left:.28rem;
+    }
+    .ec-del:hover{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+
+    .empty-entries{
+      text-align:center;padding:3.5rem 1rem;color:var(--text2);font-size:.88rem;
+      display:flex;flex-direction:column;align-items:center;gap:.6rem;
+    }
+    .empty-entries-icon{font-size:2.2rem;opacity:.1}
+
+    /* ══ MODALS (sheet style, slides up) ══ */
+    .modal-overlay{
+      position:fixed;inset:0;background:var(--overlay);z-index:500;
+      display:flex;align-items:flex-end;justify-content:center;
+      padding:0;opacity:0;pointer-events:none;transition:opacity .22s;
+    }
     .modal-overlay.open{opacity:1;pointer-events:all}
-    .modal{background:#111;border:1px solid var(--border2);border-top:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;padding:0;box-shadow:0 -24px 70px rgba(0,0,0,.9);transform:translateY(100%);transition:transform .35s cubic-bezier(.16,1,.3,1);position:relative}
+    .modal{
+      background:#111;border:1px solid var(--border2);
+      border-radius:20px 20px 0 0;width:100%;max-width:540px;
+      max-height:92vh;overflow-y:auto;
+      box-shadow:0 -20px 60px rgba(0,0,0,.9);
+      transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);
+    }
     .modal-overlay.open .modal{transform:translateY(0)}
     .modal-handle{width:32px;height:3px;border-radius:99px;background:var(--border2);margin:.75rem auto}
-    .modal-head{padding:.35rem 1.3rem .8rem;display:flex;align-items:flex-start;justify-content:space-between}
-    .modal-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.08rem}
-    .modal-sub{color:var(--text3);font-size:.72rem;margin-top:.14rem}
-    .modal-close{width:26px;height:26px;border-radius:7px;background:var(--card);border:1px solid var(--border);cursor:pointer;color:var(--text2);font-size:.88rem;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+    .modal-head{
+      padding:.35rem 1.3rem .8rem;
+      display:flex;align-items:flex-start;justify-content:space-between;
+    }
+    .modal-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.06rem;color:var(--text)}
+    .modal-sub{font-size:.72rem;color:var(--text3);margin-top:.14rem}
+    .modal-close{
+      width:26px;height:26px;border-radius:7px;
+      background:var(--card);border:1px solid var(--border);
+      cursor:pointer;color:var(--text2);font-size:.86rem;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .15s;flex-shrink:0;
+    }
     .modal-close:hover{color:var(--red);border-color:rgba(255,69,58,.35)}
     .modal-body{padding:0 1.3rem 1.3rem}
-    .mf{margin-bottom:.8rem}
-    .mf label{display:block;font-size:.61rem;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);margin-bottom:.32rem}
+
+    /* Form fields */
+    .mf{margin-bottom:.82rem}
+    .mf label{display:block;font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);margin-bottom:.34rem}
     .mf-wrap{position:relative;display:flex;align-items:center}
-    .mf-icon{position:absolute;left:.8rem;font-size:.82rem;pointer-events:none;opacity:.3}
-    .mf input,.mf select,.mf textarea{width:100%;padding:.7rem 1rem .7rem 2.2rem;background:var(--input-bg);border:1px solid var(--input-border);border-radius:10px;font-family:inherit;font-size:.84rem;color:var(--text);outline:none;transition:border-color .15s;-webkit-appearance:none}
+    .mf-icon{position:absolute;left:.82rem;font-size:.82rem;pointer-events:none;opacity:.28}
+    .mf input,.mf select,.mf textarea{
+      width:100%;padding:.72rem 1rem .72rem 2.25rem;
+      background:var(--input-bg);border:1px solid var(--input-border);border-radius:10px;
+      font-family:inherit;font-size:.85rem;color:var(--text);outline:none;
+      transition:border-color .15s;-webkit-appearance:none;
+    }
     .mf input::placeholder,.mf textarea::placeholder{color:var(--text3)}
     .mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--green)}
-    .mf textarea{resize:vertical;min-height:70px;padding-top:.7rem;padding-left:1rem}
     .mf select{cursor:pointer}
-    .mf select option{background:#111}
-    .modal-msg{font-size:.75rem;text-align:center;min-height:1em;margin-bottom:.7rem}
-    .modal-actions{display:flex;gap:.6rem}
-    .btn-primary{flex:1;padding:.8rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.87rem;color:#000;background:var(--green);border:none;border-radius:10px;cursor:pointer;transition:opacity .15s,transform .15s}
-    .btn-primary:hover{opacity:.88;transform:translateY(-1px)}
-    .btn-secondary{padding:.8rem 1.1rem;font-family:inherit;font-weight:600;font-size:.82rem;color:var(--text2);background:var(--card2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
-    .btn-secondary:hover{background:var(--card3);color:var(--text)}
+    .mf select option{background:#111;color:var(--text)}
+    .mf textarea{resize:vertical;min-height:65px;padding-top:.72rem;padding-left:1rem}
+
+    /* Qty row (2 columns) */
+    .qty-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+
+    /* Toggle */
+    .toggle-row{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.82rem;background:var(--card2);border-radius:10px;
+      border:1px solid var(--border);margin-bottom:.82rem;
+    }
+    .tr-title{font-weight:600;font-size:.83rem;color:var(--text)}
+    .tr-sub{font-size:.68rem;color:var(--text2);margin-top:.1rem}
+    .sw{position:relative;width:38px;height:21px;flex-shrink:0}
+    .sw input{display:none}
+    .sw-track{position:absolute;inset:0;border-radius:999px;background:#333;cursor:pointer;transition:background .2s}
+    .sw input:checked+.sw-track{background:var(--green)}
+    .sw-track::after{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
+    .sw input:checked+.sw-track::after{transform:translateX(17px)}
+
+    /* Conversions */
+    .conv-section{display:none;margin-top:.45rem}
+    .conv-section.show{display:block}
+    .conv-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem}
+    .conv-item{display:flex;align-items:center;gap:.48rem;flex-wrap:wrap}
+    .conv-lbl{font-size:.8rem;color:var(--text2);flex-shrink:0}
+    .conv-qty{
+      flex:1;min-width:60px;max-width:85px;
+      padding:.54rem .7rem;background:var(--input-bg);
+      border:1px solid var(--input-border);border-radius:8px;
+      color:var(--text);font-family:inherit;font-size:.82rem;outline:none;
+    }
+    .conv-qty:focus{border-color:var(--green)}
+    .conv-unit-sel{
+      flex:1;min-width:80px;padding:.54rem .7rem;
+      background:var(--input-bg);border:1px solid var(--input-border);
+      border-radius:8px;color:var(--text);font-family:inherit;font-size:.82rem;
+      outline:none;cursor:pointer;-webkit-appearance:none;
+    }
+    .conv-unit-sel:focus{border-color:var(--green)}
+    .conv-unit-sel option{background:#111;color:var(--text)}
+    .conv-del{
+      width:26px;height:26px;border-radius:7px;
+      background:var(--red-dim);border:1px solid rgba(255,69,58,.25);
+      cursor:pointer;color:var(--red);font-size:.8rem;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;
+    }
+    .conv-del:hover{background:rgba(255,69,58,.2)}
+    .add-conv-btn{
+      font-family:inherit;font-size:.78rem;color:var(--blue);
+      background:none;border:none;cursor:pointer;padding:.2rem 0;
+    }
+    .add-conv-btn:hover{opacity:.78}
+    .conv-hint{font-size:.7rem;color:var(--text3);margin-top:.45rem;line-height:1.5}
 
     /* Entry type tabs */
-    .entry-type-tabs{display:flex;gap:.5rem;margin-bottom:1rem}
-    .ett-btn{flex:1;padding:.65rem;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.82rem;border-radius:9px;border:1px solid var(--border);background:var(--card2);color:var(--text2);cursor:pointer;transition:all .15s;text-align:center}
-    .ett-btn.in.active{background:var(--in-bg);border-color:var(--in-border);color:var(--green)}
-    .ett-btn.out.active{background:var(--out-bg);border-color:var(--out-border);color:var(--red)}
-    .entry-preview{font-size:.8rem;padding:.65rem .85rem;border-radius:9px;margin-bottom:.8rem;display:none;line-height:1.5}
-    .entry-preview.in{background:var(--in-bg);border:1px solid var(--in-border);color:var(--green);display:block}
-    .entry-preview.out{background:var(--out-bg);border:1px solid var(--out-border);color:var(--red);display:block}
-    .entry-preview.hidden{display:none!important}
+    .entry-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
+    .ett{
+      padding:.65rem;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.82rem;
+      border-radius:9px;border:1px solid var(--border);
+      background:var(--card2);color:var(--text2);cursor:pointer;transition:all .15s;text-align:center;
+    }
+    .ett.in.active{background:var(--in-bg);border-color:var(--in-border);color:var(--green)}
+    .ett.out.active{background:var(--out-bg);border-color:var(--out-border);color:var(--red)}
 
-    /* Conv rows */
-    .conv-section{display:none;margin-top:.5rem}
-    .conv-section.show{display:block}
-    .conv-item{display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem;flex-wrap:wrap}
-    .conv-qty{flex:1;min-width:60px;padding:.55rem .7rem;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.82rem;outline:none}
-    .conv-qty:focus{border-color:var(--green)}
-    .conv-unit-sel{flex:1;min-width:80px;padding:.55rem .7rem;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.82rem;outline:none;cursor:pointer;-webkit-appearance:none}
-    .conv-del{width:26px;height:26px;border-radius:7px;background:var(--red-dim);border:1px solid rgba(255,69,58,.25);cursor:pointer;color:var(--red);font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
-    .add-conv-btn{font-family:inherit;font-size:.78rem;color:var(--blue);background:none;border:none;cursor:pointer;padding:.2rem 0}
+    /* Entry preview */
+    .entry-preview{
+      font-size:.8rem;padding:.65rem .85rem;border-radius:9px;
+      margin-bottom:.82rem;line-height:1.55;display:none;
+    }
+    .entry-preview.in{display:block;background:var(--in-bg);border:1px solid var(--in-border);color:var(--green)}
+    .entry-preview.out{display:block;background:var(--out-bg);border:1px solid var(--out-border);color:var(--red)}
+
+    /* Modal actions */
+    .modal-msg{font-size:.75rem;text-align:center;min-height:1.1em;margin-bottom:.72rem}
+    .modal-actions{display:flex;gap:.6rem}
+    .btn-primary{
+      flex:1;padding:.82rem;font-family:'Space Grotesk',sans-serif;font-weight:700;
+      font-size:.88rem;color:#000;background:var(--green);border:none;border-radius:10px;
+      cursor:pointer;transition:opacity .15s,transform .15s;
+    }
+    .btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+    .btn-secondary{
+      padding:.82rem 1.15rem;font-family:inherit;font-weight:600;font-size:.84rem;
+      color:var(--text2);background:var(--card2);border:1px solid var(--border);
+      border-radius:10px;cursor:pointer;transition:all .15s;
+    }
+    .btn-secondary:hover{background:var(--card3);color:var(--text)}
+    .btn-danger{
+      flex:1;padding:.82rem;font-family:'Space Grotesk',sans-serif;font-weight:700;
+      font-size:.88rem;color:var(--red);background:var(--red-dim);
+      border:1.5px solid rgba(255,69,58,.3);border-radius:10px;cursor:pointer;transition:all .15s;
+    }
+    .btn-danger:hover{background:rgba(255,69,58,.2)}
 
     /* Toast */
-    .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:#1c1c1e;border:1px solid var(--border2);color:var(--text);font-size:.82rem;padding:.65rem 1.2rem;border-radius:10px;z-index:999;opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.7)}
+    .toast{
+      position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);
+      background:#1c1c1e;border:1px solid var(--border2);color:var(--text);
+      font-size:.82rem;padding:.65rem 1.3rem;border-radius:10px;z-index:999;
+      opacity:0;transition:all .28s cubic-bezier(.16,1,.3,1);
+      white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.7);
+    }
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.success{border-color:rgba(48,209,88,.3);color:var(--green)}
     .toast.error{border-color:rgba(255,69,58,.3);color:var(--red)}
 
-    .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.28rem}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Spinner */
+    .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,.22);border-top-color:#000;border-radius:50%;animation:doSpin .7s linear infinite;vertical-align:middle;margin-right:.28rem}
+    @keyframes doSpin{to{transform:rotate(360deg)}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
     @media(max-width:480px){
-      .products-list{padding:.75rem .85rem 5rem}
-      .entries-list{padding:.75rem .85rem 5rem}
-      .product-card{padding:.85rem .9rem}
-      .entry-card{padding:.75rem .85rem}
+      .products-wrap,.entries-wrap{padding:.75rem .85rem 5rem}
+      .product-card,.entry-card{padding:.82rem .9rem}
+      .pd-actions{gap:.35rem}
     }
-
   </style>
 </head>
 <body>
 
-<!-- ══════ TOP BAR ══════ -->
+<!-- ══════════ TOPBAR ══════════ -->
 <header class="topbar">
-  <div class="topbar-left">
+  <div class="tb-left">
     <a href="dashboard.html" class="back-btn" id="topbarBack" title="Back">←</a>
     <a href="dashboard.html" class="tb-logo">⚡</a>
-    <div class="tb-godown-name" id="tbGodownName">Loading…</div>
+    <div class="tb-sep"></div>
+    <div class="tb-godown" id="tbGodownName">Loading…</div>
   </div>
 </header>
 
@@ -225,97 +501,103 @@
 ══════════════════════════════════════ -->
 <div id="productsView" class="view active">
 
-  <!-- Sticky header -->
-  <div class="products-sticky">
+  <div class="ps-sticky">
     <div class="ps-top">
-      <div class="ps-title" id="psTitle">Godown</div>
-      <button class="add-product-btn" id="addProductTopBtn" onclick="openAddProduct()">＋ Add Product</button>
+      <div class="ps-name" id="psTitle">Godown</div>
+      <button class="add-btn" id="addProductTopBtn" onclick="openAddProduct()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Product
+      </button>
     </div>
     <div class="search-wrap">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon">⌕</span>
       <input class="search-inp" id="searchInp" type="text" placeholder="Search products…" oninput="filterProducts()" />
     </div>
-    <div class="ps-stats">
+    <div class="ps-chips">
       <div class="ps-chip">📦 <b id="sc-total">0</b> products</div>
       <div class="ps-chip">📥 Total IN: <b id="sc-in">0</b></div>
       <div class="ps-chip">📤 Total OUT: <b id="sc-out">0</b></div>
     </div>
   </div>
 
-  <!-- Products list -->
-  <div class="products-list" id="productsList"></div>
+  <div class="products-wrap" id="productsList"></div>
 
-  <!-- Empty state -->
   <div class="empty-products" id="emptyProducts">
-    <div class="ep-icon">📦</div>
+    <span class="ep-icon">📦</span>
     <div class="ep-title">No products yet</div>
-    <div class="ep-sub">Add your first product to start tracking inventory</div>
-    <button class="ep-btn" onclick="openAddProduct()">＋ Add Product</button>
+    <div class="ep-sub">Add your first product to start tracking inventory in this godown.</div>
+    <button class="ep-add-btn" onclick="openAddProduct()">＋ Add Product</button>
   </div>
+
 </div>
 
 <!-- ══════════════════════════════════════
-     VIEW 2 — PRODUCT DETAIL (entries)
+     VIEW 2 — PRODUCT DETAIL
 ══════════════════════════════════════ -->
 <div id="productView" class="view">
 
-  <!-- Sticky product header -->
-  <div class="product-sticky">
+  <div class="pd-sticky">
 
-    <!-- Name row: back + name + IN/OUT + edit/delete -->
-    <div class="pv-header">
-      <button class="pv-back" onclick="backToProducts()">←</button>
-      <div class="pv-title-wrap">
-        <div class="pv-name" id="pvName">Product</div>
-        <div class="pv-sub" id="pvSub">—</div>
+    <!-- Name + actions row -->
+    <div class="pd-name-row">
+      <button class="pd-back" onclick="backToProducts()">←</button>
+      <div class="pd-title-block">
+        <div class="pd-name" id="pvName">Product</div>
+        <div class="pd-sub" id="pvSub">—</div>
       </div>
-      <!-- IN/OUT inline with name on desktop -->
-      <div class="pv-actions">
-        <button class="ae-btn in" onclick="openEntry('in')">📥 IN</button>
-        <button class="ae-btn out" onclick="openEntry('out')">📤 OUT</button>
-        <button class="pv-icon-btn" onclick="openEditProduct()" title="Edit">✏️</button>
-        <button id="pvDeleteBtn" class="pv-icon-btn red" onclick="confirmDeleteProduct()" title="Delete">🗑</button>
+      <div class="pd-actions">
+        <button class="pd-btn in" onclick="openEntry('in')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          IN
+        </button>
+        <button class="pd-btn out" onclick="openEntry('out')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="8 8 12 12 16 8"/><line x1="12" y1="12" x2="12" y2="3"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          OUT
+        </button>
+        <button class="pd-icon-btn" onclick="openEditProduct()" title="Edit product">✏️</button>
+        <button class="pd-icon-btn del" id="pvDeleteBtn" onclick="confirmDeleteProduct()" title="Delete product">🗑</button>
       </div>
     </div>
 
     <!-- Stock banner -->
-    <div class="stock-banner">
+    <div class="pd-stock-banner">
       <div>
-        <div class="sb-label">Current Stock</div>
-        <div class="sb-stock">
-          <div class="sb-num" id="sbNum">0</div>
-          <div class="sb-unit" id="sbUnit">—</div>
+        <div class="stock-label">Current Stock</div>
+        <div class="stock-row">
+          <div class="stock-num" id="pvStockNum">0</div>
+          <div class="stock-unit" id="pvStockUnit">—</div>
         </div>
       </div>
-      <div class="sb-conversions" id="sbConversions"></div>
+      <div class="conv-chips" id="pvConvChips"></div>
+    </div>
+
+  </div>
+
+  <!-- Entries -->
+  <div class="entries-wrap" id="entriesList">
+    <div class="empty-entries" id="emptyEntries">
+      <span class="empty-entries-icon">📋</span>
+      <span>No entries yet — use IN or OUT above to log a stock movement.</span>
     </div>
   </div>
 
-  <!-- Entries list -->
-  <div class="entries-list" id="entriesList">
-    <div class="empty-entries" id="emptyEntries">
-      <span class="ep-icon">📋</span>
-      No entries yet — add your first stock movement above
-    </div>
-  </div>
 </div>
 
-<!-- ══════════ TOAST ══════════ -->
+<!-- ══ TOAST ══ -->
 <div class="toast" id="toast"></div>
 
-<!-- ══════════ ADD / EDIT PRODUCT MODAL ══════════ -->
+<!-- ══════════ PRODUCT MODAL ══════════ -->
 <div class="modal-overlay" id="productModal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-head">
       <div>
         <div class="modal-title" id="productModalTitle">Add Product</div>
-        <div class="modal-sub">Fill in the product details</div>
+        <div class="modal-sub">Fill in the product details below</div>
       </div>
       <button class="modal-close" onclick="closeModal('productModal')">✕</button>
     </div>
     <div class="modal-body">
-
       <div class="mf">
         <label>Product Name</label>
         <div class="mf-wrap">
@@ -323,15 +605,13 @@
           <input type="text" id="pm-name" placeholder="e.g. 3kW Inverter" />
         </div>
       </div>
-
       <div class="mf">
         <label>Description (optional)</label>
         <div class="mf-wrap">
           <span class="mf-icon">📝</span>
-          <textarea id="pm-desc" placeholder="Optional notes about this product…" style="padding-left:2.5rem;min-height:60px;"></textarea>
+          <textarea id="pm-desc" placeholder="Notes about this product…" style="padding-left:1rem;"></textarea>
         </div>
       </div>
-
       <div class="mf">
         <label>Base Unit</label>
         <div class="mf-wrap">
@@ -353,29 +633,22 @@
           </select>
         </div>
       </div>
-
-      <!-- Advanced Conversion -->
       <div class="toggle-row">
-        <div class="ti">
-          <div class="ti-title">Advanced Unit Conversions</div>
-          <div class="ti-sub">Define how units relate to each other</div>
+        <div>
+          <div class="tr-title">Advanced Unit Conversions</div>
+          <div class="tr-sub">e.g. 1 kg = 20 pieces — auto-converts on entry</div>
         </div>
         <label class="sw">
           <input type="checkbox" id="convToggle" onchange="toggleConversions()" />
           <div class="sw-track"></div>
         </label>
       </div>
-
       <div class="conv-section" id="convSection">
         <div class="conv-list" id="convList"></div>
         <button class="add-conv-btn" onclick="addConvRow()">＋ Add Conversion</button>
-        <div style="font-size:0.72rem;color:var(--text3);margin-top:0.5rem;">
-          e.g. 1 kg = 20 piece — users can enter in any unit and stock auto-converts
-        </div>
+        <div class="conv-hint">1 base-unit = X other-unit. Users can enter in any unit; stock auto-converts.</div>
       </div>
-
       <div class="modal-msg" id="productModalMsg"></div>
-
       <div class="modal-actions">
         <button class="btn-secondary" onclick="closeModal('productModal')">Cancel</button>
         <button class="btn-primary" id="productModalBtn" onclick="saveProduct()">Add Product</button>
@@ -384,7 +657,7 @@
   </div>
 </div>
 
-<!-- ══════════ ADD ENTRY MODAL ══════════ -->
+<!-- ══════════ ENTRY MODAL ══════════ -->
 <div class="modal-overlay" id="entryModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -396,30 +669,23 @@
       <button class="modal-close" onclick="closeModal('entryModal')">✕</button>
     </div>
     <div class="modal-body">
-
-      <!-- IN / OUT tabs -->
-      <div class="entry-type-tabs">
-        <button class="ett-btn in active" id="ettIn" onclick="setEntryType('in')">📥 Stock IN</button>
-        <button class="ett-btn out" id="ettOut" onclick="setEntryType('out')">📤 Stock OUT</button>
+      <div class="entry-tabs">
+        <button class="ett in active" id="ettIn" onclick="setEntryType('in')">📥 Stock IN</button>
+        <button class="ett out" id="ettOut" onclick="setEntryType('out')">📤 Stock OUT</button>
       </div>
-
-      <!-- Qty + Unit -->
-      <div class="qty-row">
+      <div class="qty-grid">
         <div class="mf">
           <label>Quantity</label>
-          <input type="number" id="em-qty" min="0.01" step="any" placeholder="e.g. 100" oninput="updateEntryPreview()" />
+          <input type="number" id="em-qty" min="0.01" step="any" placeholder="e.g. 100" oninput="updateEntryPreview()" style="padding-left:1rem;" />
         </div>
         <div class="mf">
           <label>Unit</label>
-          <select id="em-unit" onchange="updateEntryPreview()">
+          <select id="em-unit" onchange="updateEntryPreview()" style="padding-left:1rem;">
             <option value="">—</option>
           </select>
         </div>
       </div>
-
-      <!-- Entry preview -->
-      <div class="entry-preview hidden" id="entryPreview"></div>
-
+      <div class="entry-preview" id="entryPreview"></div>
       <div class="mf">
         <label>Note (optional)</label>
         <div class="mf-wrap">
@@ -427,9 +693,7 @@
           <input type="text" id="em-note" placeholder="e.g. Received from Delhi supplier" oninput="updateEntryPreview()" />
         </div>
       </div>
-
       <div class="modal-msg" id="entryModalMsg"></div>
-
       <div class="modal-actions">
         <button class="btn-secondary" onclick="closeModal('entryModal')">Cancel</button>
         <button class="btn-primary" id="entryModalBtn" onclick="saveEntry()">Add Entry</button>
@@ -438,13 +702,15 @@
   </div>
 </div>
 
-<!-- ══════════ DELETE CONFIRM MODAL ══════════ -->
+<!-- ══════════ DELETE PRODUCT MODAL ══════════ -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal" style="max-width:400px;">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div><div class="modal-title" style="color:var(--red);">Delete Product?</div>
-      <div class="modal-sub" id="deleteModalSub">This will remove all entries too.</div></div>
+      <div>
+        <div class="modal-title" style="color:var(--red);">Delete Product?</div>
+        <div class="modal-sub" id="deleteModalSub">This will remove all entries too.</div>
+      </div>
       <button class="modal-close" onclick="closeModal('deleteModal')">✕</button>
     </div>
     <div class="modal-body">
@@ -463,38 +729,38 @@
   import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, collection, query, where, onSnapshot, orderBy, getDocs, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
-    authDomain: "store-management-nexus.firebaseapp.com",
-    projectId: "store-management-nexus",
-    storageBucket: "store-management-nexus.firebasestorage.app",
+    apiKey:            "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
+    authDomain:        "store-management-nexus.firebaseapp.com",
+    projectId:         "store-management-nexus",
+    storageBucket:     "store-management-nexus.firebasestorage.app",
     messagingSenderId: "263693510395",
-    appId: "1:263693510395:web:47a0485221405dbb6fb25e",
+    appId:             "1:263693510395:web:47a0485221405dbb6fb25e",
   };
-  const app = initializeApp(firebaseConfig);
+  const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const db = getFirestore(app);
+  const db   = getFirestore(app);
 
-  // State
-  let currentUser = null;
-  let godownId = null;
-  let godownData = null;
-  let products = [];
+  let currentUser     = null;
+  let godownId        = null;
+  let godownData      = null;
+  let products        = [];
   let currentProductId = null;
-  let currentProduct = null;
-  let entries = [];
-  let entryType = 'in';
-  let editMode = false;   // product edit mode
-  let convRows = [];      // conversions UI state
+  let currentProduct  = null;
+  let entries         = [];
+  let entryType       = 'in';
+  let editMode        = false;
+  let convRows        = [];
+  let entriesUnsubscribe = null;
 
-  window._db = db;
+  window._db   = db;
   window._auth = auth;
 
   /* ── URL PARAM ── */
   const params = new URLSearchParams(window.location.search);
   godownId = params.get('id');
-  if (!godownId) { window.location.href = 'dashboard.html'; }
+  if (!godownId) window.location.href = 'dashboard.html';
 
-  /* ── AUTH ── */
+  /* ── AUTH GUARD ── */
   onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'login.html'; return; }
     const uDoc = await getDoc(doc(db, 'users', user.uid));
@@ -502,7 +768,6 @@
     currentUser = { uid: user.uid, ...uDoc.data() };
     window._currentUser = () => currentUser;
 
-    // Check godown access
     const gdDoc = await getDoc(doc(db, 'godowns', godownId));
     if (!gdDoc.exists()) { window.location.href = 'dashboard.html'; return; }
     godownData = gdDoc.data();
@@ -511,11 +776,9 @@
       || (godownData.staffAccess && godownData.staffAccess[currentUser.uid]);
     if (!hasAccess) { window.location.href = 'dashboard.html'; return; }
 
-    // Set godown name in topbar
     document.getElementById('tbGodownName').textContent = godownData.name;
-    document.getElementById('psTitle').textContent = godownData.name;
+    document.getElementById('psTitle').textContent       = godownData.name;
 
-    // Role-based UI
     const canManage = currentUser.role === 'owner' || currentUser.role === 'manager';
     if (!canManage) {
       document.getElementById('addProductTopBtn').style.display = 'none';
@@ -525,7 +788,7 @@
     loadProducts();
   });
 
-  /* ── LOAD PRODUCTS ── */
+  /* ── PRODUCTS ── */
   function loadProducts() {
     const q = query(collection(db, 'products'), where('godownId', '==', godownId));
     onSnapshot(q, snap => {
@@ -533,25 +796,23 @@
       window._products = products;
       renderProducts();
 
-      // Rerender current product if open
       if (currentProductId) {
         currentProduct = products.find(p => p.id === currentProductId);
         if (currentProduct) renderProductHeader();
       }
 
-      // Stats
       let totalIn = 0, totalOut = 0;
       products.forEach(p => { totalIn += (p.totalIn || 0); totalOut += (p.totalOut || 0); });
       document.getElementById('sc-total').textContent = products.length;
-      document.getElementById('sc-in').textContent = totalIn;
-      document.getElementById('sc-out').textContent = totalOut;
+      document.getElementById('sc-in').textContent    = totalIn;
+      document.getElementById('sc-out').textContent   = totalOut;
     });
   }
 
   function renderProducts() {
-    const list = document.getElementById('productsList');
+    const list  = document.getElementById('productsList');
     const empty = document.getElementById('emptyProducts');
-    const search = document.getElementById('searchInp').value.toLowerCase();
+    const search = (document.getElementById('searchInp')?.value || '').toLowerCase();
 
     list.innerHTML = '';
     const filtered = products.filter(p =>
@@ -574,28 +835,29 @@
         card.innerHTML = `
           <div class="pc-icon">${getProductEmoji(p.unit)}</div>
           <div class="pc-info">
-            <div class="pc-name">${p.name}</div>
-            ${p.description ? `<div class="pc-desc">${p.description}</div>` : ''}
+            <div class="pc-name">${escHtml(p.name)}</div>
+            ${p.description ? `<div class="pc-desc">${escHtml(p.description)}</div>` : ''}
             <div class="pc-unit">${p.unit}</div>
           </div>
           <div class="pc-right">
-            <div class="pc-stock-num" style="color:${stockColor}">${formatNum(stock)}</div>
-            <div class="pc-stock-unit">${p.unit}</div>
-            <div class="pc-entries">${p.entryCount || 0} entries</div>
+            <div class="pc-stock" style="color:${stockColor}">${formatNum(stock)}</div>
+            <div class="pc-unit-lbl">${p.unit}</div>
+            <div class="pc-entries-lbl">${p.entryCount || 0} entries</div>
           </div>
-          <div class="pc-arrow">›</div>
+          <div class="pc-chevron">›</div>
         `;
         list.appendChild(card);
       });
     }
   }
 
-  /* ── OPEN PRODUCT DETAIL ── */
+  window._renderProducts = renderProducts;
+
+  /* ── PRODUCT DETAIL ── */
   window.openProductDetail = function(productId) {
     currentProductId = productId;
-    currentProduct = products.find(p => p.id === productId);
+    currentProduct   = products.find(p => p.id === productId);
     if (!currentProduct) return;
-
     renderProductHeader();
     loadEntries(productId);
     showView('productView');
@@ -603,76 +865,61 @@
 
   function renderProductHeader() {
     const p = currentProduct;
-    document.getElementById('pvName').textContent = p.name;
-    document.getElementById('pvSub').textContent = p.description || (p.unit + ' · ' + (p.entryCount || 0) + ' entries');
-    document.getElementById('sbNum').textContent = formatNum(p.currentStock || 0);
-    document.getElementById('sbUnit').textContent = p.unit;
+    document.getElementById('pvName').textContent      = p.name;
+    document.getElementById('pvSub').textContent       = p.description || `${p.unit} · ${p.entryCount || 0} entries`;
+    document.getElementById('pvStockNum').textContent  = formatNum(p.currentStock || 0);
+    document.getElementById('pvStockUnit').textContent = p.unit;
 
-    // Conversion chips in banner
-    const convWrap = document.getElementById('sbConversions');
-    convWrap.innerHTML = '';
-    if (p.conversions && p.conversions.length > 0) {
+    // Color stock number by level
+    const stock = p.currentStock || 0;
+    document.getElementById('pvStockNum').style.color =
+      stock <= 0 ? 'var(--red)' : stock < 10 ? 'var(--amber)' : 'var(--green)';
+
+    // Conversion chips
+    const chips = document.getElementById('pvConvChips');
+    chips.innerHTML = '';
+    if (p.conversions?.length) {
       p.conversions.forEach(c => {
-        const chip = document.createElement('div');
-        chip.className = 'sb-conv-chip';
-        chip.textContent = `1 ${p.unit} = ${c.qty} ${c.unit}`;
-        convWrap.appendChild(chip);
+        const ch = document.createElement('div');
+        ch.className = 'conv-chip';
+        ch.textContent = `1 ${p.unit} = ${c.qty} ${c.unit}`;
+        chips.appendChild(ch);
       });
     }
   }
 
-  /* ── LOAD ENTRIES ── */
+  /* ── ENTRIES ── */
   function loadEntries(productId) {
-    // Fetch all entries for this product (including deleted — they become audit log)
-    const q = query(
-      collection(db, 'entries'),
-      where('productId', '==', productId)
-    );
-    onSnapshot(q, snap => {
+    if (entriesUnsubscribe) { entriesUnsubscribe(); entriesUnsubscribe = null; }
+    const q = query(collection(db, 'entries'), where('productId', '==', productId));
+    entriesUnsubscribe = onSnapshot(q, snap => {
       entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      entries.sort((a, b) => {
-        const getMs = (e) => {
-          if (!e.createdAt) return Date.now();
-          if (e.createdAt.toDate) return e.createdAt.toDate().getTime();
-          return new Date(e.createdAt).getTime();
-        };
-        return getMs(b) - getMs(a);
-      });
+      entries.sort((a, b) => getMs(b) - getMs(a));
       renderEntries();
-      // Update current product stock display
-      if (currentProduct) {
-        const liveProduct = products.find(p => p.id === currentProductId);
-        if (liveProduct) {
-          currentProduct = liveProduct;
-          renderProductHeader();
-        }
-      }
-    }, (err) => {
-      console.error('Entries listener error:', err);
+    }, err => {
+      console.error('Entries error:', err);
       showToast('Failed to load entries. Please reload.', 'error');
     });
   }
 
-  function renderEntries() {
-    const list = document.getElementById('entriesList');
+  function getMs(e) {
+    if (!e.createdAt) return 0;
+    if (e.createdAt.toDate) return e.createdAt.toDate().getTime();
+    return new Date(e.createdAt).getTime();
+  }
 
-    // Remove all children EXCEPT emptyEntries (don't use innerHTML='' which destroys the element)
+  function renderEntries() {
+    const list  = document.getElementById('entriesList');
+    const empty = document.getElementById('emptyEntries');
+
+    // Remove all cards except the empty-entries element
     Array.from(list.children).forEach(child => {
       if (child.id !== 'emptyEntries') child.remove();
     });
 
-    // Re-create emptyEntries if it got destroyed somehow
-    let empty = document.getElementById('emptyEntries');
-    if (!empty) {
-      empty = document.createElement('div');
-      empty.id = 'emptyEntries';
-      empty.className = 'empty-entries';
-      empty.innerHTML = '<span class="ep-icon">📭</span>No entries yet — add your first stock movement above';
-      list.appendChild(empty);
-    }
-
+    const visible = entries.filter(e => !e.deleted);
     if (entries.length === 0) {
-      empty.style.display = 'block';
+      empty.style.display = '';
       return;
     }
     empty.style.display = 'none';
@@ -683,84 +930,81 @@
     const groups = {};
     entries.forEach(e => {
       const d = e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt || Date.now());
-      const dateKey = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push({ ...e, _date: d });
+      const key = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+      if (!groups[key]) groups[key] = [];
+      groups[key].push({ ...e, _date: d });
     });
 
     Object.entries(groups).forEach(([date, es]) => {
-      const header = document.createElement('div');
-      header.className = 'date-group-header';
-      header.textContent = date;
-      list.appendChild(header);
+      const hdr = document.createElement('div');
+      hdr.className = 'date-hdr';
+      hdr.textContent = date;
+      list.appendChild(hdr);
 
       es.forEach((e, i) => {
         const card = document.createElement('div');
+        card.style.animationDelay = `${i * 0.04}s`;
+        const time = e._date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
 
-        // Deleted entries render as permanent audit log — not deletable again
         if (e.deleted) {
-          card.className = 'entry-card entry-deleted';
-          card.style.animationDelay = `${i * 0.04}s`;
-          const time = e._date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+          card.className = 'entry-card deleted-entry';
           card.innerHTML = `
-            <div class="ec-type" style="opacity:0.5;">🗑</div>
+            <div class="ec-icon">🗑</div>
             <div class="ec-info">
-              <div class="ec-text" style="color:var(--text3);text-decoration:line-through;">
-                <b>${e.deletedBy || e.staffName}</b> deleted ${formatNum(e.qtyInBase)} ${currentProduct?.unit || ''} in <b>${currentProduct?.name || ''}</b> from godam
+              <div class="ec-text" style="text-decoration:line-through;color:var(--text3);">
+                <b>${escHtml(e.deletedBy || e.staffName)}</b> deleted ${formatNum(e.qtyInBase)} ${currentProduct?.unit || ''} in <b>${escHtml(currentProduct?.name || '')}</b>
               </div>
-              <div class="ec-meta">${time} · Originally by ${e.staffName}</div>
+              <div class="ec-meta">${time} · Originally by ${escHtml(e.staffName)}</div>
             </div>
           `;
-          list.appendChild(card);
-          return;
+        } else {
+          card.className = `entry-card ${e.type}`;
+          const dirWord = e.type === 'in' ? 'added to' : 'removed from';
+          const symbol  = e.type === 'in' ? '+' : '-';
+          const note    = e.note ? ` — ${escHtml(e.note)}` : '';
+
+          card.innerHTML = `
+            <div class="ec-icon">${e.type === 'in' ? '📥' : '📤'}</div>
+            <div class="ec-info">
+              <div class="ec-text"><b>${escHtml(e.staffName)}</b> ${dirWord} godown${note}</div>
+              <div class="ec-meta">${time}</div>
+            </div>
+            <div class="ec-qty">
+              <div class="ec-qty-num">${symbol}${formatNum(e.qtyInBase)}</div>
+              <div class="ec-qty-unit">${currentProduct?.unit || ''}</div>
+              ${e.enteredUnit && e.enteredUnit !== currentProduct?.unit
+                ? `<div class="ec-qty-conv">(${formatNum(e.enteredQty)} ${e.enteredUnit})</div>` : ''}
+            </div>
+            ${canDelete ? `
+            <button class="ec-del" title="Delete entry"
+              onclick="confirmDeleteEntry('${e.id}',${e.qtyInBase},'${e.type}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+              </svg>
+            </button>` : ''}
+          `;
         }
-
-        card.className = `entry-card ${e.type}`;
-        card.style.animationDelay = `${i * 0.04}s`;
-
-        const time = e._date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-        const dirWord = e.type === 'in' ? 'added to' : 'removed from';
-        const symbol = e.type === 'in' ? '+' : '-';
-        const note = e.note ? ` — ${e.note}` : '';
-
-        card.innerHTML = `
-          <div class="ec-type">${e.type === 'in' ? '📥' : '📤'}</div>
-          <div class="ec-info">
-            <div class="ec-text"><b>${e.staffName}</b> ${dirWord} godown${note}</div>
-            <div class="ec-meta">${time}</div>
-          </div>
-          <div class="ec-qty">
-            <div class="ec-qty-num">${symbol}${formatNum(e.qtyInBase)}</div>
-            <div class="ec-qty-unit">${currentProduct?.unit || ''}</div>
-            ${e.enteredUnit && e.enteredUnit !== currentProduct?.unit
-              ? `<div class="ec-qty-unit">(${formatNum(e.enteredQty)} ${e.enteredUnit})</div>` : ''}
-          </div>
-          ${canDelete ? `<button class="ec-del-btn" title="Delete entry" onclick="confirmDeleteEntry('${e.id}',${e.qtyInBase},'${e.type}')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          </button>` : ''}
-        `;
         list.appendChild(card);
       });
     });
   }
 
-  /* ── BACK TO PRODUCTS ── */
+  /* ── BACK ── */
   window.backToProducts = function() {
-    currentProductId = null;
-    currentProduct = null;
-    entries = [];
+    if (entriesUnsubscribe) { entriesUnsubscribe(); entriesUnsubscribe = null; }
+    currentProductId = null; currentProduct = null; entries = [];
     showView('productsView');
   };
 
-  /* ── ADD/EDIT PRODUCT ── */
+  /* ── ADD / EDIT PRODUCT ── */
   window.openAddProduct = function() {
-    editMode = false;
-    convRows = [];
+    editMode = false; convRows = [];
     document.getElementById('productModalTitle').textContent = 'Add Product';
-    document.getElementById('productModalBtn').textContent = 'Add Product';
-    document.getElementById('pm-name').value = '';
-    document.getElementById('pm-desc').value = '';
-    document.getElementById('pm-unit').value = 'piece';
+    document.getElementById('productModalBtn').textContent   = 'Add Product';
+    document.getElementById('pm-name').value  = '';
+    document.getElementById('pm-desc').value  = '';
+    document.getElementById('pm-unit').value  = 'piece';
     document.getElementById('convToggle').checked = false;
     document.getElementById('convSection').classList.remove('show');
     document.getElementById('convList').innerHTML = '';
@@ -773,15 +1017,13 @@
     editMode = true;
     const p = currentProduct;
     convRows = p.conversions ? [...p.conversions] : [];
-
     document.getElementById('productModalTitle').textContent = 'Edit Product';
-    document.getElementById('productModalBtn').textContent = 'Save Changes';
-    document.getElementById('pm-name').value = p.name;
-    document.getElementById('pm-desc').value = p.description || '';
-    document.getElementById('pm-unit').value = p.unit || 'piece';
+    document.getElementById('productModalBtn').textContent   = 'Save Changes';
+    document.getElementById('pm-name').value  = p.name;
+    document.getElementById('pm-desc').value  = p.description || '';
+    document.getElementById('pm-unit').value  = p.unit || 'piece';
     document.getElementById('convToggle').checked = p.conversionsEnabled || convRows.length > 0;
     document.getElementById('productModalMsg').textContent = '';
-
     if (convRows.length > 0) {
       document.getElementById('convSection').classList.add('show');
       document.getElementById('convList').innerHTML = '';
@@ -794,43 +1036,40 @@
   };
 
   window.saveProduct = async function() {
-    const name = document.getElementById('pm-name').value.trim();
-    const desc = document.getElementById('pm-desc').value.trim();
-    const unit = document.getElementById('pm-unit').value;
+    const name        = document.getElementById('pm-name').value.trim();
+    const desc        = document.getElementById('pm-desc').value.trim();
+    const unit        = document.getElementById('pm-unit').value;
     const convEnabled = document.getElementById('convToggle').checked;
-    const btn = document.getElementById('productModalBtn');
+    const btn         = document.getElementById('productModalBtn');
 
     if (!name) { pmMsg('⚠ Product name is required.', 'error'); return; }
 
-    // Collect conversions
     const conversions = [];
     if (convEnabled) {
       const rows = document.querySelectorAll('#convList .conv-item');
       for (const row of rows) {
-        const qty = parseFloat(row.querySelector('.conv-qty').value);
+        const qty     = parseFloat(row.querySelector('.conv-qty').value);
         const convUnit = row.querySelector('.conv-unit-sel').value;
         if (!qty || !convUnit) { pmMsg('⚠ Fill all conversion rows or remove empty ones.', 'error'); return; }
         conversions.push({ qty, unit: convUnit });
       }
-      if (conversions.length === 0) { pmMsg('⚠ Add at least one conversion or turn off Advanced Conversions.', 'error'); return; }
+      if (!conversions.length) { pmMsg('⚠ Add at least one conversion or turn off the toggle.', 'error'); return; }
     }
 
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving…';
-
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Saving…';
     try {
       if (editMode && currentProductId) {
-        const p = currentProduct;
         const changeLog = [];
-        if (p.name !== name) changeLog.push(`renamed to "${name}"`);
-        conversions.forEach(c => { if (!p.conversions?.find(x => x.unit === c.unit)) changeLog.push(`added ${c.unit} conversion`); });
+        const prev = currentProduct;
+        if (prev.name !== name) changeLog.push(`renamed to "${name}"`);
+        if (prev.unit !== unit) changeLog.push(`unit changed to ${unit}`);
 
         await updateDoc(doc(db, 'products', currentProductId), {
           name, description: desc, unit, conversions, conversionsEnabled: convEnabled,
-          lastUpdated: new Date().toISOString(),
-          lastUpdatedBy: currentUser.name,
+          updatedAt: serverTimestamp(), updatedBy: currentUser.uid, updatedByName: currentUser.name,
         });
 
-        if (changeLog.length > 0) {
+        if (changeLog.length) {
           await addDoc(collection(db, 'notifications'), {
             message: `${currentUser.name} ${changeLog.join(', ')} on "${name}".`,
             companyId: currentUser.companyId || currentUser.uid,
@@ -850,9 +1089,7 @@
         showToast('Product added ✓', 'success');
       }
       closeModal('productModal');
-    } catch (e) {
-      pmMsg('❌ Failed. Try again.', 'error');
-    }
+    } catch (e) { pmMsg('❌ Failed. Try again.', 'error'); }
     btn.disabled = false; btn.textContent = editMode ? 'Save Changes' : 'Add Product';
   };
 
@@ -865,13 +1102,13 @@
   /* ── DELETE PRODUCT ── */
   window.confirmDeleteProduct = function() {
     if (!currentProduct) return;
-    const canDelete = currentUser.role === 'owner' || currentUser.role === 'manager';
-    if (!canDelete) { showToast('Only owners/managers can delete products', 'error'); return; }
+    if (currentUser.role !== 'owner' && currentUser.role !== 'manager') {
+      showToast('Only owners/managers can delete products', 'error'); return;
+    }
     document.getElementById('deleteModalSub').textContent = `Delete "${currentProduct.name}" and all its entries?`;
     document.getElementById('confirmDeleteBtn').onclick = async () => {
       try {
-        // Delete all entries first
-        const eq = query(collection(db, 'entries'), where('productId', '==', currentProductId));
+        const eq    = query(collection(db, 'entries'), where('productId', '==', currentProductId));
         const eSnap = await getDocs(eq);
         const batch = writeBatch(db);
         eSnap.docs.forEach(d => batch.delete(d.ref));
@@ -889,7 +1126,6 @@
   window.openEntry = function(type) {
     entryType = type;
     setEntryType(type);
-    // Populate unit dropdown with base unit + conversions
     const p = currentProduct;
     if (!p) return;
     const sel = document.getElementById('em-unit');
@@ -901,9 +1137,9 @@
         sel.appendChild(opt);
       });
     }
-    document.getElementById('em-qty').value = '';
-    document.getElementById('em-note').value = '';
-    document.getElementById('entryPreview').className = 'entry-preview hidden';
+    document.getElementById('em-qty').value   = '';
+    document.getElementById('em-note').value  = '';
+    document.getElementById('entryPreview').className = 'entry-preview';
     document.getElementById('entryModalMsg').textContent = '';
     openModal('entryModal');
   };
@@ -912,80 +1148,62 @@
     entryType = type;
     document.getElementById('ettIn').classList.toggle('active', type === 'in');
     document.getElementById('ettOut').classList.toggle('active', type === 'out');
-    document.getElementById('ettIn').classList.remove('out');
-    document.getElementById('ettOut').classList.remove('in');
     updateEntryPreview();
   };
 
   window.updateEntryPreview = function() {
-    const qty = parseFloat(document.getElementById('em-qty').value);
+    const qty  = parseFloat(document.getElementById('em-qty').value);
     const unit = document.getElementById('em-unit').value;
     const note = document.getElementById('em-note').value.trim();
-    const p = currentProduct;
-    const preview = document.getElementById('entryPreview');
-
-    if (!qty || !unit || !p) { preview.className = 'entry-preview hidden'; return; }
-
-    const baseQty = convertToBase(qty, unit, p);
-    const dirWord = entryType === 'in' ? 'added to' : 'removed from';
-    const noteStr = note ? ` — ${note}` : '';
-
-    preview.className = `entry-preview ${entryType}`;
-    const displayQty = unit !== p.unit ? `${qty} ${unit} (= ${formatNum(baseQty)} ${p.unit})` : `${formatNum(qty)} ${unit}`;
-    preview.innerHTML = `<b>${currentUser?.name || 'You'}</b> ${dirWord} ${displayQty} godown${noteStr}`;
+    const p    = currentProduct;
+    const prev = document.getElementById('entryPreview');
+    if (!qty || !unit || !p) { prev.className = 'entry-preview'; return; }
+    const baseQty    = convertToBase(qty, unit, p);
+    const dirWord    = entryType === 'in' ? 'added to' : 'removed from';
+    const noteStr    = note ? ` — ${escHtml(note)}` : '';
+    const displayQty = unit !== p.unit
+      ? `${qty} ${unit} (= ${formatNum(baseQty)} ${p.unit})`
+      : `${formatNum(qty)} ${unit}`;
+    prev.className = `entry-preview ${entryType}`;
+    prev.innerHTML = `<b>${escHtml(currentUser?.name || 'You')}</b> ${dirWord} ${displayQty} godown${noteStr}`;
   };
 
   window.saveEntry = async function() {
-    const qty = parseFloat(document.getElementById('em-qty').value);
+    const qty  = parseFloat(document.getElementById('em-qty').value);
     const unit = document.getElementById('em-unit').value;
     const note = document.getElementById('em-note').value.trim();
-    const btn = document.getElementById('entryModalBtn');
-    const p = currentProduct;
+    const btn  = document.getElementById('entryModalBtn');
+    const p    = currentProduct;
 
     if (!qty || qty <= 0) { emMsg('⚠ Enter a valid quantity.', 'error'); return; }
-    if (!unit) { emMsg('⚠ Select a unit.', 'error'); return; }
+    if (!unit)             { emMsg('⚠ Select a unit.', 'error'); return; }
 
     const baseQty = convertToBase(qty, unit, p);
-
-    // Check stock for OUT
     if (entryType === 'out' && baseQty > (p.currentStock || 0)) {
-      emMsg(`⚠ Only ${formatNum(p.currentStock)} ${p.unit} available in stock.`, 'error'); return;
+      emMsg(`⚠ Only ${formatNum(p.currentStock)} ${p.unit} available.`, 'error'); return;
     }
 
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving…';
-
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Saving…';
     try {
-      // Add entry doc
       await addDoc(collection(db, 'entries'), {
-        productId: currentProductId,
-        godownId, type: entryType,
-        enteredQty: qty, enteredUnit: unit,
-        qtyInBase: baseQty,
-        note,
+        productId: currentProductId, godownId, type: entryType,
+        enteredQty: qty, enteredUnit: unit, qtyInBase: baseQty, note,
         staffId: currentUser.uid, staffName: currentUser.name,
         companyId: currentUser.companyId || currentUser.uid,
         createdAt: serverTimestamp(),
       });
-
-      // Update product stock
-      const delta = entryType === 'in' ? baseQty : -baseQty;
+      const delta    = entryType === 'in' ? baseQty : -baseQty;
       const newStock = (p.currentStock || 0) + delta;
-      const totalIn = (p.totalIn || 0) + (entryType === 'in' ? baseQty : 0);
-      const totalOut = (p.totalOut || 0) + (entryType === 'out' ? baseQty : 0);
-
       await updateDoc(doc(db, 'products', currentProductId), {
         currentStock: newStock,
-        totalIn, totalOut,
+        totalIn:  (p.totalIn  || 0) + (entryType === 'in'  ? baseQty : 0),
+        totalOut: (p.totalOut || 0) + (entryType === 'out' ? baseQty : 0),
         entryCount: (p.entryCount || 0) + 1,
-        lastEntry: new Date().toISOString(),
-        lastEntryBy: currentUser.name,
+        lastEntry: new Date().toISOString(), lastEntryBy: currentUser.name,
       });
-
       closeModal('entryModal');
       showToast(entryType === 'in' ? '📥 Stock added!' : '📤 Stock removed!', 'success');
-    } catch (e) {
-      emMsg('❌ Failed. Try again.', 'error');
-    }
+    } catch (e) { emMsg('❌ Failed. Try again.', 'error'); }
     btn.disabled = false; btn.textContent = 'Add Entry';
   };
 
@@ -995,12 +1213,12 @@
     el.style.color = type === 'error' ? 'var(--red)' : 'var(--green)';
   }
 
-  /* ── DELETE ENTRY (with permanent audit log) ── */
+  /* ── DELETE ENTRY (soft delete / audit log) ── */
   window.confirmDeleteEntry = function(entryId, qty, type) {
     const p = currentProduct;
     if (!p) return;
     const dirWord = type === 'in' ? 'added' : 'removed';
-    if (!confirm(`Delete this entry? This will reverse the stock change (${dirWord} ${formatNum(qty)} ${p.unit}).\n\nA permanent audit record will remain.`)) return;
+    if (!confirm(`Delete this entry? Stock will be reversed (${dirWord} ${formatNum(qty)} ${p.unit}).\nA permanent audit record will remain.`)) return;
     deleteEntry(entryId, qty, type);
   };
 
@@ -1008,33 +1226,22 @@
     const p = currentProduct;
     if (!p) return;
     try {
-      // Reverse the stock
-      const delta = type === 'in' ? -qty : qty; // reverse the original operation
+      const delta    = type === 'in' ? -qty : qty;
       const newStock = Math.max(0, (p.currentStock || 0) + delta);
-
-      // Mark entry as deleted (permanent audit — do NOT hard delete)
       await updateDoc(doc(db, 'entries', entryId), {
-        deleted: true,
-        deletedBy: currentUser.name,
-        deletedAt: serverTimestamp(),
+        deleted: true, deletedBy: currentUser.name, deletedAt: serverTimestamp(),
       });
-
-      // Reverse stock on product
       await updateDoc(doc(db, 'products', currentProductId), {
         currentStock: newStock,
-        totalIn: type === 'in' ? Math.max(0, (p.totalIn || 0) - qty) : (p.totalIn || 0),
+        totalIn:  type === 'in'  ? Math.max(0, (p.totalIn  || 0) - qty) : (p.totalIn  || 0),
         totalOut: type === 'out' ? Math.max(0, (p.totalOut || 0) - qty) : (p.totalOut || 0),
         entryCount: Math.max(0, (p.entryCount || 0) - 1),
       });
-
-      // Notify
       const compId = currentUser.companyId || currentUser.uid;
       await addDoc(collection(db, 'notifications'), {
         message: `${currentUser.name} deleted ${formatNum(qty)} ${p.unit} entry in "${p.name}" from godam.`,
-        companyId: compId,
-        createdAt: serverTimestamp(),
+        companyId: compId, createdAt: serverTimestamp(),
       });
-
       showToast('Entry deleted. Audit record saved.', 'success');
     } catch (e) {
       console.error(e);
@@ -1042,52 +1249,42 @@
     }
   }
 
-  /* ── UNIT CONVERSION MATH ── */
+  /* ── UNIT CONVERSION ── */
   function convertToBase(qty, unit, product) {
     if (unit === product.unit) return qty;
     if (!product.conversions) return qty;
     const conv = product.conversions.find(c => c.unit === unit);
     if (!conv) return qty;
-    // 1 base = conv.qty of unit => 1 unit = 1/conv.qty base
     return qty / conv.qty;
   }
 
-  /* ── EXPOSE GLOBALS ── */
-  window._loadProducts = loadProducts;
+  window._loadProducts   = loadProducts;
   window._renderProducts = renderProducts;
-  window._products = products;
+  window._products       = products;
 </script>
 
-<!-- NON-MODULE HELPERS -->
+<!-- ══ NON-MODULE HELPERS ══ -->
 <script>
-  /* ── THEME: Dark only ── */
-  document.documentElement.setAttribute('data-theme', 'dark');
+  document.documentElement.removeAttribute('data-theme'); // dark only
 
-  /* ── VIEWS ── */
+  /* ── VIEW SWITCHING ── */
   function showView(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
-    // Update topbar back button behaviour
-    const backBtn = document.getElementById('topbarBack');
+    const back = document.getElementById('topbarBack');
     if (id === 'productView') {
-      backBtn.href = '#';
-      backBtn.onclick = (e) => { e.preventDefault(); backToProducts(); };
+      back.href = '#';
+      back.onclick = e => { e.preventDefault(); backToProducts(); };
     } else {
-      backBtn.href = 'dashboard.html';
-      backBtn.onclick = null;
+      back.href = 'dashboard.html';
+      back.onclick = null;
     }
   }
 
   /* ── MODALS ── */
-  function openModal(id) {
-    document.getElementById(id).classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-    document.body.style.overflow = '';
-  }
+  function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
   document.querySelectorAll('.modal-overlay').forEach(o => {
     o.addEventListener('click', e => { if (e.target === o) closeModal(o.id); });
   });
@@ -1095,35 +1292,26 @@
     if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
   });
 
-  /* ── FILTER PRODUCTS ── */
+  /* ── FILTER ── */
   function filterProducts() {
     if (window._renderProducts) window._renderProducts();
-    else {
-      const q = document.getElementById('searchInp').value.toLowerCase();
-      document.querySelectorAll('#productsList .product-card').forEach(c => {
-        c.style.display = c.textContent.toLowerCase().includes(q) ? '' : 'none';
-      });
-    }
   }
 
-  /* ── CONVERSION ROWS ── */
-  const UNIT_OPTIONS = ['piece','kg','gram','litre','ml','metre','box','packet','bundle','bag','ton','dozen','set'];
+  /* ── CONVERSIONS ── */
+  const UNITS = ['piece','kg','gram','litre','ml','metre','box','packet','bundle','bag','ton','dozen','set'];
 
-  function addConvRow(qty = '', unitVal = '', idx = null) {
-    const list = document.getElementById('convList');
+  function addConvRow(qty = '', unitVal = '') {
+    const list     = document.getElementById('convList');
+    const base     = document.getElementById('pm-unit').value || 'piece';
+    const options  = UNITS.filter(u => u !== base).map(u =>
+      `<option value="${u}" ${u === unitVal ? 'selected' : ''}>${u}</option>`
+    ).join('');
     const row = document.createElement('div');
     row.className = 'conv-item';
-
-    const baseUnit = document.getElementById('pm-unit').value || 'piece';
-    const unitsExcBase = UNIT_OPTIONS.filter(u => u !== baseUnit);
-
     row.innerHTML = `
-      <span style="font-size:0.8rem;color:var(--text2);flex-shrink:0;">1 ${baseUnit} =</span>
-      <input class="conv-qty" type="number" placeholder="qty" min="0.001" step="any" value="${qty}" style="max-width:80px;" />
-      <select class="conv-unit-sel">
-        <option value="">Unit…</option>
-        ${unitsExcBase.map(u => `<option value="${u}" ${u === unitVal ? 'selected' : ''}>${u}</option>`).join('')}
-      </select>
+      <span class="conv-lbl">1 ${base} =</span>
+      <input class="conv-qty" type="number" placeholder="qty" min="0.001" step="any" value="${qty}" />
+      <select class="conv-unit-sel"><option value="">Unit…</option>${options}</select>
       <button class="conv-del" onclick="this.closest('.conv-item').remove()" title="Remove">✕</button>
     `;
     list.appendChild(row);
@@ -1131,21 +1319,20 @@
 
   function toggleConversions() {
     const on = document.getElementById('convToggle').checked;
-    const section = document.getElementById('convSection');
-    section.classList.toggle('show', on);
+    document.getElementById('convSection').classList.toggle('show', on);
     if (on && document.getElementById('convList').children.length === 0) addConvRow();
   }
 
   function updateUnitLabel() {
-    // Rebuild conv rows with updated base unit label
-    const rows = document.querySelectorAll('#convList .conv-item');
     const base = document.getElementById('pm-unit').value;
-    rows.forEach(r => {
-      r.querySelector('span').textContent = `1 ${base} =`;
+    document.querySelectorAll('#convList .conv-item').forEach(r => {
+      r.querySelector('.conv-lbl').textContent = `1 ${base} =`;
       const sel = r.querySelector('.conv-unit-sel');
-      const curVal = sel.value;
+      const cur = sel.value;
       sel.innerHTML = `<option value="">Unit…</option>` +
-        UNIT_OPTIONS.filter(u => u !== base).map(u => `<option value="${u}" ${u === curVal ? 'selected' : ''}>${u}</option>`).join('');
+        UNITS.filter(u => u !== base).map(u =>
+          `<option value="${u}" ${u === cur ? 'selected' : ''}>${u}</option>`
+        ).join('');
     });
   }
 
@@ -1157,7 +1344,7 @@
     setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  /* ── HELPERS ── */
+  /* ── UTILS ── */
   function getProductEmoji(unit) {
     const map = { kg:'⚖️', gram:'⚖️', litre:'🫙', ml:'💧', metre:'📏', box:'📦', packet:'🗃️', bundle:'📦', bag:'🛍️', ton:'🏋️', dozen:'🥚', set:'🧰', piece:'📦' };
     return map[unit] || '📦';
@@ -1165,20 +1352,26 @@
   function formatNum(n) {
     if (n == null) return '0';
     const num = parseFloat(n);
-    return num % 1 === 0 ? num.toLocaleString('en-IN') : num.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    return num % 1 === 0
+      ? num.toLocaleString('en-IN')
+      : num.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+  }
+  function escHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // Expose globals
-  window.openModal = openModal;
-  window.closeModal = closeModal;
-  window.showView = showView;
-  window.showToast = showToast;
-  window.addConvRow = addConvRow;
+  /* ── EXPOSE ── */
+  window.openModal        = openModal;
+  window.closeModal       = closeModal;
+  window.showView         = showView;
+  window.showToast        = showToast;
+  window.addConvRow       = addConvRow;
   window.toggleConversions = toggleConversions;
-  window.updateUnitLabel = updateUnitLabel;
-  window.filterProducts = filterProducts;
-  window.getProductEmoji = getProductEmoji;
-  window.formatNum = formatNum;
+  window.updateUnitLabel  = updateUnitLabel;
+  window.filterProducts   = filterProducts;
+  window.getProductEmoji  = getProductEmoji;
+  window.formatNum        = formatNum;
+  window.escHtml          = escHtml;
 </script>
 </body>
 </html>
