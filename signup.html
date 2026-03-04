@@ -136,7 +136,6 @@
     </svg>
     SwiftStock
   </a>
-  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">☀️ Light</button>
 </div>
 
 <main class="page">
@@ -440,15 +439,8 @@ document.addEventListener('keydown',e=>{
   else if(document.getElementById('panel-2').classList.contains('active')) goStep2();
 });
 
-// ══ THEME ══
-const saved=localStorage.getItem('swiftTheme')||'dark';
-document.documentElement.setAttribute('data-theme',saved);
-document.getElementById('themeBtn').textContent=saved==='dark'?'☀️ Light':'🌙 Dark';
-function toggleTheme(){
-  const cur=document.documentElement.getAttribute('data-theme'),next=cur==='dark'?'light':'dark';
-  document.documentElement.setAttribute('data-theme',next);localStorage.setItem('swiftTheme',next);
-  document.getElementById('themeBtn').textContent=next==='dark'?'☀️ Light':'🌙 Dark';
-}
+// ══ THEME: dark only ══
+document.documentElement.setAttribute('data-theme','dark');
 
 // ══ BACKGROUND ══
 const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
@@ -456,9 +448,9 @@ let W,H;function resize(){W=canvas.width=window.innerWidth;H=canvas.height=windo
 resize();window.addEventListener('resize',resize);
 const lines=Array.from({length:8},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,len:80+Math.random()*120,angle:Math.random()*Math.PI*2,speed:.003+Math.random()*.005,opacity:.02+Math.random()*.04}));
 function drawBg(){
-  const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  ctx.clearRect(0,0,W,H);ctx.fillStyle=dark?'#060c10':'#eef7f2';ctx.fillRect(0,0,W,H);
-  const g=dark?'rgba(0,230,118,':'rgba(0,140,70,';
+  const dark=true;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#030508';ctx.fillRect(0,0,W,H);
+  const g='rgba(0,255,163,';
   lines.forEach(l=>{
     l.angle+=l.speed;l.x+=Math.cos(l.angle)*.3;l.y+=Math.sin(l.angle)*.3;
     if(l.x<-l.len)l.x=W+l.len;if(l.x>W+l.len)l.x=-l.len;
