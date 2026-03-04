@@ -6,45 +6,45 @@
   <title>SwiftStock — Godown</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* ── THEMES ── */
     [data-theme="dark"] {
-      --bg: #060d12;
-      --surface: #0c1a22;
-      --surface2: #102030;
-      --card: #0e1d28;
-      --card2: #122535;
-      --border: rgba(0,230,118,0.13);
-      --border2: rgba(255,255,255,0.06);
-      --text: #dff2e8;
-      --text2: #6ea890;
-      --text3: #3a5a50;
-      --green: #00e676;
-      --green-dim: rgba(0,230,118,0.08);
-      --green-glow: rgba(0,230,118,0.2);
-      --red: #ff5252;
-      --red-dim: rgba(255,82,82,0.1);
-      --amber: #ffc107;
-      --amber-dim: rgba(255,193,7,0.1);
-      --blue: #40c4ff;
-      --shadow: rgba(0,0,0,0.55);
-      --input-bg: #07141d;
-      --input-border: rgba(0,230,118,0.18);
-      --topbar-bg: rgba(6,13,18,0.9);
-      --overlay: rgba(0,0,0,0.72);
-      --in-bg: rgba(0,230,118,0.07);
-      --in-border: rgba(0,230,118,0.2);
-      --out-bg: rgba(255,82,82,0.07);
-      --out-border: rgba(255,82,82,0.2);
-      --sticky-bg: rgba(6,13,18,0.96);
+      --bg: #080e0b;
+      --surface: #0d1510;
+      --surface2: #111a14;
+      --card: #0f1812;
+      --card2: #131e16;
+      --border: rgba(34,197,94,0.14);
+      --border2: rgba(34,197,94,0.07);
+      --text: #e8f5ee;
+      --text2: #6b9e82;
+      --text3: #38604a;
+      --green: #16db65;
+      --green-dim: rgba(22,219,101,0.1);
+      --green-glow: rgba(22,219,101,0.28);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.09);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245,158,11,0.1);
+      --blue: #3b82f6;
+      --shadow: rgba(0,0,0,0.85);
+      --input-bg: #0b1410;
+      --input-border: rgba(22,219,101,0.18);
+      --topbar-bg: rgba(8,14,11,0.94);
+      --overlay: rgba(0,0,0,0.75);
+      --in-bg: rgba(34,197,94,0.07);
+      --in-border: rgba(34,197,94,0.2);
+      --out-bg: rgba(239,68,68,0.07);
+      --out-border: rgba(239,68,68,0.2);
+      --sticky-bg: rgba(8,14,11,0.97);
     }
 
     html, body {
-      min-height: 100%; font-family: 'DM Sans', sans-serif;
+      min-height: 100%; font-family: 'Inter', sans-serif;
       background: var(--bg); color: var(--text);
       overflow-x: hidden; transition: background 0.35s, color 0.35s;
     }
@@ -77,13 +77,13 @@
     .back-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
 
     .tb-logo {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.2rem;
       color: var(--green); text-decoration: none;
       text-shadow: 0 0 18px var(--green-glow); letter-spacing: -0.01em;
     }
 
     .tb-godown-name {
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem;
       color: var(--text2); padding-left: 0.7rem;
       border-left: 1px solid var(--border2);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -96,7 +96,7 @@
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 999px; padding: 0.28rem 0.8rem;
       font-size: 0.78rem; cursor: pointer; color: var(--text2);
-      transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s; font-family: 'Inter', sans-serif;
     }
     .theme-pill:hover { border-color: var(--green); color: var(--green); }
 
@@ -127,15 +127,15 @@
       margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.6rem;
     }
     .ps-title {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.3rem;
       letter-spacing: -0.02em; color: var(--green);
     }
 
     .add-product-btn {
       display: flex; align-items: center; gap: 0.4rem;
       padding: 0.55rem 1.1rem;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem;
-      color: #060d12; background: var(--green);
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.88rem;
+      color: #0a0a0a; background: var(--green);
       border: none; border-radius: 10px; cursor: pointer;
       transition: all 0.2s; box-shadow: 0 3px 16px var(--green-glow);
     }
@@ -149,7 +149,7 @@
     .search-inp {
       width: 100%; padding: 0.65rem 1rem 0.65rem 2.5rem;
       background: var(--input-bg); border: 1.5px solid var(--input-border);
-      border-radius: 11px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      border-radius: 11px; font-family: 'Inter', sans-serif; font-size: 0.9rem;
       color: var(--text); outline: none; transition: all 0.2s;
     }
     .search-inp::placeholder { color: var(--text3); }
@@ -205,7 +205,7 @@
     }
     .pc-info { flex: 1; min-width: 0; }
     .pc-name {
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .pc-desc { color: var(--text2); font-size: 0.78rem; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -218,7 +218,7 @@
 
     .pc-right { text-align: right; flex-shrink: 0; }
     .pc-stock-num {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.25rem;
       line-height: 1;
     }
     .pc-stock-unit { font-size: 0.72rem; color: var(--text2); margin-top: 0.1rem; }
@@ -232,12 +232,12 @@
     }
     .empty-products.show { display: flex; }
     .ep-icon { font-size: 4rem; opacity: 0.25; }
-    .ep-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
+    .ep-title { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.3rem; }
     .ep-sub { color: var(--text2); font-size: 0.9rem; }
     .ep-btn {
       padding: 0.85rem 2rem;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
-      color: #060d12; background: var(--green); border: none; border-radius: 12px;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem;
+      color: #0a0a0a; background: var(--green); border: none; border-radius: 12px;
       cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 20px var(--green-glow);
     }
     .ep-btn:hover { transform: translateY(-2px); }
@@ -271,7 +271,7 @@
 
     .pv-title-wrap { flex: 1; min-width: 0; }
     .pv-name {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.2rem;
       letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .pv-sub { color: var(--text2); font-size: 0.78rem; }
@@ -296,7 +296,7 @@
       display: flex; align-items: baseline; gap: 0.5rem;
     }
     .sb-num {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.8rem;
       color: var(--green); line-height: 1;
     }
     .sb-unit { color: var(--text2); font-size: 0.85rem; }
@@ -309,7 +309,7 @@
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 7px; padding: 0.2rem 0.6rem;
       font-size: 0.75rem; color: var(--text2);
-      font-family: 'DM Mono', monospace;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     /* Add entry toolbar */
@@ -321,10 +321,10 @@
     .ae-btn {
       display: flex; align-items: center; gap: 0.35rem;
       padding: 0.5rem 0.9rem;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.82rem;
       border-radius: 9px; cursor: pointer; border: none; transition: all 0.2s;
     }
-    .ae-btn.in { background: var(--green); color: #060d12; box-shadow: 0 3px 14px var(--green-glow); }
+    .ae-btn.in { background: var(--green); color: #0a0a0a; box-shadow: 0 3px 14px var(--green-glow); }
     .ae-btn.in:hover { transform: translateY(-1px); box-shadow: 0 5px 20px var(--green-glow); }
     .ae-btn.out { background: rgba(255,82,82,0.12); color: var(--red); border: 1px solid rgba(255,82,82,0.25); }
     .ae-btn.out:hover { background: rgba(255,82,82,0.2); }
@@ -381,7 +381,7 @@
       text-align: right; flex-shrink: 0;
     }
     .ec-qty-num {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.1rem;
       line-height: 1;
     }
     .entry-card.in  .ec-qty-num { color: var(--green); }
@@ -428,7 +428,7 @@
       padding: 1rem 1.4rem 0;
       display: flex; align-items: flex-start; justify-content: space-between;
     }
-    .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; }
+    .modal-title { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.2rem; }
     .modal-sub { color: var(--text2); font-size: 0.8rem; margin-top: 0.2rem; }
     .modal-close {
       width: 30px; height: 30px; border-radius: 8px;
@@ -453,7 +453,7 @@
     .mf input, .mf select, .mf textarea {
       width: 100%; padding: 0.8rem 1rem 0.8rem 2.5rem;
       background: var(--input-bg); border: 1.5px solid var(--input-border);
-      border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+      border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem;
       color: var(--text); outline: none; transition: all 0.2s; resize: vertical;
       -webkit-appearance: none;
     }
@@ -506,7 +506,7 @@
       flex: 1; padding: 0.45rem 0.7rem;
       background: var(--input-bg); border: 1.5px solid var(--input-border);
       border-radius: 8px; font-size: 0.85rem; color: var(--text); outline: none;
-      font-family: 'DM Sans', sans-serif; -webkit-appearance: none;
+      font-family: 'Inter', sans-serif; -webkit-appearance: none;
     }
     .conv-item input:focus, .conv-item select:focus { border-color: var(--green); }
     .conv-eq { color: var(--text3); font-size: 0.85rem; flex-shrink: 0; }
@@ -522,7 +522,7 @@
       padding: 0.5rem 0.9rem; border-radius: 9px;
       background: var(--green-dim); border: 1px dashed var(--border);
       color: var(--green); font-size: 0.82rem; font-weight: 600;
-      cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;
     }
     .add-conv-btn:hover { background: rgba(0,230,118,0.14); border-color: var(--green); }
 
@@ -532,7 +532,7 @@
     }
     .ett-btn {
       flex: 1; padding: 0.75rem; border-radius: 12px;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem;
       cursor: pointer; transition: all 0.25s; border: 1.5px solid var(--border);
       background: var(--surface2); color: var(--text2);
     }
@@ -560,15 +560,15 @@
     .modal-actions { display: flex; gap: 0.7rem; }
     .btn-primary {
       flex: 1; padding: 0.9rem;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
-      color: #060d12; background: var(--green); border: none; border-radius: 12px;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem;
+      color: #0a0a0a; background: var(--green); border: none; border-radius: 12px;
       cursor: pointer; transition: all 0.25s; box-shadow: 0 4px 18px var(--green-glow);
     }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 26px var(--green-glow); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .btn-secondary {
       padding: 0.9rem 1.2rem;
-      font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.9rem;
       color: var(--text2); background: var(--surface2);
       border: 1px solid var(--border); border-radius: 12px; cursor: pointer;
       transition: all 0.2s;
@@ -576,7 +576,7 @@
     .btn-secondary:hover { border-color: var(--border); color: var(--text); }
     .btn-danger {
       padding: 0.9rem 1.2rem;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.9rem;
       color: var(--red); background: var(--red-dim);
       border: 1px solid rgba(255,82,82,0.25); border-radius: 12px; cursor: pointer;
       transition: all 0.2s;
@@ -588,7 +588,7 @@
     /* ── LOADING SPINNER ── */
     .spinner {
       display: inline-block; width: 16px; height: 16px;
-      border: 2px solid rgba(6,13,18,0.3); border-top-color: #060d12;
+      border: 2px solid rgba(6,13,18,0.3); border-top-color: #0a0a0a;
       border-radius: 50%; animation: spin 0.7s linear infinite;
       vertical-align: middle; margin-right: 0.35rem;
     }
