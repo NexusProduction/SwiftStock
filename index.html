@@ -6,7 +6,6 @@
   <title>SwiftStock — Inventory Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <script src="sheets.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -886,8 +885,25 @@
   <span>Firebase + Google Sheets Powered</span>
 </footer>
 
-<script>
-  /* ── BACKGROUND CANVAS: animated grid + orbs ── */
+<script type="module">
+  // If user is already logged in, redirect to dashboard immediately
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app = initializeApp({
+    apiKey: "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
+    authDomain: "store-management-nexus.firebaseapp.com",
+    projectId: "store-management-nexus",
+    storageBucket: "store-management-nexus.firebasestorage.app",
+    messagingSenderId: "263693510395",
+    appId: "1:263693510395:web:47a0485221405dbb6fb25e",
+  });
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      window.location.replace('dashboard.html');
+    }
+  });
+</script>
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, mouse = { x: -1000, y: -1000 };
