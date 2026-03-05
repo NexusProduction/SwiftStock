@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SwiftStock — Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23000'/><path d='M18 4L8 18h8l-2 10 14-16h-9z' fill='%2330d158'/></svg>"/>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <style>
@@ -25,7 +26,7 @@
       --input-bg:#0d0d0d;--input-border:#2c2c2e;
       --topbar-bg:rgba(0,0,0,0.88);
     }
-    html,body{height:100%;font-family:-apple-system,'Inter','SF Pro Text',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    html,body{height:100%;font-family:'Inter',-apple-system,'SF Pro Text',sans-serif;font-size:15px;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
     ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2c2c2e;border-radius:99px}
 
     /* ── TOPBAR ── */
@@ -65,8 +66,8 @@
     .stat-card-icon{width:32px;height:32px;border-radius:9px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--accent,var(--green));transition:background .18s,border-color .18s}
     .stat-card:hover .stat-card-icon{background:rgba(var(--accent-rgb,48,209,88),0.12);border-color:rgba(var(--accent-rgb,48,209,88),0.3)}
     .stat-tag{font-size:.56rem;padding:.12rem .45rem;border-radius:4px;background:var(--card2);color:var(--text2);letter-spacing:.07em;font-weight:600;border:1px solid var(--border)}
-    .stat-val{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:2.2rem;line-height:1;letter-spacing:-.06em;color:var(--text)}
-    .stat-label{color:var(--text2);font-size:.76rem;font-weight:500;margin-top:.28rem;letter-spacing:-.01em}
+    .stat-val{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:2.4rem;line-height:1;letter-spacing:-.06em;color:var(--text)}
+    .stat-label{color:var(--text2);font-size:.82rem;font-weight:500;margin-top:.32rem;letter-spacing:-.01em}
     .stat-card:nth-child(1){--accent:var(--green);--accent-rgb:48,209,88}
     .stat-card:nth-child(2){--accent:var(--blue);--accent-rgb:10,132,255}
     .stat-card:nth-child(3){--accent:var(--amber);--accent-rgb:255,159,10}
@@ -86,89 +87,122 @@
     }
 
     /* ── CHART ROW ── */
-    .charts-row{display:grid;grid-template-columns:1fr 240px;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.6rem}
+    .charts-row{display:grid;grid-template-columns:1fr 260px;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.6rem}
     @media(max-width:660px){.charts-row{grid-template-columns:1fr}}
-    .chart-panel{background:var(--card);padding:1.2rem 1.3rem}
+    .chart-panel{background:var(--card);padding:1.3rem 1.4rem}
     .chart-panel+.chart-panel{border-left:1px solid var(--border)}
     @media(max-width:660px){.chart-panel+.chart-panel{border-left:none;border-top:1px solid var(--border)}}
-    .chart-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
-    .chart-hd-left{}
-    .chart-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.88rem;color:var(--text)}
-    .chart-desc{font-size:.72rem;color:var(--text2);margin-top:.15rem}
-    .chart-legend{display:flex;gap:.7rem;flex-wrap:wrap}
-    .cleg{display:flex;align-items:center;gap:.3rem;font-size:.67rem;color:var(--text2)}
-    .cleg-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
-    .chart-wrap{position:relative;height:130px}
+    .chart-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.1rem}
+    .chart-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;color:var(--text)}
+    .chart-desc{font-size:.75rem;color:var(--text2);margin-top:.18rem}
+    .chart-legend{display:flex;gap:.7rem;flex-wrap:wrap;padding-top:.1rem}
+    .cleg{display:flex;align-items:center;gap:.32rem;font-size:.72rem;color:var(--text2);font-weight:500}
+    .cleg-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+    .chart-wrap{position:relative;height:145px}
     .chart-wrap canvas{width:100%!important;height:100%!important}
 
     /* ── SECTION ── */
-    .section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-    .section-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.8rem;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:.5rem}
-    .count-pill{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:.1rem .48rem;font-size:.68rem;color:var(--text2);font-weight:700}
+    .section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+    .section-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:.5rem}
+    .count-pill{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:.12rem .5rem;font-size:.7rem;color:var(--text2);font-weight:700}
 
-    /* ── GODOWN GRID ── */
-    .godowns-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));border:1px solid var(--border);border-radius:14px;overflow:hidden}
-    .godowns-grid>*{border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
-
-    .add-card{background:var(--card);padding:1.8rem 1.3rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;cursor:pointer;transition:background .15s;min-height:186px;color:var(--text3)}
-    .add-card:hover{background:var(--card2);color:var(--text2)}
-    .add-icon{width:40px;height:40px;border-radius:10px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:border-color .15s,color .15s}
-    .add-card:hover .add-icon{border-color:var(--green);color:var(--green)}
-    .add-label{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.86rem}
-
-    .godown-card{
-      background:var(--card);padding:1.4rem 1.4rem 1.2rem;cursor:pointer;position:relative;
-      transition:background .18s,border-color .18s,transform .18s;
-      animation:fadeUp .35s ease both;overflow:hidden;
+    /* ── GODOWN LIST ── */
+    .godowns-list{border:1px solid var(--border2);border-radius:14px;overflow:hidden;background:var(--card)}
+    .add-row{
+      display:flex;align-items:center;gap:.88rem;padding:1rem 1.2rem;
+      cursor:pointer;transition:background .15s;
+      border-bottom:1px solid var(--border);
     }
-    .godown-card:hover{background:var(--card2);transform:translateY(-1px)}
-    .godown-card::before{
-      content:'';position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(48,209,88,0.04) 0%,transparent 60%);
-      opacity:0;transition:opacity .22s;pointer-events:none;
+    .add-row:hover{background:var(--card2)}
+    .add-row-icon{
+      width:38px;height:38px;border-radius:10px;flex-shrink:0;
+      border:1.5px dashed var(--border2);
+      display:flex;align-items:center;justify-content:center;color:var(--text3);
+      transition:border-color .15s,color .15s;
     }
-    .godown-card:hover::before{opacity:1}
-    .godown-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2.5px;background:var(--green);opacity:0;transition:opacity .18s}
-    .godown-card:hover::after{opacity:1}
-    .gd-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
-    .gd-icon{
-      width:42px;height:42px;border-radius:12px;
+    .add-row:hover .add-row-icon{border-color:var(--green);color:var(--green)}
+    .add-row-text{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.9rem;color:var(--text2)}
+    .add-row:hover .add-row-text{color:var(--text)}
+
+    /* Godown row */
+    .gd-row{
+      display:grid;
+      grid-template-columns:38px 1fr auto auto;
+      align-items:center;gap:.88rem;
+      padding:1rem 1.2rem;
+      cursor:pointer;position:relative;
+      border-bottom:1px solid var(--border);
+      transition:background .15s;
+      animation:fadeUp .3s ease both;
+    }
+    .gd-row:last-child{border-bottom:none}
+    .gd-row::before{
+      content:'';position:absolute;left:0;top:12%;bottom:12%;
+      width:2.5px;border-radius:0 2px 2px 0;
+      background:var(--green);opacity:0;
+      transition:opacity .18s;
+    }
+    .gd-row:hover{background:rgba(255,255,255,.03)}
+    .gd-row:hover::before{opacity:1}
+
+    .gd-row-icon{
+      width:38px;height:38px;border-radius:10px;flex-shrink:0;
       background:var(--card2);border:1px solid var(--border);
-      display:flex;align-items:center;justify-content:center;font-size:1.25rem;
-      transition:background .18s,border-color .18s;
+      display:flex;align-items:center;justify-content:center;
+      color:var(--text2);transition:background .18s,border-color .18s,color .18s;
     }
-    .godown-card:hover .gd-icon{background:rgba(48,209,88,0.1);border-color:rgba(48,209,88,.3)}
-    .gd-menu-btn{width:26px;height:26px;border-radius:7px;background:none;border:1px solid transparent;cursor:pointer;color:var(--text3);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
-    .gd-menu-btn:hover{background:var(--card3);border-color:var(--border);color:var(--text)}
-    .gd-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:.22rem;letter-spacing:-.02em}
-    .gd-loc{color:var(--text2);font-size:.76rem;display:flex;align-items:center;gap:.3rem}
-    .gd-divider{height:1px;background:var(--border);margin:.9rem 0}
-    .gd-stats{display:flex;gap:0}
-    .gd-stat{flex:1;padding:.4rem .5rem .4rem 0}
-    .gd-stat+.gd-stat{padding-left:.8rem;border-left:1px solid var(--border)}
-    .gd-stat-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);line-height:1}
-    .gd-stat-lbl{color:var(--text3);font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;margin-top:.12rem}
-    .gd-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:.85rem}
-    .gd-avatars{display:flex}
-    .gd-avatar{width:24px;height:24px;border-radius:50%;border:2px solid var(--card);background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;color:var(--text2);margin-left:-6px;overflow:hidden;transition:border-color .18s}
-    .gd-avatar:first-child{margin-left:0}
-    .godown-card:hover .gd-avatar{border-color:var(--card2)}
-    .gd-staff-count{color:var(--text2);font-size:.7rem}
-    /* Godown hover reveal arrow */
-    .gd-arrow{
-      position:absolute;bottom:1.1rem;right:1.1rem;
-      width:22px;height:22px;border-radius:50%;
-      background:var(--green);display:flex;align-items:center;justify-content:center;
-      font-size:.7rem;color:#000;opacity:0;transform:scale(.7);
+    .gd-row:hover .gd-row-icon{background:rgba(48,209,88,.1);border-color:rgba(48,209,88,.3);color:var(--green)}
+
+    .gd-row-info{min-width:0}
+    .gd-row-name{
+      font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;
+      color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      margin-bottom:.12rem;
+    }
+    .gd-row-loc{
+      display:flex;align-items:center;gap:.28rem;
+      font-size:.76rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+
+    /* Staff pill with tooltip */
+    .gd-row-staff{position:relative;flex-shrink:0}
+    .staff-pill{
+      display:flex;align-items:center;gap:.38rem;
+      padding:.3rem .7rem;border-radius:999px;
+      background:var(--card2);border:1px solid var(--border);
+      font-size:.74rem;font-weight:600;color:var(--text2);
+      cursor:default;transition:all .15s;white-space:nowrap;
+    }
+    .staff-pill svg{opacity:.6}
+    .gd-row-staff:hover .staff-pill{background:var(--card3);border-color:var(--border2);color:var(--text)}
+    /* Tooltip */
+    .staff-tooltip{
+      position:absolute;right:0;top:calc(100% + 7px);
+      min-width:160px;max-width:220px;
+      background:#1a1a1a;border:1px solid var(--border2);border-radius:10px;
+      padding:.55rem .7rem;
+      opacity:0;pointer-events:none;
+      transform:translateY(-4px);
       transition:opacity .18s,transform .18s;
+      z-index:50;box-shadow:0 12px 36px rgba(0,0,0,.75);
     }
-    .godown-card:hover .gd-arrow{opacity:1;transform:scale(1)}
+    .gd-row-staff:hover .staff-tooltip{opacity:1;transform:translateY(0)}
+    .st-item{display:flex;align-items:center;gap:.55rem;padding:.3rem 0}
+    .st-item+.st-item{border-top:1px solid var(--border)}
+    .st-av{width:22px;height:22px;border-radius:50%;background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.2);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--green);flex-shrink:0}
+    .st-name{font-size:.75rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .st-role{font-size:.64rem;color:var(--text3)}
+    .st-empty{font-size:.75rem;color:var(--text3);padding:.2rem 0}
+
+    /* Chevron */
+    .gd-row-arr{flex-shrink:0;color:var(--text3);display:flex;align-items:center;transition:transform .18s,color .18s}
+    .gd-row:hover .gd-row-arr{transform:translateX(2px);color:var(--green)}
 
     /* ── EMPTY STATE ── */
-    .empty-state{text-align:center;padding:3.5rem 2rem;display:none}
+    .empty-state{text-align:center;padding:3rem 2rem;display:none}
     .empty-state.show{display:block}
-    .empty-icon{font-size:2.2rem;margin-bottom:.9rem;opacity:.1}
-    .empty-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.35rem;color:var(--text2)}
+    .empty-icon{font-size:2rem;margin-bottom:.8rem;opacity:.1}
+    .empty-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.3rem;color:var(--text2)}
 
     /* ── NOTIF PANEL ── */
     .notif-panel{position:fixed;top:58px;right:1.2rem;width:300px;max-height:400px;background:#111;border:1px solid var(--border2);border-radius:13px;z-index:400;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.85);transform:translateY(-8px) scale(.97);opacity:0;pointer-events:none;transition:all .18s cubic-bezier(.16,1,.3,1)}
@@ -341,8 +375,15 @@
     @media(max-width:600px){
       .sidebar{width:100%}
       .notif-panel{left:.8rem;right:.8rem;width:auto}
-      .dash-title{font-size:1.55rem}
-      .content{padding:1.3rem .9rem 3rem}
+      .content{padding:1rem .85rem 3rem}
+      .gd-row{padding:.85rem .95rem;gap:.7rem}
+      .gd-row-icon{width:34px;height:34px;border-radius:9px}
+      .gd-row-name{font-size:.88rem}
+      .gd-row-loc{font-size:.72rem}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .stat-val{font-size:2rem}
+      .charts-row{grid-template-columns:1fr}
+      .chart-panel+.chart-panel{border-left:none;border-top:1px solid var(--border)}
     }
 
   </style>
@@ -353,16 +394,18 @@
 <!-- ══════════ TOP BAR ══════════ -->
 <header class="topbar">
   <a href="#" class="topbar-logo">
-    <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-      <rect x="2" y="8" width="28" height="18" rx="3" stroke="currentColor" stroke-width="2"/>
-      <path d="M8 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2"/>
-      <path d="M12 16h8M12 20h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#30d158"/>
+      <path d="M18 4L8 18h8l-2 10 14-16h-9z" fill="#000"/>
     </svg>
     SwiftStock
   </a>
+  <div class="topbar-name">
+    <span class="topbar-name-val" id="topbarCompName"></span>
+  </div>
   <div class="topbar-right">
     <div class="notif-btn" onclick="toggleNotif()" id="notifBtn">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <div class="notif-badge" id="notifBadge"></div>
     </div>
     <div class="profile-btn owner" id="profileBtn" onclick="openSidebar()"></div>
@@ -384,17 +427,8 @@
 <main class="main">
   <div class="content">
 
-    <!-- Dashboard header -->
-    <div class="dash-header" style="animation:fadeUp 0.5s ease both;">
-      <div>
-        <div class="dash-eyebrow" id="dashEyebrow">Loading…</div>
-        <div class="dash-title" id="dashTitle">Dashboard</div>
-        <div class="dash-subtitle" id="dashSubtitle">Owner</div>
-      </div>
-    </div>
-
     <!-- Stats -->
-    <div class="stats-grid" id="statsMini" style="animation:fadeUp 0.5s 0.05s ease both;">
+    <div class="stats-grid" id="statsMini" style="animation:fadeUp 0.5s ease both;margin-top:.2rem">
       <div class="stat-card">
         <div class="stat-card-top">
           <div class="stat-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
@@ -464,12 +498,13 @@
       </div>
     </div>
 
-    <div class="godowns-grid" id="godownsGrid" style="animation:fadeUp 0.5s 0.15s ease both;">
-      <!-- Add card — only for owner/manager -->
-      <div class="add-card" id="addGodownCard" onclick="openCreateGodown()">
-        <div class="add-icon">＋</div>
-        <div class="add-label">New Godown</div>
-        <div style="font-size:0.78rem;color:var(--text3);">Click to create</div>
+    <div class="godowns-list" id="godownsGrid" style="animation:fadeUp 0.5s 0.15s ease both;">
+      <!-- Add row — only for owner/manager -->
+      <div class="add-row" id="addGodownCard" onclick="openCreateGodown()">
+        <div class="add-row-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="add-row-text">New Godown</div>
       </div>
     </div>
 
@@ -851,7 +886,6 @@
     loadStaff(compId);
     loadNotifications(compId);
     loadTodayEntries(compId);
-    setTimeout(() => loadChartData(compId), 800);
     // Sync sidebar quick stats from stat elements
     const syncQS = () => {
       const g = document.getElementById('statGodowns'); if(g && document.getElementById('qsGodowns')) document.getElementById('qsGodowns').textContent = g.textContent;
@@ -865,16 +899,15 @@
     const u = currentUser;
     const role = u.role;
 
-    // Topbar greeting — company name only
-    document.getElementById('dashEyebrow').textContent = companyData.companyName || 'My Company';
-    document.getElementById('dashTitle').textContent = companyData.companyName || 'My Company';
-    document.getElementById('dashSubtitle').textContent = 'Dashboard Overview';
-
-    // Profile button
+    // Profile button initials
     const pb = document.getElementById('profileBtn');
     pb.textContent = u.name.charAt(0).toUpperCase();
     pb.className = `profile-btn ${role}`;
     if (u.photoURL) { pb.innerHTML = `<img src="${u.photoURL}" />`; }
+
+    // Topbar company name
+    const tn = document.getElementById('topbarCompName');
+    if (tn) tn.textContent = companyData.companyName || '';
 
     // Sidebar profile
     document.getElementById('sbName').textContent = u.name;
@@ -898,12 +931,10 @@
       document.getElementById('staffTab').style.display = 'none';
       document.getElementById('addGodownCard').style.display = 'none';
     } else if (role === 'manager') {
-      // Managers can see staff tab but not add owners
       document.getElementById('staffTab').style.display = '';
       document.getElementById('addGodownCard').style.display = '';
     }
 
-    // Theme
     document.documentElement.setAttribute('data-theme', 'dark');
   }
 
@@ -932,6 +963,11 @@
           document.getElementById('statProducts').textContent = ps.size;
         });
       }
+      // Load charts after godowns are known (only on first load)
+      if (!window._chartsLoaded) {
+        window._chartsLoaded = true;
+        setTimeout(() => loadChartData(currentUser.companyId || currentUser.uid), 400);
+      }
     });
   }
 
@@ -939,68 +975,73 @@
     const grid = document.getElementById('godownsGrid');
     const role = currentUser.role;
 
-    // Remove old godown cards (keep add card)
-    grid.querySelectorAll('.godown-card').forEach(c => c.remove());
+    // Remove old godown rows (keep add row)
+    grid.querySelectorAll('.gd-row').forEach(c => c.remove());
 
     const empty = document.getElementById('emptyState');
     if (godownList.length === 0) {
       empty.classList.add('show');
     } else {
       empty.classList.remove('show');
+
+      // Unique SVG icons cycling for each godown
+      const GD_ICONS = [
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 22V11L12 2l11 9v11"/><path d="M9 22V12h6v10"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4"/><path d="M5 21V10.85"/><path d="M19 21V10.85"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><rect x="9" y="14" width="6" height="6"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 20h20M6 20V9m12 11V9M2 9l10-7 10 7"/><path d="M10 20v-5h4v5"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 22V12H2L12 2l10 10h-3v10"/><path d="M9 22v-4h6v4"/></svg>`,
+      ];
+
       godownList.forEach((gd, i) => {
-        const card = document.createElement('div');
-        card.className = 'godown-card';
-        card.style.animationDelay = `${i * 0.06}s`;
-        // Single tap → open godown directly
-        card.onclick = () => window.location.href = `godown.html?id=${gd.id}`;
-        // Long press (mobile) or right-click (desktop) → options
-        let _pt;
-        card.addEventListener('touchstart', () => { _pt = setTimeout(() => { card.onclick=null; showGodownDetail(gd.id); setTimeout(()=>card.onclick=()=>window.location.href=`godown.html?id=${gd.id}`,300); }, 600); }, {passive:true});
-        card.addEventListener('touchend', () => clearTimeout(_pt));
-        card.addEventListener('touchmove', () => clearTimeout(_pt));
-        card.addEventListener('contextmenu', e => { e.preventDefault(); showGodownDetail(gd.id); });
+        const row = document.createElement('div');
+        row.className = 'gd-row';
+        row.style.animationDelay = `${i * 0.05}s`;
+        row.onclick = () => window.location.href = `godown.html?id=${gd.id}`;
 
-        const staffCount = Object.values(gd.staffAccess || {}).filter(Boolean).length;
-        const avatarHTML = Object.keys(gd.staffAccess || {}).slice(0, 3).map(uid => {
-          const s = staffList.find(x => x.uid === uid);
-          const initials = s ? s.name.charAt(0) : '?';
-          return `<div class="gd-avatar">${initials}</div>`;
-        }).join('');
+        const iconSvg = GD_ICONS[i % GD_ICONS.length];
 
-        card.innerHTML = `
-          <div class="gd-top">
-            <div class="gd-icon">🏪</div>
-            ${role === 'owner' || role === 'manager' ? `
-            <div class="gd-menu">
-              <button class="gd-menu-btn" onclick="event.stopPropagation();showGodownMenu(event,'${gd.id}')">⋮</button>
-            </div>` : ''}
-          </div>
-          <div class="gd-name">${gd.name}</div>
-          <div class="gd-loc">📍 ${gd.location}</div>
-          <div class="gd-divider"></div>
-          <div class="gd-stats">
-            <div class="gd-stat">
-              <div class="gd-stat-val" id="gd-products-${gd.id}">—</div>
-              <div class="gd-stat-lbl">Products</div>
-            </div>
-            <div class="gd-stat">
-              <div class="gd-stat-val">${staffCount}</div>
-              <div class="gd-stat-lbl">Staff</div>
+        // Build staff tooltip content (only known staff, no ?)
+        const assignedStaff = staffList.filter(s => gd.staffAccess?.[s.uid]);
+        const staffCount = assignedStaff.length;
+
+        const tooltipItems = assignedStaff.length
+          ? assignedStaff.map(s => {
+              const init = s.name.charAt(0).toUpperCase();
+              return `<div class="st-item">
+                <div class="st-av">${init}</div>
+                <div>
+                  <div class="st-name">${s.name}</div>
+                  <div class="st-role">${capitalize(s.role)}</div>
+                </div>
+              </div>`;
+            }).join('')
+          : `<div class="st-empty">No staff assigned</div>`;
+
+        row.innerHTML = `
+          <div class="gd-row-icon">${iconSvg}</div>
+          <div class="gd-row-info">
+            <div class="gd-row-name">${gd.name}</div>
+            <div class="gd-row-loc">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${gd.location || 'No location'}
             </div>
           </div>
-          <div class="gd-bottom">
-            <div class="gd-avatars">${avatarHTML}</div>
-            <span class="gd-staff-count">${gd.customStaff ? 'Custom access' : 'All staff'}</span>
+          <div class="gd-row-staff" onclick="event.stopPropagation()">
+            <div class="staff-pill">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              ${staffCount}
+            </div>
+            <div class="staff-tooltip">${tooltipItems}</div>
+          </div>
+          <div class="gd-row-arr">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
         `;
-        grid.appendChild(card);
-
-        // Load product count for this godown
-        const pq = query(collection(db, 'products'), where('godownId', '==', gd.id));
-        getDocs(pq).then(ps => {
-          const el = document.getElementById(`gd-products-${gd.id}`);
-          if (el) el.textContent = ps.size;
-        });
+        grid.appendChild(row);
       });
     }
   }
@@ -1681,98 +1722,98 @@
 
   window._initCharts = function(weekData, donutData) {
     // Destroy existing
-    if (weekChartInst) { weekChartInst.destroy(); weekChartInst = null; }
-    if (donutChartInst) { donutChartInst.destroy(); donutChartInst = null; }
+    if (weekChartInst) { try { weekChartInst.destroy(); } catch(e){} weekChartInst = null; }
+    if (donutChartInst) { try { donutChartInst.destroy(); } catch(e){} donutChartInst = null; }
 
     const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    const today = new Date().getDay(); // 0=Sun
     const labels = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate() - i);
-      labels.push(days[(d.getDay() + 6) % 7]);
+      labels.push(i === 0 ? 'Today' : days[(d.getDay() + 6) % 7]);
     }
 
     const wCtx = document.getElementById('weekChart');
     if (!wCtx) return;
-    weekChartInst = new Chart(wCtx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'IN', data: weekData.in || [0,0,0,0,0,0,0],
-            backgroundColor: 'rgba(48,209,88,0.75)',
-            borderColor: '#30d158', borderWidth: 0,
-            borderRadius: 4, borderSkipped: false,
-          },
-          {
-            label: 'OUT', data: weekData.out || [0,0,0,0,0,0,0],
-            backgroundColor: 'rgba(255,69,58,0.7)',
-            borderColor: '#ff453a', borderWidth: 0,
-            borderRadius: 4, borderSkipped: false,
-          }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        animation: { duration: 700, easing: 'easeOutQuart' },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
-            bodyColor: '#86868b', borderColor: '#2c2c2e', borderWidth: 1,
-            padding: 10, cornerRadius: 8,
-          }
+    try {
+      weekChartInst = new Chart(wCtx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'IN', data: weekData.in || [0,0,0,0,0,0,0],
+              backgroundColor: 'rgba(48,209,88,0.7)',
+              borderRadius: 5, borderSkipped: false,
+            },
+            {
+              label: 'OUT', data: weekData.out || [0,0,0,0,0,0,0],
+              backgroundColor: 'rgba(255,69,58,0.65)',
+              borderRadius: 5, borderSkipped: false,
+            }
+          ]
         },
-        scales: {
-          x: {
-            grid: { display: false },
-            border: { display: false },
-            ticks: { color: '#48484a', font: { size: 11, family: "'Inter',sans-serif" } }
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 600, easing: 'easeOutQuart' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
+              bodyColor: '#aeaeb2', borderColor: '#2c2c2e', borderWidth: 1,
+              padding: 10, cornerRadius: 8,
+            }
           },
-          y: {
-            grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
-            border: { display: false, dash: [4,4] },
-            ticks: { color: '#48484a', font: { size: 11 }, maxTicksLimit: 5, precision: 0 },
-            beginAtZero: true
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { display: false },
+              ticks: { color: '#636366', font: { size: 11, family: "'Inter',sans-serif" } }
+            },
+            y: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              border: { display: false, dash: [4,4] },
+              ticks: { color: '#636366', font: { size: 11 }, maxTicksLimit: 5, precision: 0 },
+              beginAtZero: true
+            }
           }
         }
-      }
-    });
+      });
+    } catch(e) { console.log('Bar chart error:', e.message); }
 
     const dCtx = document.getElementById('donutChart');
     if (!dCtx) return;
-    const dColors = ['#30d158','#0a84ff','#ff9f0a','#bf5af2','#ff453a','#636366'];
+    const dColors = ['#30d158','#0a84ff','#ff9f0a','#bf5af2','#ff453a','#64d2ff'];
     const dLabels = donutData.labels?.length ? donutData.labels : ['No data'];
-    const dVals = donutData.values?.length ? donutData.values : [1];
-    const dBg = dLabels.map((_, i) => dColors[i % dColors.length]);
-
-    donutChartInst = new Chart(dCtx, {
-      type: 'doughnut',
-      data: {
-        labels: dLabels,
-        datasets: [{ data: dVals, backgroundColor: dBg, borderColor: '#111', borderWidth: 2, hoverOffset: 6 }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        cutout: '70%',
-        animation: { duration: 700, easing: 'easeOutQuart' },
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              color: '#86868b', font: { size: 10, family: "'Inter',sans-serif" },
-              padding: 8, boxWidth: 8, boxHeight: 8, usePointStyle: true
+    const dVals   = donutData.values?.length ? donutData.values : [1];
+    const dBg     = dLabels.map((_, i) => dColors[i % dColors.length]);
+    try {
+      donutChartInst = new Chart(dCtx, {
+        type: 'doughnut',
+        data: {
+          labels: dLabels,
+          datasets: [{ data: dVals, backgroundColor: dBg, borderColor: '#111', borderWidth: 2, hoverOffset: 6 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          cutout: '68%',
+          animation: { duration: 600, easing: 'easeOutQuart' },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#aeaeb2', font: { size: 11, family: "'Inter',sans-serif" },
+                padding: 10, boxWidth: 9, boxHeight: 9, usePointStyle: true
+              }
+            },
+            tooltip: {
+              backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
+              bodyColor: '#aeaeb2', borderColor: '#2c2c2e', borderWidth: 1,
+              padding: 10, cornerRadius: 8,
             }
-          },
-          tooltip: {
-            backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
-            bodyColor: '#86868b', borderColor: '#2c2c2e', borderWidth: 1,
-            padding: 10, cornerRadius: 8,
           }
         }
-      }
-    });
+      });
+    } catch(e) { console.log('Donut chart error:', e.message); }
   };
 
   // Called from module after data loads
