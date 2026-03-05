@@ -4,9 +4,10 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>SwiftStock — Godown</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23000'/><path d='M18 4L8 18h8l-2 10 14-16h-9z' fill='%2330d158'/></svg>"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -39,7 +40,7 @@
       --topbar:rgba(0,0,0,.92);
       --overlay:rgba(0,0,0,.88);
     }
-    html,body{min-height:100%;font-family:-apple-system,'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    html,body{min-height:100%;font-family:'Inter',-apple-system,sans-serif;font-size:15px;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
     ::-webkit-scrollbar{width:4px}
     ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
 
@@ -63,7 +64,7 @@
     .back-btn:hover{background:var(--card3);color:var(--text);border-color:var(--border3)}
     .tb-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.02em;color:var(--text);text-decoration:none}
     .tb-div{width:1px;height:16px;background:var(--border2);flex-shrink:0}
-    .tb-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.88rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;flex:1}
+    .tb-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.9rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;flex:1}
     .tb-add-btn{
       margin-left:auto;flex-shrink:0;
       display:flex;align-items:center;gap:.38rem;
@@ -121,8 +122,8 @@
       background:var(--card2);border:1px solid var(--border2);
       display:flex;align-items:center;justify-content:center;font-size:.82rem;
     }
-    .sb-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;line-height:1;color:var(--text)}
-    .sb-lbl{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:.1rem}
+    .sb-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;line-height:1;color:var(--text)}
+    .sb-lbl{font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-top:.12rem}
 
     /* ══ SEARCH ══ */
     .search-sticky{
@@ -197,17 +198,17 @@
     }
     .pr-info{min-width:0}
     .pr-name{
-      font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;
+      font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;
       color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     }
-    .pr-desc{font-size:.72rem;color:var(--text2);margin-top:.04rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .pr-meta{font-size:.68rem;color:var(--text3);margin-top:.04rem}
+    .pr-desc{font-size:.76rem;color:var(--text2);margin-top:.04rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pr-meta{font-size:.72rem;color:var(--text3);margin-top:.04rem}
     .pr-stock{text-align:right}
     .pr-num{
       font-family:'Space Grotesk',sans-serif;font-weight:800;
-      font-size:.98rem;letter-spacing:-.03em;display:block;
+      font-size:1.05rem;letter-spacing:-.03em;display:block;
     }
-    .pr-unit{font-size:.62rem;color:var(--text3);display:block;margin-top:.06rem}
+    .pr-unit{font-size:.66rem;color:var(--text2);display:block;margin-top:.06rem}
     .pr-arr{
       display:flex;align-items:center;justify-content:flex-end;
       color:var(--text3);transition:transform .18s,color .18s;
@@ -377,20 +378,20 @@
 
     /* Body */
     .ec-body{flex:1;min-width:0}
-    .ec-who{font-size:.85rem;font-weight:600;color:var(--text);line-height:1.45}
-    .ec-note{font-size:.73rem;color:var(--text2);margin-top:.1rem;font-style:italic}
-    .ec-time{display:inline-flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text3);margin-top:.16rem}
+    .ec-who{font-size:.88rem;font-weight:600;color:var(--text);line-height:1.45}
+    .ec-note{font-size:.76rem;color:var(--text2);margin-top:.1rem;font-style:italic}
+    .ec-time{display:inline-flex;align-items:center;gap:.28rem;font-size:.7rem;color:var(--text3);margin-top:.16rem}
 
     /* Badge */
     .ec-right{text-align:right;flex-shrink:0}
     .ec-badge{
-      display:inline-block;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:.93rem;
+      display:inline-block;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:.98rem;
       padding:.22rem .7rem;border-radius:8px;line-height:1.3;
     }
     .entry-card.in .ec-badge{background:rgba(48,209,88,.14);color:var(--green)}
     .entry-card.out .ec-badge{background:rgba(255,69,58,.14);color:var(--red)}
-    .ec-unit{font-size:.62rem;color:var(--text3);margin-top:.08rem}
-    .ec-conv{font-size:.6rem;color:var(--text3)}
+    .ec-unit{font-size:.66rem;color:var(--text2);margin-top:.08rem}
+    .ec-conv{font-size:.63rem;color:var(--text3)}
 
     /* Delete button — hidden, reveal on hover */
     .ec-del{
