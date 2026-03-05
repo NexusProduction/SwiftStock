@@ -1,868 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SwiftStock — Inventory Intelligence</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --green: #00e676;
-      --green-dark: #00b34a;
-      --green-glow: rgba(0,230,118,0.25);
-      --bg: #060c10;
-      --surface: #0d1a21;
-      --surface2: #102030;
-      --text: #e8f5ef;
-      --muted: #567a6a;
-      --border: rgba(0,230,118,0.12);
-    }
-
-    html, body {
-      height: 100%;
-      overflow-x: hidden;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    /* ── CANVAS BG ── */
-    #bg-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    /* ── NOISE OVERLAY ── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.45;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    /* ── NAVBAR ── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.2rem 3rem;
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(20px);
-      background: rgba(6,12,16,0.7);
-    }
-
-    .nav-logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 1.5rem;
-      letter-spacing: -0.02em;
-      color: var(--green);
-      text-shadow: 0 0 30px var(--green-glow);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .nav-logo svg { width: 28px; height: 28px; }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--text); }
-
-    /* ── HERO ── */
-    .hero {
-      position: relative;
-      z-index: 2;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 4rem;
-      gap: 2rem;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(0,230,118,0.08);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.4rem 1rem;
-      font-size: 0.78rem;
-      color: var(--green);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      font-weight: 600;
-      animation: fadeDown 0.8s ease both;
-    }
-
-    .badge-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 8px var(--green);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.5); }
-    }
-
-    .hero-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: clamp(3.5rem, 10vw, 8rem);
-      line-height: 0.95;
-      letter-spacing: -0.04em;
-      animation: fadeUp 0.9s 0.1s ease both;
-    }
-
-    .hero-title .line2 {
-      color: var(--green);
-      text-shadow: 0 0 60px rgba(0,230,118,0.3);
-      display: block;
-    }
-
-    .hero-sub {
-      max-width: 520px;
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.7;
-      font-weight: 300;
-      animation: fadeUp 0.9s 0.2s ease both;
-    }
-
-    /* ── LIQUID BUTTON ── */
-    .btn-wrap {
-      position: relative;
-      animation: fadeUp 0.9s 0.35s ease both;
-      margin-top: 0.5rem;
-    }
-
-    .liquid-btn {
-      position: relative;
-      padding: 1.1rem 3.2rem;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 1.1rem;
-      letter-spacing: 0.03em;
-      color: #060c10;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      border-radius: 999px;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.3s;
-      text-decoration: none;
-      display: inline-block;
-      z-index: 0;
-      box-shadow: 0 0 40px rgba(0,230,118,0.2);
-    }
-
-    .liquid-btn:hover {
-      transform: scale(1.04);
-      box-shadow: 0 0 60px rgba(0,230,118,0.4);
-    }
-
-    .liquid-btn:active { transform: scale(0.98); }
-
-    /* Static green base */
-    .liquid-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--green);
-      border-radius: 999px;
-      z-index: -2;
-    }
-
-    /* Liquid blob that follows cursor */
-    .liquid-blob {
-      position: absolute;
-      width: 120%;
-      height: 400%;
-      background: radial-gradient(ellipse at center, #80ffc2 0%, #00e676 40%, #00b34a 100%);
-      border-radius: 45% 55% 60% 40% / 40% 50% 50% 60%;
-      top: -150%;
-      left: -10%;
-      pointer-events: none;
-      z-index: -1;
-      transition: transform 0.08s linear;
-      animation: blobMorph 4s ease-in-out infinite alternate;
-      will-change: transform;
-    }
-
-    @keyframes blobMorph {
-      0%   { border-radius: 45% 55% 60% 40% / 40% 50% 50% 60%; }
-      25%  { border-radius: 60% 40% 45% 55% / 55% 45% 60% 40%; }
-      50%  { border-radius: 40% 60% 55% 45% / 60% 40% 45% 55%; }
-      75%  { border-radius: 55% 45% 40% 60% / 45% 55% 40% 60%; }
-      100% { border-radius: 50% 50% 60% 40% / 50% 60% 40% 50%; }
-    }
-
-    .btn-label { position: relative; z-index: 1; pointer-events: none; }
-
-    .btn-secondary {
-      margin-left: 1rem;
-      padding: 1.1rem 2.4rem;
-      font-family: 'Syne', sans-serif;
-      font-weight: 600;
-      font-size: 1rem;
-      color: var(--green);
-      background: transparent;
-      border: 1.5px solid rgba(0,230,118,0.35);
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all 0.25s;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(0,230,118,0.08);
-      border-color: var(--green);
-    }
-
-    .hero-cta-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      animation: fadeUp 0.9s 0.35s ease both;
-    }
-
-    /* ── FLOATING STATS ── */
-    .stats-row {
-      display: flex;
-      gap: 3rem;
-      margin-top: 1rem;
-      animation: fadeUp 0.9s 0.5s ease both;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .stat { text-align: center; }
-
-    .stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--green);
-    }
-
-    .stat-label {
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-top: 0.2rem;
-    }
-
-    .stat-divider {
-      width: 1px;
-      background: var(--border);
-      align-self: stretch;
-    }
-
-    /* ── FEATURES ── */
-    .features {
-      position: relative;
-      z-index: 2;
-      padding: 6rem 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .section-label {
-      text-align: center;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--green);
-      margin-bottom: 1rem;
-      font-weight: 600;
-    }
-
-    .section-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      text-align: center;
-      margin-bottom: 3.5rem;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .feat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem;
-      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--green), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .feat-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(0,230,118,0.3);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(0,230,118,0.08);
-    }
-
-    .feat-card:hover::before { opacity: 1; }
-
-    .feat-icon {
-      width: 48px; height: 48px;
-      background: rgba(0,230,118,0.1);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      margin-bottom: 1.2rem;
-      border: 1px solid rgba(0,230,118,0.2);
-    }
-
-    .feat-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 1.15rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .feat-desc {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.65;
-    }
-
-    /* ── HOW IT WORKS ── */
-    .how {
-      position: relative;
-      z-index: 2;
-      padding: 6rem 2rem;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .how-inner {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .steps {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      margin-top: 3rem;
-      position: relative;
-    }
-
-    .steps::before {
-      content: '';
-      position: absolute;
-      left: 23px;
-      top: 0; bottom: 0;
-      width: 2px;
-      background: linear-gradient(to bottom, var(--green), transparent);
-    }
-
-    .step {
-      display: flex;
-      gap: 2rem;
-      padding-bottom: 3rem;
-      position: relative;
-      opacity: 0;
-      transform: translateX(-20px);
-      transition: opacity 0.5s, transform 0.5s;
-    }
-
-    .step.visible { opacity: 1; transform: none; }
-
-    .step-num {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 2px solid var(--green);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      color: var(--green);
-      font-size: 1rem;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
-      box-shadow: 0 0 20px rgba(0,230,118,0.2);
-    }
-
-    .step-content { padding-top: 0.6rem; }
-    .step-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 0.4rem;
-    }
-    .step-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.65; }
-
-    /* ── ROLES ── */
-    .roles {
-      position: relative;
-      z-index: 2;
-      padding: 6rem 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .roles-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-      margin-top: 3rem;
-    }
-
-    .role-card {
-      border-radius: 20px;
-      padding: 2rem 1.8rem;
-      border: 1px solid;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.3s;
-    }
-
-    .role-card:hover { transform: translateY(-5px); }
-
-    .role-card.owner {
-      background: linear-gradient(135deg, #1a0a2e 0%, #0d0518 100%);
-      border-color: rgba(160,80,255,0.35);
-    }
-
-    .role-card.manager {
-      background: linear-gradient(135deg, #1f1600 0%, #120e00 100%);
-      border-color: rgba(255,180,0,0.35);
-    }
-
-    .role-card.staff {
-      background: linear-gradient(135deg, #0f1a1a 0%, #081212 100%);
-      border-color: rgba(180,180,180,0.25);
-    }
-
-    .role-ring {
-      width: 64px; height: 64px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      margin-bottom: 1.2rem;
-      border: 3px solid;
-    }
-
-    .owner .role-ring {
-      border-color: #a050ff;
-      background: rgba(160,80,255,0.1);
-      box-shadow: 0 0 25px rgba(160,80,255,0.3);
-    }
-
-    .manager .role-ring {
-      border-color: #ffd700;
-      background: rgba(255,215,0,0.1);
-      box-shadow: 0 0 25px rgba(255,215,0,0.3);
-    }
-
-    .staff .role-ring {
-      border-color: #c0c0c0;
-      background: rgba(192,192,192,0.1);
-      box-shadow: 0 0 25px rgba(192,192,192,0.2);
-    }
-
-    .role-name {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 1.2rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .owner .role-name { color: #b060ff; }
-    .manager .role-name { color: #ffd700; }
-    .staff .role-name { color: #c0c0c0; }
-
-    .role-perms {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .role-perms li {
-      font-size: 0.85rem;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .perm-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .owner .perm-dot { background: #b060ff; }
-    .manager .perm-dot { background: #ffd700; }
-    .staff .perm-dot { background: #c0c0c0; }
-
-    /* ── FOOTER CTA ── */
-    .cta-section {
-      position: relative;
-      z-index: 2;
-      padding: 6rem 2rem;
-      text-align: center;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    .cta-section::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 600px;
-      height: 300px;
-      background: radial-gradient(ellipse, rgba(0,230,118,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .cta-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      margin-bottom: 1rem;
-      letter-spacing: -0.03em;
-    }
-
-    .cta-sub {
-      color: var(--muted);
-      max-width: 440px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.7;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      position: relative;
-      z-index: 2;
-      padding: 2rem 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.8rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .footer-logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      color: var(--green);
-      font-size: 1rem;
-    }
-
-    /* ── FLOATING INVENTORY ICONS ── */
-    .float-icons {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
-    }
-
-    .float-icon {
-      position: absolute;
-      font-size: 1.5rem;
-      opacity: 0.04;
-      animation: floatUp linear infinite;
-      color: var(--green);
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.04; }
-      90% { opacity: 0.04; }
-      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-    }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── MOBILE ── */
-    @media (max-width: 768px) {
-      nav { padding: 1rem 1.5rem; }
-      .nav-links { display: none; }
-      .hero { padding: 7rem 1.5rem 3rem; }
-      .stat-divider { display: none; }
-      footer { flex-direction: column; text-align: center; }
-      .btn-secondary { margin-left: 0; }
-      .steps::before { left: 21px; }
-    }
-
-    /* Scroll fade-in for sections */
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: none;
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SwiftStock — The Perfect Godown Management App</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000'/%3E%3Cpath d='M18 4L8 18h8l-2 10 14-16h-9z' fill='%2300D97E'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050709;--s1:#0B0F15;--s2:#111620;
+  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);
+  --t1:#EFF3FF;--t2:#7785A8;--t3:#3A4260;
+  --g:#00D97E;--gd:#009959;--glow:rgba(0,217,126,.25);
+  --r:#FF4D6A;
+}
+html,body{min-height:100%;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:"Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:99px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 max(1.5rem,env(safe-area-inset-left));backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);background:rgba(5,7,9,.8);border-bottom:1px solid var(--b1);}
+.nav-brand{display:flex;align-items:center;gap:.55rem;text-decoration:none;}
+.nav-bolt{width:30px;height:30px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-name{font-family:"Syne",sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-.03em;color:var(--t1)}
+.nav-name span{color:var(--g)}
+.nav-actions{display:flex;align-items:center;gap:.65rem}
+.nav-link{color:var(--t2);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .15s;padding:.4rem .6rem;}
+.nav-link:hover{color:var(--t1)}
+.nav-cta{height:36px;padding:0 1.1rem;background:var(--g);color:#000;border:none;border-radius:9px;font-family:inherit;font-weight:700;font-size:.84rem;cursor:pointer;text-decoration:none;display:flex;align-items:center;transition:opacity .15s,transform .15s;}
+.nav-cta:hover{opacity:.88;transform:translateY(-1px)}
+@media(max-width:500px){.nav-link{display:none}}
+
+/* HERO */
+.hero{
+  min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:calc(60px + 3rem) 1.5rem 4rem;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%,rgba(0,217,126,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 70%,rgba(0,217,126,.04) 0%,transparent 60%);
+}
+.hero-grid{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  -webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 30%,transparent 100%);
+  mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 30%,transparent 100%);
+}
+.hero-content{position:relative;z-index:1;max-width:700px;}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:rgba(0,217,126,.08);border:1px solid rgba(0,217,126,.2);border-radius:999px;
+  padding:.32rem .85rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--g);margin-bottom:1.6rem;animation:fadeDown .7s ease both;
+}
+.pill-dot{width:5px;height:5px;border-radius:50%;background:var(--g);animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hero-h1{
+  font-family:"Syne",sans-serif;font-weight:800;
+  font-size:clamp(2.8rem,9vw,6rem);letter-spacing:-.05em;line-height:.95;
+  margin-bottom:1.1rem;animation:fadeUp .7s .1s ease both;
+}
+.hero-h1 .green{color:var(--g);display:block}
+.hero-sub{
+  font-size:clamp(.95rem,2.5vw,1.15rem);color:var(--t2);line-height:1.7;
+  max-width:480px;margin:0 auto 2.2rem;animation:fadeUp .7s .2s ease both;
+  font-weight:400;
+}
+.hero-cta{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.85rem;animation:fadeUp .7s .3s ease both;}
+.btn-hero{
+  height:52px;padding:0 2rem;
+  background:var(--g);color:#000;border:none;border-radius:14px;
+  font-family:inherit;font-weight:800;font-size:.98rem;letter-spacing:.01em;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;
+  transition:opacity .15s,transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .15s;
+  box-shadow:0 4px 24px var(--glow);
+}
+.btn-hero:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 32px var(--glow)}
+.btn-ghost{
+  height:52px;padding:0 1.8rem;
+  background:transparent;color:var(--t1);border:1.5px solid var(--b2);border-radius:14px;
+  font-family:inherit;font-weight:600;font-size:.95rem;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;
+  transition:all .15s;
+}
+.btn-ghost:hover{background:var(--s1);border-color:var(--b2)}
+.hero-trust{margin-top:2.5rem;font-size:.76rem;color:var(--t3);animation:fadeUp .7s .45s ease both;}
+
+/* APP PREVIEW */
+.preview-section{padding:2rem 1.5rem 4rem;display:flex;justify-content:center}
+.preview-frame{
+  width:100%;max-width:360px;
+  background:var(--s1);border:1px solid var(--b2);border-radius:24px;
+  overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  animation:fadeUp .8s .4s ease both;
+}
+.pf-topbar{height:48px;background:rgba(8,10,15,.95);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:.5rem;padding:0 1rem;}
+.pf-back{width:28px;height:28px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--t2);}
+.pf-dot{width:20px;height:20px;background:var(--g);border-radius:6px;font-size:.55rem;font-weight:700;color:#000;display:flex;align-items:center;justify-content:center;}
+.pf-title{font-size:.78rem;font-weight:700;color:var(--t2);flex:1}
+.pf-add{height:26px;padding:0 .65rem;background:var(--g);border:none;border-radius:7px;font-size:.72rem;font-weight:700;color:#000;cursor:default;}
+.pf-hero{padding:1rem 1rem .7rem;background:var(--bg)}
+.pf-tag{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:.35rem;display:flex;align-items:center;gap:.25rem;}
+.pf-tagdot{width:4px;height:4px;border-radius:50%;background:var(--g);}
+.pf-name{font-family:"Syne",sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-.04em;color:var(--t1);margin-bottom:.18rem}
+.pf-loc{font-size:.68rem;color:var(--t2);display:flex;align-items:center;gap:.25rem}
+.pf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;padding:.5rem 1rem .6rem;background:var(--bg);}
+.pf-stat{background:var(--s1);border:1px solid var(--b1);border-radius:9px;padding:.5rem .5rem;text-align:center;}
+.pf-sv{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.78rem;display:block;line-height:1;margin-bottom:.12rem;}
+.pf-sl{font-size:.5rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}
+.pf-search{margin:.5rem 1rem;background:var(--s1);border:1px solid var(--b1);border-radius:9px;height:34px;display:flex;align-items:center;gap:.5rem;padding:0 .75rem;}
+.pf-search svg{color:var(--t3);flex-shrink:0}
+.pf-si{font-size:.72rem;color:var(--t3);}
+.pf-list{padding:0 1rem .5rem}
+.pf-phdr{display:flex;align-items:center;justify-content:space-between;padding:.55rem 0 .3rem;font-size:.52rem;font-weight:700;color:var(--t3);letter-spacing:.1em;text-transform:uppercase}
+.pf-pill{background:var(--s2);border:1px solid var(--b1);border-radius:4px;padding:.04rem .35rem;font-size:.5rem;font-weight:700;color:var(--t2);}
+.pf-item{display:flex;align-items:center;gap:.55rem;padding:.55rem 0;border-bottom:1px solid var(--b1);}
+.pf-item:last-child{border-bottom:none}
+.pf-ico{width:34px;height:34px;background:var(--s2);border:1px solid var(--b1);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.pf-iname{font-size:.78rem;font-weight:700;color:var(--t1);margin-bottom:.06rem}
+.pf-imeta{font-size:.6rem;color:var(--t3)}
+.pf-istk{text-align:right;margin-left:auto;flex-shrink:0}
+.pf-inum{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.8rem;display:block;line-height:1}
+.pf-iu{font-size:.52rem;color:var(--t3);display:block;margin-top:.06rem}
+
+/* FEATURES */
+.features{padding:4rem 1.5rem 5rem;max-width:1000px;margin:0 auto}
+.sec-label{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin-bottom:.65rem}
+.sec-title{font-family:"Syne",sans-serif;font-weight:800;font-size:clamp(1.7rem,5vw,3rem);letter-spacing:-.04em;line-height:1.1;margin-bottom:.7rem}
+.sec-sub{font-size:clamp(.88rem,2vw,1rem);color:var(--t2);line-height:1.7;max-width:480px}
+.features-grid{display:grid;grid-template-columns:1fr;gap:.9rem;margin-top:2.5rem}
+@media(min-width:540px){.features-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:800px){.features-grid{grid-template-columns:repeat(3,1fr)}}
+.feat-card{background:var(--s1);border:1px solid var(--b1);border-radius:18px;padding:1.5rem;transition:border-color .2s,transform .2s;}
+.feat-card:hover{border-color:var(--b2);transform:translateY(-2px)}
+.feat-icon{width:40px;height:40px;border-radius:11px;background:rgba(0,217,126,.1);border:1px solid rgba(0,217,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:1rem;}
+.feat-title{font-weight:700;font-size:.95rem;color:var(--t1);margin-bottom:.35rem;letter-spacing:-.01em}
+.feat-desc{font-size:.82rem;color:var(--t2);line-height:1.6}
+
+/* ROLES */
+.roles{padding:3rem 1.5rem 5rem;max-width:1000px;margin:0 auto}
+.roles-grid{display:grid;grid-template-columns:1fr;gap:.8rem;margin-top:2.5rem}
+@media(min-width:600px){.roles-grid{grid-template-columns:repeat(3,1fr)}}
+.role-card{background:var(--s1);border:1px solid var(--b1);border-radius:18px;padding:1.4rem;}
+.role-card.owner{border-color:rgba(255,184,51,.2)}
+.role-card.manager{border-color:rgba(0,132,255,.15)}
+.role-card.staff{border-color:rgba(255,255,255,.08)}
+.role-emoji{font-size:1.6rem;margin-bottom:.8rem;display:block}
+.role-name{font-weight:800;font-size:1rem;color:var(--t1);margin-bottom:.9rem;letter-spacing:-.02em}
+.role-list{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.role-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.82rem;color:var(--t2);line-height:1.45}
+.role-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:.42rem}
+.owner .role-dot{background:var(--amb, #FFB833)}
+.manager .role-dot{background:#0084FF}
+.staff .role-dot{background:var(--t3)}
+
+/* CTA SECTION */
+.cta-section{
+  text-align:center;padding:4rem 1.5rem 6rem;
+  background:linear-gradient(180deg,var(--bg) 0%,rgba(0,217,126,.04) 50%,var(--bg) 100%);
+}
+.cta-title{font-family:"Syne",sans-serif;font-weight:800;font-size:clamp(1.8rem,6vw,3.5rem);letter-spacing:-.05em;line-height:1.05;margin-bottom:1rem}
+.cta-sub{font-size:.95rem;color:var(--t2);margin-bottom:2rem;line-height:1.65}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--b1);padding:2rem 1.5rem;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;
+}
+.foot-brand{font-family:"Syne",sans-serif;font-weight:800;font-size:.95rem;color:var(--t1)}
+.foot-brand span{color:var(--g)}
+.foot-by{font-size:.78rem;color:var(--t3)}
+.foot-by span{color:var(--g)}
+@media(max-width:480px){footer{flex-direction:column;align-items:flex-start;gap:.6rem}}
+</style>
 </head>
 <body>
 
-<!-- Animated background canvas -->
-<canvas id="bg-canvas"></canvas>
-
-<!-- Floating inventory icons -->
-<div class="float-icons" id="floatIcons"></div>
-
-<!-- Navbar -->
 <nav>
-  <div class="nav-logo">
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="8" width="28" height="18" rx="3" stroke="#00e676" stroke-width="2"/>
-      <path d="M8 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" stroke="#00e676" stroke-width="2"/>
-      <path d="M12 16h8M12 20h5" stroke="#00e676" stroke-width="1.8" stroke-linecap="round"/>
-      <circle cx="23" cy="19" r="1.5" fill="#00e676"/>
-    </svg>
-    SwiftStock
-  </div>
-  <ul class="nav-links">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#roles">Roles</a></li>
-    <li><a href="#how">How It Works</a></li>
-  </ul>
-  <a href="login.html" class="liquid-btn" style="padding:0.6rem 1.6rem; font-size:0.9rem; box-shadow:none;">
-    <div class="liquid-blob" id="navBlob"></div>
-    <span class="btn-label">Login</span>
+  <a href="#" class="nav-brand">
+    <div class="nav-bolt">
+      <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><path d="M18 4L8 18h8l-2 10 14-16h-9z" fill="#000"/></svg>
+    </div>
+    <span class="nav-name"><span>Swift</span>Stock</span>
   </a>
+  <div class="nav-actions">
+    <a href="#features" class="nav-link">Features</a>
+    <a href="login.html" class="nav-link">Login</a>
+    <a href="signup.html" class="nav-cta">Get Started</a>
+  </div>
 </nav>
 
-<!-- Hero -->
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-badge"><span class="badge-dot"></span> Inventory Management Platform</div>
-
-  <h1 class="hero-title">
-    Manage Every<br>
-    <span class="line2">Godown. Instantly.</span>
-  </h1>
-
-  <p class="hero-sub">
-    SwiftStock gives your team real-time inventory control across warehouses, roles, and devices — with powerful analytics built right in.
-  </p>
-
-  <div class="hero-cta-row">
-    <a href="signup.html" class="liquid-btn" id="mainBtn">
-      <div class="liquid-blob" id="mainBlob"></div>
-      <span class="btn-label">Get Started Free</span>
-    </a>
-    <a href="login.html" class="btn-secondary">Already have account</a>
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-pill"><span class="pill-dot"></span>Now in Beta</div>
+    <h1 class="hero-h1">
+      The Perfect
+      <span class="green">Godown Management</span>
+      App
+    </h1>
+    <p class="hero-sub">Track stock across multiple godowns in real time. Log IN/OUT entries, manage your team, and stay in control — from any device.</p>
+    <div class="hero-cta">
+      <a href="signup.html" class="btn-hero">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
+        Start for Free
+      </a>
+      <a href="login.html" class="btn-ghost">Sign In</a>
+    </div>
+    <div class="hero-trust">Firebase powered &middot; Real-time sync &middot; Role-based access</div>
   </div>
+</section>
 
-  <div class="stats-row">
-    <div class="stat">
-      <div class="stat-num" data-count="500">0</div>
-      <div class="stat-label">Companies</div>
+<!-- APP PREVIEW -->
+<section class="preview-section">
+  <div class="preview-frame">
+    <div class="pf-topbar">
+      <div class="pf-back">&#8592;</div>
+      <div class="pf-dot">&#9889;</div>
+      <div class="tb-sep" style="width:1px;height:14px;background:rgba(255,255,255,.08)"></div>
+      <div class="pf-title">Main Warehouse</div>
+      <button class="pf-add">+ Add</button>
     </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num" data-count="50">0</div>
-      <div class="stat-label">Godowns Tracked</div>
+    <div class="pf-hero">
+      <div class="pf-tag"><span class="pf-tagdot"></span>Warehouse</div>
+      <div class="pf-name">Main Warehouse</div>
+      <div class="pf-loc">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Mumbai, Maharashtra
+      </div>
     </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num" data-count="99">0</div>
-      <div class="stat-label">% Accuracy</div>
+    <div class="pf-stats">
+      <div class="pf-stat"><span class="pf-sv">12</span><div class="pf-sl">Products</div></div>
+      <div class="pf-stat"><span class="pf-sv" style="color:#00D97E">2.4k</span><div class="pf-sl">Total IN</div></div>
+      <div class="pf-stat"><span class="pf-sv" style="color:#FF4D6A">890</span><div class="pf-sl">Total OUT</div></div>
+    </div>
+    <div class="pf-search">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="pf-si">Search products...</span>
+    </div>
+    <div class="pf-list">
+      <div class="pf-phdr"><span>Products</span><span class="pf-pill">12</span></div>
+      <div class="pf-item">
+        <div class="pf-ico">&#9878;&#65039;</div>
+        <div><div class="pf-iname">Steel Rods</div><div class="pf-imeta">kg &middot; 28 entries</div></div>
+        <div class="pf-istk"><span class="pf-inum" style="color:#00D97E">450</span><span class="pf-iu">kg</span></div>
+      </div>
+      <div class="pf-item">
+        <div class="pf-ico">&#128230;</div>
+        <div><div class="pf-iname">Cement Bags</div><div class="pf-imeta">bag &middot; 14 entries</div></div>
+        <div class="pf-istk"><span class="pf-inum" style="color:#FFB833">8</span><span class="pf-iu">bag</span></div>
+      </div>
+      <div class="pf-item">
+        <div class="pf-ico">&#128230;</div>
+        <div><div class="pf-iname">PVC Pipes</div><div class="pf-imeta">piece &middot; 9 entries</div></div>
+        <div class="pf-istk"><span class="pf-inum" style="color:#00D97E">120</span><span class="pf-iu">piece</span></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Features -->
+<!-- FEATURES -->
 <section class="features" id="features">
-  <p class="section-label reveal">What You Get</p>
-  <h2 class="section-title reveal">Everything you need to<br>run your warehouse.</h2>
+  <div class="sec-label">Why SwiftStock</div>
+  <h2 class="sec-title">Everything your<br>team needs.</h2>
+  <p class="sec-sub">Built for warehouses, godowns, and inventory-heavy businesses that demand real-time visibility.</p>
   <div class="features-grid">
-    <div class="feat-card reveal">
-      <div class="feat-icon">🏪</div>
-      <div class="feat-title">Multi-Godown Management</div>
-      <p class="feat-desc">Create unlimited godowns and assign custom staff access per warehouse. Full control over who sees what.</p>
+    <div class="feat-card">
+      <div class="feat-icon">&#9889;</div>
+      <div class="feat-title">Real-Time Sync</div>
+      <div class="feat-desc">Entries update instantly across all devices. Firebase powers live stock changes the moment they happen.</div>
     </div>
-    <div class="feat-card reveal">
-      <div class="feat-icon">📦</div>
-      <div class="feat-title">Smart Product Entries</div>
-      <p class="feat-desc">Log every IN/OUT entry with timestamps, quantities, and unit conversions. Full audit trail, always.</p>
+    <div class="feat-card">
+      <div class="feat-icon">&#127979;</div>
+      <div class="feat-title">Multi-Godown</div>
+      <div class="feat-desc">Manage unlimited godowns from one dashboard. Each with its own products, staff, and stock history.</div>
     </div>
-    <div class="feat-card reveal">
-      <div class="feat-icon">🔄</div>
-      <div class="feat-title">Unit Conversions</div>
-      <p class="feat-desc">Define custom conversions like 1 kg = 20 pieces. SwiftStock auto-calculates stock across any unit.</p>
-    </div>
-    <div class="feat-card reveal">
-      <div class="feat-icon">👥</div>
+    <div class="feat-card">
+      <div class="feat-icon">&#128101;</div>
       <div class="feat-title">Role-Based Access</div>
-      <p class="feat-desc">Owners, Managers, and Staff each see exactly what they need. Built-in permission layers, zero config.</p>
+      <div class="feat-desc">Owner, Manager, Employee, Viewer. Assign the right access to the right person every time.</div>
     </div>
-    <div class="feat-card reveal">
-      <div class="feat-icon">📊</div>
-      <div class="feat-title">Google Sheets Backup</div>
-      <p class="feat-desc">Every transaction syncs to your Google Sheet in real time. Audit from anywhere, even offline.</p>
+    <div class="feat-card">
+      <div class="feat-icon">&#128260;</div>
+      <div class="feat-title">Unit Conversions</div>
+      <div class="feat-desc">Log entries in any unit. Set up conversions like 1 box = 12 pieces and let SwiftStock do the math.</div>
     </div>
-    <div class="feat-card reveal">
-      <div class="feat-icon">🔔</div>
-      <div class="feat-title">Owner Notifications</div>
-      <p class="feat-desc">Get notified instantly when staff change credentials, entries are made, or key events happen.</p>
+    <div class="feat-card">
+      <div class="feat-icon">&#128203;</div>
+      <div class="feat-title">Audit Trail</div>
+      <div class="feat-desc">Every entry, edit, and deletion is recorded with who did it and when. Full accountability.</div>
     </div>
-  </div>
-</section>
-
-<!-- How it works -->
-<section class="how" id="how">
-  <div class="how-inner">
-    <p class="section-label reveal">Simple by Design</p>
-    <h2 class="section-title reveal">Up and running in<br>minutes.</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <div class="step-title">Sign Up as Owner</div>
-          <p class="step-desc">Create your company profile with name, email, and password. A unique 10-digit Corporate ID is generated automatically for your team.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <div class="step-title">Add Your Staff</div>
-          <p class="step-desc">Create manager, employee, or viewer accounts from your dashboard. Share credentials via WhatsApp, Gmail, or any app — in text or image.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <div class="step-title">Create Godowns</div>
-          <p class="step-desc">Add warehouse locations and assign custom staff access per godown. Toggle individual staff on or off for each warehouse.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-content">
-          <div class="step-title">Track Everything</div>
-          <p class="step-desc">Add products, log IN/OUT entries, set unit conversions, and watch your stock update in real time — synced to Firebase and your Google Sheet.</p>
-        </div>
-      </div>
+    <div class="feat-card">
+      <div class="feat-icon">&#128241;</div>
+      <div class="feat-title">Mobile First</div>
+      <div class="feat-desc">Designed from the ground up for phones. Log stock from the warehouse floor, not just the office.</div>
     </div>
   </div>
 </section>
 
-<!-- Roles -->
-<section class="roles" id="roles">
-  <p class="section-label reveal">Access Levels</p>
-  <h2 class="section-title reveal">The right permissions<br>for every role.</h2>
+<!-- ROLES -->
+<section class="roles">
+  <div class="sec-label">Access Control</div>
+  <h2 class="sec-title">The right access<br>for every role.</h2>
   <div class="roles-grid">
-    <div class="role-card owner reveal">
-      <div class="role-ring">👑</div>
+    <div class="role-card owner">
+      <span class="role-emoji">&#128081;</span>
       <div class="role-name">Owner</div>
-      <ul class="role-perms">
-        <li><span class="perm-dot"></span>Full platform access</li>
-        <li><span class="perm-dot"></span>Create & remove any staff</li>
-        <li><span class="perm-dot"></span>View all IDs & passwords</li>
-        <li><span class="perm-dot"></span>Delete products & entries</li>
-        <li><span class="perm-dot"></span>Receive all notifications</li>
-        <li><span class="perm-dot"></span>Manage all godowns</li>
+      <ul class="role-list">
+        <li><span class="role-dot"></span>Full platform access</li>
+        <li><span class="role-dot"></span>Add &amp; remove any staff</li>
+        <li><span class="role-dot"></span>Delete products &amp; entries</li>
+        <li><span class="role-dot"></span>View all godowns</li>
+        <li><span class="role-dot"></span>Receive all notifications</li>
       </ul>
     </div>
-    <div class="role-card manager reveal">
-      <div class="role-ring">🛡️</div>
+    <div class="role-card manager">
+      <span class="role-emoji">&#128737;&#65039;</span>
       <div class="role-name">Manager</div>
-      <ul class="role-perms">
-        <li><span class="perm-dot"></span>Create & manage staff</li>
-        <li><span class="perm-dot"></span>Create & manage godowns</li>
-        <li><span class="perm-dot"></span>Add & delete products</li>
-        <li><span class="perm-dot"></span>View assigned godowns</li>
-        <li><span class="perm-dot"></span>Log IN/OUT entries</li>
-        <li><span class="perm-dot"></span>Cannot remove Owner</li>
+      <ul class="role-list">
+        <li><span class="role-dot"></span>Create &amp; manage staff</li>
+        <li><span class="role-dot"></span>Manage assigned godowns</li>
+        <li><span class="role-dot"></span>Add &amp; delete products</li>
+        <li><span class="role-dot"></span>Log IN/OUT entries</li>
+        <li><span class="role-dot"></span>Cannot remove Owner</li>
       </ul>
     </div>
-    <div class="role-card staff reveal">
-      <div class="role-ring">🧑‍💼</div>
+    <div class="role-card staff">
+      <span class="role-emoji">&#129489;&#8205;&#128188;</span>
       <div class="role-name">Staff / Viewer</div>
-      <ul class="role-perms">
-        <li><span class="perm-dot"></span>View assigned godowns only</li>
-        <li><span class="perm-dot"></span>Add product entries</li>
-        <li><span class="perm-dot"></span>View own profile</li>
-        <li><span class="perm-dot"></span>No account management</li>
-        <li><span class="perm-dot"></span>No staff creation</li>
-        <li><span class="perm-dot"></span>Viewers: read only</li>
+      <ul class="role-list">
+        <li><span class="role-dot"></span>View assigned godowns</li>
+        <li><span class="role-dot"></span>Log stock entries</li>
+        <li><span class="role-dot"></span>View own profile</li>
+        <li><span class="role-dot"></span>Viewers: read only</li>
+        <li><span class="role-dot"></span>No admin access</li>
       </ul>
     </div>
   </div>
@@ -870,203 +353,26 @@
 
 <!-- CTA -->
 <section class="cta-section">
-  <h2 class="cta-title reveal">Start managing smarter,<br>today.</h2>
-  <p class="cta-sub reveal">No credit card. No setup fee. Your first godown is live in under 2 minutes.</p>
-  <a href="signup.html" class="liquid-btn" id="ctaBtn">
-    <div class="liquid-blob" id="ctaBlob"></div>
-    <span class="btn-label">Create Free Account →</span>
+  <h2 class="cta-title">Start managing<br>smarter today.</h2>
+  <p class="cta-sub">No credit card. No setup fee.<br>Your first godown is live in under 2 minutes.</p>
+  <a href="signup.html" class="btn-hero" style="display:inline-flex">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
+    Create Free Account
   </a>
 </section>
 
-<!-- Footer -->
 <footer>
-  <div class="footer-logo">⚡ SwiftStock</div>
-  <span>© 2025 SwiftStock. Built for teams that move fast.</span>
-  <span>Firebase + Google Sheets Powered</span>
+  <div class="foot-brand"><span>Swift</span>Stock</div>
+  <div class="foot-by">Built by <span>Nexus Production</span></div>
+  <div style="font-size:.72rem;color:var(--t3)">&#169; 2025 SwiftStock. All rights reserved.</div>
 </footer>
 
 <script type="module">
-  // If user is already logged in, redirect to dashboard immediately
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  const app = initializeApp({
-    apiKey: "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
-    authDomain: "store-management-nexus.firebaseapp.com",
-    projectId: "store-management-nexus",
-    storageBucket: "store-management-nexus.firebasestorage.app",
-    messagingSenderId: "263693510395",
-    appId: "1:263693510395:web:47a0485221405dbb6fb25e",
-  });
-  const auth = getAuth(app);
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      window.location.replace('dashboard.html');
-    }
-  });
-</script>
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, mouse = { x: -1000, y: -1000 };
-
-  function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // Orbs
-  const orbs = Array.from({ length: 4 }, (_, i) => ({
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    r: 200 + Math.random() * 300,
-    vx: (Math.random() - 0.5) * 0.4,
-    vy: (Math.random() - 0.5) * 0.4,
-    hue: i === 0 ? 150 : (i === 1 ? 145 : 155),
-  }));
-
-  function drawCanvas() {
-    ctx.clearRect(0, 0, W, H);
-
-    // Draw grid
-    ctx.strokeStyle = 'rgba(0,230,118,0.04)';
-    ctx.lineWidth = 1;
-    const gridSize = 60;
-    for (let x = 0; x < W; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, H);
-      ctx.stroke();
-    }
-    for (let y = 0; y < H; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-    }
-
-    // Draw orbs
-    orbs.forEach(o => {
-      o.x += o.vx;
-      o.y += o.vy;
-      if (o.x < -o.r || o.x > W + o.r) o.vx *= -1;
-      if (o.y < -o.r || o.y > H + o.r) o.vy *= -1;
-
-      const g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
-      g.addColorStop(0, `hsla(${o.hue},100%,50%,0.08)`);
-      g.addColorStop(1, 'transparent');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    requestAnimationFrame(drawCanvas);
-  }
-  drawCanvas();
-
-  /* ── LIQUID BUTTON: cursor-following blob ── */
-  function setupLiquidBtn(btnId, blobId) {
-    const btn = document.getElementById(btnId);
-    const blob = document.getElementById(blobId);
-    if (!btn || !blob) return;
-
-    btn.addEventListener('mousemove', (e) => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left; // 0 to rect.width
-      const y = e.clientY - rect.top;
-      // Map to blob position: blob is 120% wide, 400% tall
-      const blobX = (x / rect.width) * 100 - 60; // shift by -60 to -10 range
-      const blobY = (y / rect.height) * 100 - 200;
-      blob.style.transform = `translate(${blobX * 0.3}px, ${blobY * 0.15}px)`;
-    });
-
-    btn.addEventListener('mouseleave', () => {
-      blob.style.transform = 'translate(0, 0)';
-    });
-  }
-
-  // For any anchor with liquid-btn class — handle all blobs
-  const liquidBtns = document.querySelectorAll('.liquid-btn');
-  liquidBtns.forEach(btn => {
-    const blob = btn.querySelector('.liquid-blob');
-    if (!blob) return;
-    btn.addEventListener('mousemove', (e) => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const blobX = (x / rect.width * 100 - 60) * 0.3;
-      const blobY = (y / rect.height * 100 - 200) * 0.15;
-      blob.style.transform = `translate(${blobX}px, ${blobY}px)`;
-      blob.style.transition = 'transform 0.06s linear';
-    });
-    btn.addEventListener('mouseleave', () => {
-      blob.style.transform = 'translate(0, 0)';
-      blob.style.transition = 'transform 0.5s ease';
-    });
-  });
-
-  /* ── MOBILE: auto-oscillating liquid ── */
-  if ('ontouchstart' in window) {
-    let t = 0;
-    function mobileOscillate() {
-      t += 0.02;
-      document.querySelectorAll('.liquid-blob').forEach(blob => {
-        blob.style.transform = `translate(${Math.sin(t) * 15}px, ${Math.cos(t * 0.7) * 8}px)`;
-        blob.style.transition = 'none';
-      });
-      requestAnimationFrame(mobileOscillate);
-    }
-    mobileOscillate();
-  }
-
-  /* ── FLOATING ICONS ── */
-  const icons = ['📦', '🏪', '📊', '🔄', '📋', '⚡', '🏷️', '📈', '🗂️', '🔑'];
-  const floatContainer = document.getElementById('floatIcons');
-  icons.forEach((icon, i) => {
-    const el = document.createElement('div');
-    el.className = 'float-icon';
-    el.textContent = icon;
-    el.style.left = `${5 + (i * 10) % 90}%`;
-    el.style.animationDuration = `${12 + Math.random() * 15}s`;
-    el.style.animationDelay = `${Math.random() * 12}s`;
-    el.style.fontSize = `${1 + Math.random()}rem`;
-    floatContainer.appendChild(el);
-  });
-
-  /* ── SCROLL REVEALS ── */
-  const reveals = document.querySelectorAll('.reveal, .step');
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry, idx) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), idx * 80);
-      }
-    });
-  }, { threshold: 0.15 });
-  reveals.forEach(el => revealObserver.observe(el));
-
-  /* ── COUNTER ANIMATION ── */
-  const counters = document.querySelectorAll('[data-count]');
-  const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const el = entry.target;
-        const target = parseInt(el.dataset.count);
-        const suffix = el.dataset.count === '99' ? '%' : '+';
-        let start = 0;
-        const duration = 1500;
-        const step = (timestamp) => {
-          if (!start) start = timestamp;
-          const progress = Math.min((timestamp - start) / duration, 1);
-          el.textContent = Math.floor(progress * target) + (progress === 1 ? suffix : '');
-          if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-        counterObserver.unobserve(el);
-      }
-    });
-  }, { threshold: 0.5 });
-  counters.forEach(el => counterObserver.observe(el));
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const app = initializeApp({apiKey:"AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",authDomain:"store-management-nexus.firebaseapp.com",projectId:"store-management-nexus",storageBucket:"store-management-nexus.firebasestorage.app",messagingSenderId:"263693510395",appId:"1:263693510395:web:47a0485221405dbb6fb25e"});
+const auth = getAuth(app);
+onAuthStateChanged(auth, user => { if (user) window.location.replace("dashboard.html"); });
 </script>
 </body>
 </html>
