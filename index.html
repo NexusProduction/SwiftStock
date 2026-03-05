@@ -1,378 +1,1848 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SwiftStock — The Perfect Godown Management App</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000'/%3E%3Cpath d='M18 4L8 18h8l-2 10 14-16h-9z' fill='%2300D97E'/%3E%3C/svg%3E"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#050709;--s1:#0B0F15;--s2:#111620;
-  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);
-  --t1:#EFF3FF;--t2:#7785A8;--t3:#3A4260;
-  --g:#00D97E;--gd:#009959;--glow:rgba(0,217,126,.25);
-  --r:#FF4D6A;
-}
-html,body{min-height:100%;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:"Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:99px}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SwiftStock — Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23000'/><path d='M18 4L8 18h8l-2 10 14-16h-9z' fill='%2330d158'/></svg>"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#000;--bg2:#0a0a0a;
+      --card:#111111;--card2:#161616;--card3:#1c1c1e;
+      --border:#222222;--border2:#2c2c2e;
+      --text:#f5f5f7;--text2:#aeaeb2;--text3:#6e6e73;
+      --green:#30d158;--green-dim:rgba(48,209,88,0.12);
+      --blue:#0a84ff;--blue-dim:rgba(10,132,255,0.12);
+      --purple:#bf5af2;--purple-dim:rgba(191,90,242,0.12);
+      --amber:#ff9f0a;--amber-dim:rgba(255,159,10,0.12);
+      --red:#ff453a;--red-dim:rgba(255,69,58,0.12);
+      --silver:#636366;
+      --input-bg:#0d0d0d;--input-border:#2c2c2e;
+      --topbar-bg:rgba(0,0,0,0.88);
+    }
+    html,body{height:100%;font-family:'Inter',-apple-system,'SF Pro Text',sans-serif;font-size:15px;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2c2c2e;border-radius:99px}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 max(1.5rem,env(safe-area-inset-left));backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);background:rgba(5,7,9,.8);border-bottom:1px solid var(--b1);}
-.nav-brand{display:flex;align-items:center;gap:.55rem;text-decoration:none;}
-.nav-bolt{width:30px;height:30px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.nav-name{font-family:"Syne",sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-.03em;color:var(--t1)}
-.nav-name span{color:var(--g)}
-.nav-actions{display:flex;align-items:center;gap:.65rem}
-.nav-link{color:var(--t2);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .15s;padding:.4rem .6rem;}
-.nav-link:hover{color:var(--t1)}
-.nav-cta{height:36px;padding:0 1.1rem;background:var(--g);color:#000;border:none;border-radius:9px;font-family:inherit;font-weight:700;font-size:.84rem;cursor:pointer;text-decoration:none;display:flex;align-items:center;transition:opacity .15s,transform .15s;}
-.nav-cta:hover{opacity:.88;transform:translateY(-1px)}
-@media(max-width:500px){.nav-link{display:none}}
+    /* ── TOPBAR ── */
+    .topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 1.4rem;background:var(--topbar-bg);border-bottom:1px solid var(--border);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
+    .topbar-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:-.02em;color:var(--text);display:flex;align-items:center;gap:.45rem;text-decoration:none}
+    .topbar-logo svg{color:var(--green)}
+    .topbar-right{display:flex;align-items:center;gap:.4rem}
+    .notif-btn{position:relative;width:34px;height:34px;border-radius:9px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .15s}
+    .notif-btn:hover{background:var(--card2);color:var(--text)}
+    .notif-badge{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg);display:none}
+    .notif-badge.show{display:block}
+    .profile-btn{width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;font-family:'Space Grotesk',sans-serif;border:1.5px solid var(--border2);background:var(--card2);color:var(--text);transition:all .15s;overflow:hidden}
+    .profile-btn:hover{border-color:var(--text3)}
+    .profile-btn img{width:100%;height:100%;object-fit:cover}
 
-/* HERO */
-.hero{
-  min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:calc(60px + 3rem) 1.5rem 4rem;
-  position:relative;overflow:hidden;
-}
-.hero-bg{
-  position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 20%,rgba(0,217,126,.05) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 70%,rgba(0,217,126,.04) 0%,transparent 60%);
-}
-.hero-grid{
-  position:absolute;inset:0;pointer-events:none;z-index:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-  background-size:60px 60px;
-  -webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 30%,transparent 100%);
-  mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 30%,transparent 100%);
-}
-.hero-content{position:relative;z-index:1;max-width:700px;}
-.hero-pill{
-  display:inline-flex;align-items:center;gap:.4rem;
-  background:rgba(0,217,126,.08);border:1px solid rgba(0,217,126,.2);border-radius:999px;
-  padding:.32rem .85rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--g);margin-bottom:1.6rem;animation:fadeDown .7s ease both;
-}
-.pill-dot{width:5px;height:5px;border-radius:50%;background:var(--g);animation:blink 2s ease infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.hero-h1{
-  font-family:"Syne",sans-serif;font-weight:800;
-  font-size:clamp(2.8rem,9vw,6rem);letter-spacing:-.05em;line-height:.95;
-  margin-bottom:1.1rem;animation:fadeUp .7s .1s ease both;
-}
-.hero-h1 .green{color:var(--g);display:block}
-.hero-sub{
-  font-size:clamp(.95rem,2.5vw,1.15rem);color:var(--t2);line-height:1.7;
-  max-width:480px;margin:0 auto 2.2rem;animation:fadeUp .7s .2s ease both;
-  font-weight:400;
-}
-.hero-cta{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.85rem;animation:fadeUp .7s .3s ease both;}
-.btn-hero{
-  height:52px;padding:0 2rem;
-  background:var(--g);color:#000;border:none;border-radius:14px;
-  font-family:inherit;font-weight:800;font-size:.98rem;letter-spacing:.01em;
-  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;
-  transition:opacity .15s,transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .15s;
-  box-shadow:0 4px 24px var(--glow);
-}
-.btn-hero:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 32px var(--glow)}
-.btn-ghost{
-  height:52px;padding:0 1.8rem;
-  background:transparent;color:var(--t1);border:1.5px solid var(--b2);border-radius:14px;
-  font-family:inherit;font-weight:600;font-size:.95rem;
-  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;
-  transition:all .15s;
-}
-.btn-ghost:hover{background:var(--s1);border-color:var(--b2)}
-.hero-trust{margin-top:2.5rem;font-size:.76rem;color:var(--t3);animation:fadeUp .7s .45s ease both;}
+    .main{padding:52px 0 0;min-height:100vh}
+    .content{max-width:1060px;margin:0 auto;padding:2.2rem 1.4rem 5rem}
 
-/* APP PREVIEW */
-.preview-section{padding:2rem 1.5rem 4rem;display:flex;justify-content:center}
-.preview-frame{
-  width:100%;max-width:360px;
-  background:var(--s1);border:1px solid var(--b2);border-radius:24px;
-  overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
-  animation:fadeUp .8s .4s ease both;
-}
-.pf-topbar{height:48px;background:rgba(8,10,15,.95);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:.5rem;padding:0 1rem;}
-.pf-back{width:28px;height:28px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--t2);}
-.pf-dot{width:20px;height:20px;background:var(--g);border-radius:6px;font-size:.55rem;font-weight:700;color:#000;display:flex;align-items:center;justify-content:center;}
-.pf-title{font-size:.78rem;font-weight:700;color:var(--t2);flex:1}
-.pf-add{height:26px;padding:0 .65rem;background:var(--g);border:none;border-radius:7px;font-size:.72rem;font-weight:700;color:#000;cursor:default;}
-.pf-hero{padding:1rem 1rem .7rem;background:var(--bg)}
-.pf-tag{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:.35rem;display:flex;align-items:center;gap:.25rem;}
-.pf-tagdot{width:4px;height:4px;border-radius:50%;background:var(--g);}
-.pf-name{font-family:"Syne",sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-.04em;color:var(--t1);margin-bottom:.18rem}
-.pf-loc{font-size:.68rem;color:var(--t2);display:flex;align-items:center;gap:.25rem}
-.pf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;padding:.5rem 1rem .6rem;background:var(--bg);}
-.pf-stat{background:var(--s1);border:1px solid var(--b1);border-radius:9px;padding:.5rem .5rem;text-align:center;}
-.pf-sv{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.78rem;display:block;line-height:1;margin-bottom:.12rem;}
-.pf-sl{font-size:.5rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}
-.pf-search{margin:.5rem 1rem;background:var(--s1);border:1px solid var(--b1);border-radius:9px;height:34px;display:flex;align-items:center;gap:.5rem;padding:0 .75rem;}
-.pf-search svg{color:var(--t3);flex-shrink:0}
-.pf-si{font-size:.72rem;color:var(--t3);}
-.pf-list{padding:0 1rem .5rem}
-.pf-phdr{display:flex;align-items:center;justify-content:space-between;padding:.55rem 0 .3rem;font-size:.52rem;font-weight:700;color:var(--t3);letter-spacing:.1em;text-transform:uppercase}
-.pf-pill{background:var(--s2);border:1px solid var(--b1);border-radius:4px;padding:.04rem .35rem;font-size:.5rem;font-weight:700;color:var(--t2);}
-.pf-item{display:flex;align-items:center;gap:.55rem;padding:.55rem 0;border-bottom:1px solid var(--b1);}
-.pf-item:last-child{border-bottom:none}
-.pf-ico{width:34px;height:34px;background:var(--s2);border:1px solid var(--b1);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
-.pf-iname{font-size:.78rem;font-weight:700;color:var(--t1);margin-bottom:.06rem}
-.pf-imeta{font-size:.6rem;color:var(--t3)}
-.pf-istk{text-align:right;margin-left:auto;flex-shrink:0}
-.pf-inum{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.8rem;display:block;line-height:1}
-.pf-iu{font-size:.52rem;color:var(--t3);display:block;margin-top:.06rem}
+    /* ── PAGE HEADER ── */
+    .dash-header{margin-bottom:1.8rem}
+    .dash-eyebrow{font-size:.68rem;font-weight:600;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;display:flex;align-items:center;gap:.4rem}
+    .dash-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 8px var(--green)}
+    .dash-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:2.1rem;letter-spacing:-.05em;line-height:1.08;color:var(--text)}
+    .dash-subtitle{color:var(--text2);font-size:.74rem;margin-top:.3rem;letter-spacing:.03em;text-transform:uppercase;font-weight:500}
 
-/* FEATURES */
-.features{padding:4rem 1.5rem 5rem;max-width:1000px;margin:0 auto}
-.sec-label{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin-bottom:.65rem}
-.sec-title{font-family:"Syne",sans-serif;font-weight:800;font-size:clamp(1.7rem,5vw,3rem);letter-spacing:-.04em;line-height:1.1;margin-bottom:.7rem}
-.sec-sub{font-size:clamp(.88rem,2vw,1rem);color:var(--t2);line-height:1.7;max-width:480px}
-.features-grid{display:grid;grid-template-columns:1fr;gap:.9rem;margin-top:2.5rem}
-@media(min-width:540px){.features-grid{grid-template-columns:1fr 1fr}}
-@media(min-width:800px){.features-grid{grid-template-columns:repeat(3,1fr)}}
-.feat-card{background:var(--s1);border:1px solid var(--b1);border-radius:18px;padding:1.5rem;transition:border-color .2s,transform .2s;}
-.feat-card:hover{border-color:var(--b2);transform:translateY(-2px)}
-.feat-icon{width:40px;height:40px;border-radius:11px;background:rgba(0,217,126,.1);border:1px solid rgba(0,217,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:1rem;}
-.feat-title{font-weight:700;font-size:.95rem;color:var(--t1);margin-bottom:.35rem;letter-spacing:-.01em}
-.feat-desc{font-size:.82rem;color:var(--t2);line-height:1.6}
+    /* ── STAT CARDS ── */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.6rem}
+    @media(max-width:740px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+    .stat-card{background:var(--card);padding:1.35rem 1.2rem;border-right:1px solid var(--border);transition:background .18s;position:relative;overflow:hidden;cursor:default}
+    .stat-card:last-child{border-right:none}
+    @media(max-width:740px){.stat-card:nth-child(2){border-right:none}.stat-card:nth-child(1),.stat-card:nth-child(2){border-bottom:1px solid var(--border)}}
+    .stat-card:hover{background:var(--card2)}
+    .stat-card:hover .stat-tooltip{opacity:1;transform:translateY(0);pointer-events:all}
+    .stat-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+    .stat-card-icon{width:32px;height:32px;border-radius:9px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--accent,var(--green));transition:background .18s,border-color .18s}
+    .stat-card:hover .stat-card-icon{background:rgba(var(--accent-rgb,48,209,88),0.12);border-color:rgba(var(--accent-rgb,48,209,88),0.3)}
+    .stat-tag{font-size:.56rem;padding:.12rem .45rem;border-radius:4px;background:var(--card2);color:var(--text2);letter-spacing:.07em;font-weight:600;border:1px solid var(--border)}
+    .stat-val{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:2.4rem;line-height:1;letter-spacing:-.06em;color:var(--text)}
+    .stat-label{color:var(--text2);font-size:.82rem;font-weight:500;margin-top:.32rem;letter-spacing:-.01em}
+    .stat-card:nth-child(1){--accent:var(--green);--accent-rgb:48,209,88}
+    .stat-card:nth-child(2){--accent:var(--blue);--accent-rgb:10,132,255}
+    .stat-card:nth-child(3){--accent:var(--amber);--accent-rgb:255,159,10}
+    .stat-card:nth-child(4){--accent:var(--purple);--accent-rgb:191,90,242}
+    .stat-card .stat-card-icon{color:var(--accent)}
+    /* Stat tooltip */
+    .stat-tooltip{
+      position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);
+      background:#1c1c1e;border:1px solid var(--border2);border-radius:10px;
+      padding:.55rem .8rem;font-size:.72rem;color:var(--text2);white-space:nowrap;
+      opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;
+      box-shadow:0 8px 24px rgba(0,0,0,.7);z-index:50;line-height:1.55;
+    }
+    .stat-tooltip::after{
+      content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+      border:5px solid transparent;border-top-color:#2c2c2e;
+    }
 
-/* ROLES */
-.roles{padding:3rem 1.5rem 5rem;max-width:1000px;margin:0 auto}
-.roles-grid{display:grid;grid-template-columns:1fr;gap:.8rem;margin-top:2.5rem}
-@media(min-width:600px){.roles-grid{grid-template-columns:repeat(3,1fr)}}
-.role-card{background:var(--s1);border:1px solid var(--b1);border-radius:18px;padding:1.4rem;}
-.role-card.owner{border-color:rgba(255,184,51,.2)}
-.role-card.manager{border-color:rgba(0,132,255,.15)}
-.role-card.staff{border-color:rgba(255,255,255,.08)}
-.role-emoji{font-size:1.6rem;margin-bottom:.8rem;display:block}
-.role-name{font-weight:800;font-size:1rem;color:var(--t1);margin-bottom:.9rem;letter-spacing:-.02em}
-.role-list{list-style:none;display:flex;flex-direction:column;gap:.45rem}
-.role-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.82rem;color:var(--t2);line-height:1.45}
-.role-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:.42rem}
-.owner .role-dot{background:var(--amb, #FFB833)}
-.manager .role-dot{background:#0084FF}
-.staff .role-dot{background:var(--t3)}
+    /* ── CHART ROW ── */
+    .charts-row{display:grid;grid-template-columns:1fr 260px;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.6rem}
+    @media(max-width:660px){.charts-row{grid-template-columns:1fr}}
+    .chart-panel{background:var(--card);padding:1.3rem 1.4rem}
+    .chart-panel+.chart-panel{border-left:1px solid var(--border)}
+    @media(max-width:660px){.chart-panel+.chart-panel{border-left:none;border-top:1px solid var(--border)}}
+    .chart-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.1rem}
+    .chart-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;color:var(--text)}
+    .chart-desc{font-size:.75rem;color:var(--text2);margin-top:.18rem}
+    .chart-legend{display:flex;gap:.7rem;flex-wrap:wrap;padding-top:.1rem}
+    .cleg{display:flex;align-items:center;gap:.32rem;font-size:.72rem;color:var(--text2);font-weight:500}
+    .cleg-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+    .chart-wrap{position:relative;height:145px}
+    .chart-wrap canvas{width:100%!important;height:100%!important}
 
-/* CTA SECTION */
-.cta-section{
-  text-align:center;padding:4rem 1.5rem 6rem;
-  background:linear-gradient(180deg,var(--bg) 0%,rgba(0,217,126,.04) 50%,var(--bg) 100%);
-}
-.cta-title{font-family:"Syne",sans-serif;font-weight:800;font-size:clamp(1.8rem,6vw,3.5rem);letter-spacing:-.05em;line-height:1.05;margin-bottom:1rem}
-.cta-sub{font-size:.95rem;color:var(--t2);margin-bottom:2rem;line-height:1.65}
+    /* ── SECTION ── */
+    .section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+    .section-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:.5rem}
+    .count-pill{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:.12rem .5rem;font-size:.7rem;color:var(--text2);font-weight:700}
 
-/* FOOTER */
-footer{
-  border-top:1px solid var(--b1);padding:2rem 1.5rem;
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;
-}
-.foot-brand{font-family:"Syne",sans-serif;font-weight:800;font-size:.95rem;color:var(--t1)}
-.foot-brand span{color:var(--g)}
-.foot-by{font-size:.78rem;color:var(--t3)}
-.foot-by span{color:var(--g)}
-@media(max-width:480px){footer{flex-direction:column;align-items:flex-start;gap:.6rem}}
-</style>
+    /* ── GODOWN LIST ── */
+    .godowns-list{border:1px solid var(--border2);border-radius:14px;overflow:visible;background:var(--card)}
+    .add-row{
+      display:flex;align-items:center;gap:.88rem;padding:1rem 1.2rem;
+      cursor:pointer;transition:background .15s;
+      border-bottom:1px solid var(--border);
+      border-radius:14px 14px 0 0;
+    }
+    .add-row:hover{background:var(--card2)}
+    .add-row-icon{
+      width:38px;height:38px;border-radius:10px;flex-shrink:0;
+      border:1.5px dashed var(--border2);
+      display:flex;align-items:center;justify-content:center;color:var(--text3);
+      transition:border-color .15s,color .15s;
+    }
+    .add-row:hover .add-row-icon{border-color:var(--green);color:var(--green)}
+    .add-row-text{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.9rem;color:var(--text2)}
+    .add-row:hover .add-row-text{color:var(--text)}
+
+    /* Godown row */
+    .gd-row{
+      display:grid;
+      grid-template-columns:38px 1fr auto auto;
+      align-items:center;gap:.88rem;
+      padding:1rem 1.2rem;
+      cursor:pointer;position:relative;z-index:1;
+      border-bottom:1px solid var(--border);
+      transition:background .15s;
+      animation:fadeUp .3s ease both;
+    }
+    .gd-row:last-child{border-bottom:none;border-radius:0 0 14px 14px}
+    .gd-row::before{
+      content:'';position:absolute;left:0;top:12%;bottom:12%;
+      width:2.5px;border-radius:0 2px 2px 0;
+      background:var(--green);opacity:0;
+      transition:opacity .18s;
+    }
+    .gd-row:hover{background:rgba(255,255,255,.03);z-index:100}
+    .gd-row:hover::before{opacity:1}
+
+    .gd-row-icon{
+      width:38px;height:38px;border-radius:10px;flex-shrink:0;
+      background:var(--card2);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      color:var(--text2);transition:background .18s,border-color .18s,color .18s;
+    }
+    .gd-row:hover .gd-row-icon{background:rgba(48,209,88,.1);border-color:rgba(48,209,88,.3);color:var(--green)}
+
+    .gd-row-info{min-width:0}
+    .gd-row-name{
+      font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;
+      color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      margin-bottom:.12rem;
+    }
+    .gd-row-loc{
+      display:flex;align-items:center;gap:.28rem;
+      font-size:.76rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+
+    /* Staff pill with tooltip */
+    .gd-row-staff{position:relative;flex-shrink:0;z-index:10}
+    .gd-row-staff:hover{z-index:999}
+    .staff-pill{
+      display:flex;align-items:center;gap:.38rem;
+      padding:.3rem .7rem;border-radius:999px;
+      background:var(--card2);border:1px solid var(--border);
+      font-size:.74rem;font-weight:600;color:var(--text2);
+      cursor:default;transition:all .15s;white-space:nowrap;
+    }
+    .staff-pill svg{opacity:.6}
+    .gd-row-staff:hover .staff-pill{background:var(--card3);border-color:var(--border2);color:var(--text)}
+    /* Tooltip */
+    .staff-tooltip{
+      position:absolute;right:0;top:calc(100% + 8px);
+      min-width:180px;max-width:240px;
+      background:#1c1c1c;border:1px solid var(--border2);border-radius:12px;
+      padding:.6rem .75rem;
+      opacity:0;pointer-events:none;
+      transform:translateY(-6px) scale(.97);
+      transition:opacity .18s,transform .18s;
+      z-index:9999;
+      box-shadow:0 16px 48px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.04);
+    }
+    .gd-row-staff:hover .staff-tooltip{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+    .tt-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.4rem}
+    .st-item{display:flex;align-items:center;gap:.55rem;padding:.28rem 0}
+    .st-item+.st-item{border-top:1px solid var(--border)}
+    .st-av{width:22px;height:22px;border-radius:50%;background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.2);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--green);flex-shrink:0}
+    .st-name{font-size:.76rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .st-role{font-size:.64rem;color:var(--text3)}
+    .st-all{display:flex;align-items:center;gap:.45rem;font-size:.76rem;color:var(--text2);padding:.2rem 0}
+    .st-all svg{color:var(--green);flex-shrink:0}
+
+    /* Chevron */
+    .gd-row-arr{flex-shrink:0;color:var(--text3);display:flex;align-items:center;transition:transform .18s,color .18s}
+    .gd-row:hover .gd-row-arr{transform:translateX(2px);color:var(--green)}
+
+    /* ── EMPTY STATE ── */
+    .empty-state{text-align:center;padding:3rem 2rem;display:none}
+    .empty-state.show{display:block}
+    .empty-icon{font-size:2rem;margin-bottom:.8rem;opacity:.1}
+    .empty-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.3rem;color:var(--text2)}
+
+    /* ── NOTIF PANEL ── */
+    .notif-panel{position:fixed;top:58px;right:1.2rem;width:300px;max-height:400px;background:#111;border:1px solid var(--border2);border-radius:13px;z-index:400;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.85);transform:translateY(-8px) scale(.97);opacity:0;pointer-events:none;transition:all .18s cubic-bezier(.16,1,.3,1)}
+    .notif-panel.open{transform:none;opacity:1;pointer-events:all}
+    .notif-head{padding:.8rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.82rem}
+    .notif-clear{font-size:.68rem;color:var(--text3);cursor:pointer}
+    .notif-clear:hover{color:var(--red)}
+    .notif-list{overflow-y:auto;max-height:320px}
+    .notif-item{padding:.7rem 1rem;border-bottom:1px solid var(--border);display:flex;gap:.65rem;align-items:flex-start;transition:background .12s}
+    .notif-item:hover{background:var(--card2)}
+    .notif-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:.35rem}
+    .notif-text{font-size:.78rem;line-height:1.5;color:var(--text2)}
+    .notif-time{font-size:.64rem;color:var(--text3);margin-top:.15rem}
+    .notif-empty{padding:2.5rem;text-align:center;color:var(--text3);font-size:.78rem}
+
+    /* ── SIDEBAR ── */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:490;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+    .sidebar-overlay.open{opacity:1;pointer-events:all}
+    .sidebar{position:fixed;top:0;right:0;bottom:0;width:360px;max-width:95vw;background:#080808;border-left:1px solid var(--border);z-index:500;overflow-y:auto;transform:translateX(100%);transition:transform .32s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
+    .sidebar.open{transform:translateX(0)}
+    .sb-close{position:absolute;top:1rem;left:1rem;width:30px;height:30px;border-radius:9px;background:var(--card);border:1px solid var(--border);cursor:pointer;color:var(--text2);font-size:.88rem;display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:2}
+    .sb-close:hover{background:var(--card2);color:var(--text)}
+
+    /* Profile hero */
+    .profile-wrap{
+      position:relative;display:flex;flex-direction:column;align-items:center;
+      padding:2.8rem 1.5rem 1.5rem;border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg,rgba(48,209,88,0.04) 0%,transparent 100%);
+    }
+    .profile-wrap::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(48,209,88,.3),transparent);
+    }
+    .photo-ring{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;margin-bottom:.85rem;border:2px solid var(--border2);transition:border-color .2s}
+    .photo-ring.owner{border-color:var(--purple);box-shadow:0 0 0 4px rgba(191,90,242,.12)}
+    .photo-ring.manager{border-color:var(--amber);box-shadow:0 0 0 4px rgba(255,159,10,.12)}
+    .photo-ring:hover{transform:scale(1.04)}
+    .photo-inner{width:72px;height:72px;border-radius:50%;background:var(--card2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.85rem;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--text)}
+    .photo-inner img{width:100%;height:100%;object-fit:cover}
+    .photo-badge{position:absolute;bottom:2px;right:2px;width:22px;height:22px;border-radius:50%;background:var(--green);border:2px solid #080808;display:flex;align-items:center;justify-content:center;font-size:.62rem;cursor:pointer;color:#000;transition:transform .15s}
+    .photo-badge:hover{transform:scale(1.15)}
+    .sb-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:-.02em}
+    .sb-corp{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text3);margin-top:.18rem;letter-spacing:.04em}
+    .role-badge{margin-top:.45rem;padding:.18rem .72rem;border-radius:6px;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+    .role-owner{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(191,90,242,.25)}
+    .role-manager{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,159,10,.25)}
+    .role-staff,.role-employee{background:var(--card2);color:var(--silver);border:1px solid var(--border)}
+    .role-viewer{background:var(--card2);color:var(--text3);border:1px solid var(--border)}
+
+    /* Profile quick stats */
+    .sb-quick-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:1.1rem;width:100%}
+    .sb-qstat{padding:.65rem .5rem;text-align:center;background:var(--card);border-right:1px solid var(--border)}
+    .sb-qstat:last-child{border-right:none}
+    .sb-qstat-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:var(--text)}
+    .sb-qstat-lbl{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:.1rem}
+
+    /* Tabs */
+    .sb-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 .5rem;background:#080808;position:sticky;top:0;z-index:5}
+    .sb-tab{flex:1;padding:.78rem .4rem;font-size:.78rem;font-weight:600;color:var(--text3);cursor:pointer;text-align:center;border-bottom:2px solid transparent;transition:all .18s;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;gap:.3rem}
+    .sb-tab.active{color:var(--text);border-bottom-color:var(--green)}
+    .sb-tab:hover:not(.active){color:var(--text2)}
+    .sb-body{flex:1;overflow-y:auto}
+    .sb-panel{display:none;padding:1.1rem 1.4rem}
+    .sb-panel.active{display:block}
+
+    /* Profile rows */
+    .pf-section-title{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin:1rem 0 .55rem;padding-bottom:.35rem;border-bottom:1px solid var(--border)}
+    .pf-row{padding:.72rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+    .pf-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:.14rem}
+    .pf-val{font-size:.88rem;font-weight:500;color:var(--text)}
+    .pf-val.mono{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--green)}
+    .pf-edit{width:26px;height:26px;border-radius:8px;background:none;border:1px solid var(--border);cursor:pointer;color:var(--text3);font-size:.72rem;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+    .pf-edit:hover{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+    .logout-btn{width:calc(100% - 2.8rem);margin:.9rem 1.4rem;padding:.78rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.86rem;color:var(--red);background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.22);border-radius:11px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+    .logout-btn:hover{background:rgba(255,69,58,.18);border-color:rgba(255,69,58,.4)}
+    .staff-search{position:relative;margin-bottom:.85rem}
+    .staff-search input{width:100%;padding:.58rem 1rem .58rem 2rem;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;color:var(--text);font-family:inherit;font-size:.82rem;outline:none;transition:border-color .15s}
+    .staff-search input:focus{border-color:var(--green)}
+    .staff-search::before{content:'⌕';position:absolute;left:.72rem;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--text3)}
+    .staff-item{display:flex;align-items:center;gap:.7rem;padding:.75rem .8rem;border-radius:11px;border:1px solid var(--border);margin-bottom:.45rem;transition:all .18s;background:var(--card);position:relative;overflow:hidden}
+    .staff-item:hover{background:var(--card2);border-color:var(--border2);transform:translateX(2px)}
+    .staff-item::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--accent-color,var(--green));opacity:0;transition:opacity .18s}
+    .staff-item:hover::before{opacity:1}
+    .staff-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.76rem;font-weight:700;flex-shrink:0;font-family:'Space Grotesk',sans-serif;background:var(--card2);color:var(--text2);border:2px solid var(--border)}
+    .staff-av.manager{background:var(--amber-dim);color:var(--amber);border-color:rgba(255,159,10,.3);--accent-color:var(--amber)}
+    .staff-av.employee{background:var(--blue-dim);color:var(--blue);border-color:rgba(10,132,255,.3);--accent-color:var(--blue)}
+    .staff-av.viewer{background:var(--card2);color:var(--silver);border-color:var(--border);--accent-color:var(--silver)}
+    .staff-info{flex:1;min-width:0}
+    .staff-name{font-weight:600;font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+    .staff-role-chip{font-size:.65rem;color:var(--text2);text-transform:capitalize;margin-top:.06rem}
+    .staff-id{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--text3);margin-top:.04rem}
+    .staff-actions{display:flex;gap:.32rem;flex-shrink:0}
+    .sa-btn{width:26px;height:26px;border-radius:8px;background:none;border:1px solid var(--border);cursor:pointer;font-size:.72rem;color:var(--text3);display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .sa-btn:hover{background:var(--card2);color:var(--text2);border-color:var(--border2)}
+    .sa-btn.del:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+    .add-staff-btn{width:100%;padding:.8rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.87rem;color:#000;background:var(--green);border:none;border-radius:11px;cursor:pointer;transition:opacity .15s,transform .15s;margin-top:.6rem;display:flex;align-items:center;justify-content:center;gap:.4rem}
+    .add-staff-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+    /* ── MODALS ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:600;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s}
+    .modal-overlay.open{opacity:1;pointer-events:all}
+    .modal{background:#111;border:1px solid var(--border2);border-radius:18px;width:100%;max-width:450px;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.9);transform:scale(.97) translateY(10px);transition:transform .22s cubic-bezier(.16,1,.3,1)}
+    .modal-overlay.open .modal{transform:none}
+    .modal-handle{width:30px;height:3px;border-radius:99px;background:var(--border2);margin:.72rem auto}
+    .modal-head{padding:.35rem 1.3rem .82rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+    .modal-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.06rem}
+    .modal-sub{color:var(--text3);font-size:.72rem;margin-top:.14rem}
+    .modal-close{width:26px;height:26px;border-radius:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;color:var(--text2);font-size:.86rem;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+    .modal-close:hover{color:var(--red);border-color:rgba(255,69,58,.35)}
+    .modal-body{padding:0 1.3rem 1.3rem}
+    .mf{margin-bottom:.82rem}
+    .mf label{display:block;font-size:.61rem;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);margin-bottom:.33rem}
+    .mf-wrap{position:relative;display:flex;align-items:center}
+    .mf-icon{position:absolute;left:.8rem;font-size:.82rem;pointer-events:none;opacity:.3}
+    .mf input,.mf select{width:100%;padding:.7rem 1rem .7rem 2.2rem;background:var(--input-bg);border:1px solid var(--input-border);border-radius:10px;font-family:inherit;font-size:.85rem;color:var(--text);outline:none;transition:border-color .15s;-webkit-appearance:none}
+    .mf input::placeholder{color:var(--text3)}
+    .mf input:focus,.mf select:focus{border-color:var(--green)}
+    .mf select{cursor:pointer}
+    .mf select option{background:#111}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.8rem;background:var(--card2);border-radius:10px;border:1px solid var(--border);margin-bottom:.82rem}
+    .toggle-title{font-weight:600;font-size:.82rem}
+    .toggle-sub{font-size:.66rem;color:var(--text2);margin-top:.1rem}
+    .sw{position:relative;width:38px;height:21px;flex-shrink:0}
+    .sw input{display:none}
+    .sw-track{position:absolute;inset:0;border-radius:999px;background:#333;cursor:pointer;transition:background .2s}
+    .sw input:checked+.sw-track{background:var(--green)}
+    .sw-track::after{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
+    .sw input:checked+.sw-track::after{transform:translateX(17px)}
+    .staff-picker{display:none;margin-top:.45rem}
+    .staff-picker.show{display:block}
+    .sp-search{position:relative;margin-bottom:.6rem}
+    .sp-search input{width:100%;padding:.5rem 1rem .5rem 1.8rem;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--text);font-size:.78rem;outline:none;font-family:inherit}
+    .sp-search input:focus{border-color:var(--green)}
+    .sp-search::before{content:'⌕';position:absolute;left:.6rem;top:50%;transform:translateY(-50%);font-size:.78rem;color:var(--text3)}
+    .sp-list{max-height:170px;overflow-y:auto;display:flex;flex-direction:column;gap:.28rem}
+    .sp-item{display:flex;align-items:center;justify-content:space-between;padding:.5rem .7rem;border-radius:8px;background:var(--card2);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+    .sp-item:hover{background:var(--card3);border-color:var(--border2)}
+    .sp-item-left{display:flex;align-items:center;gap:.5rem}
+    .sp-av{width:20px;height:20px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--text2);border:1px solid var(--border)}
+    .sp-name{font-size:.78rem;font-weight:600}
+    .sp-role{font-size:.62rem;color:var(--text2)}
+    .sp-locked{font-size:.62rem;color:var(--text3);font-style:italic}
+    .sp-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:.64rem;transition:all .15s}
+    .sp-item.selected .sp-check{background:var(--green);border-color:var(--green);color:#000}
+    .modal-actions{display:flex;gap:.6rem}
+    .btn-primary{flex:1;padding:.8rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.87rem;color:#000;background:var(--green);border:none;border-radius:10px;cursor:pointer;transition:opacity .15s,transform .15s}
+    .btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+    .btn-secondary{padding:.8rem 1.1rem;font-family:inherit;font-weight:600;font-size:.82rem;color:var(--text2);background:var(--card2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
+    .btn-secondary:hover{background:var(--card3);color:var(--text);border-color:var(--border2)}
+    .modal-msg{font-size:.75rem;text-align:center;min-height:1em;margin-bottom:.72rem}
+    .sc-card{background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1.1rem;margin-bottom:.82rem}
+    .sc-row{margin-bottom:.65rem}
+    .sc-lbl{font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.1rem}
+    .sc-val{font-size:.86rem;font-weight:600;color:var(--text);font-family:'Space Grotesk',sans-serif}
+    .sc-val.mono{font-family:'JetBrains Mono',monospace;color:var(--green)}
+    .sc-btns{display:flex;gap:.4rem;flex-wrap:wrap}
+    .sc-btn{flex:1;min-width:75px;padding:.5rem .7rem;border-radius:8px;border:none;cursor:pointer;font-size:.75rem;font-family:'Space Grotesk',sans-serif;font-weight:700;transition:opacity .15s,transform .15s;display:flex;align-items:center;justify-content:center;gap:.28rem}
+    .sc-btn.img{background:var(--green);color:#000}
+    .sc-btn.wa{background:#25d366;color:#fff}
+    .sc-btn.copy{background:var(--card3);color:var(--text);border:1px solid var(--border2)}
+    .sc-btn:hover{opacity:.82;transform:translateY(-1px)}
+    .ep-field{display:flex;align-items:center;gap:.4rem;margin-bottom:.7rem}
+    .ep-field input{flex:1;padding:.6rem .85rem;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;color:var(--text);font-size:.83rem;font-family:inherit;outline:none}
+    .ep-field input:focus{border-color:var(--green)}
+
+    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.3rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+    @media(max-width:600px){
+      .sidebar{width:100%}
+      .notif-panel{left:.8rem;right:.8rem;width:auto}
+      .content{padding:1rem .85rem 3rem}
+      .gd-row{padding:.85rem .95rem;gap:.7rem}
+      .gd-row-icon{width:34px;height:34px;border-radius:9px}
+      .gd-row-name{font-size:.88rem}
+      .gd-row-loc{font-size:.72rem}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .stat-val{font-size:2rem}
+      .charts-row{grid-template-columns:1fr}
+      .chart-panel+.chart-panel{border-left:none;border-top:1px solid var(--border)}
+    }
+
+  </style>
+
 </head>
 <body>
 
-<nav>
-  <a href="#" class="nav-brand">
-    <div class="nav-bolt">
-      <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><path d="M18 4L8 18h8l-2 10 14-16h-9z" fill="#000"/></svg>
-    </div>
-    <span class="nav-name"><span>Swift</span>Stock</span>
+<!-- ══════════ TOP BAR ══════════ -->
+<header class="topbar">
+  <a href="#" class="topbar-logo">
+    <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#30d158"/>
+      <path d="M18 4L8 18h8l-2 10 14-16h-9z" fill="#000"/>
+    </svg>
+    SwiftStock
+    <span style="font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#30d158;background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.25);padding:.18rem .45rem;border-radius:5px;margin-left:.1rem;vertical-align:middle">beta</span>
   </a>
-  <div class="nav-actions">
-    <a href="#features" class="nav-link">Features</a>
-    <a href="login.html" class="nav-link">Login</a>
-    <a href="signup.html" class="nav-cta">Get Started</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-content">
-    <div class="hero-pill"><span class="pill-dot"></span>Now in Beta</div>
-    <h1 class="hero-h1">
-      The Perfect
-      <span class="green">Godown Management</span>
-      App
-    </h1>
-    <p class="hero-sub">Track stock across multiple godowns in real time. Log IN/OUT entries, manage your team, and stay in control — from any device.</p>
-    <div class="hero-cta">
-      <a href="signup.html" class="btn-hero">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
-        Start for Free
-      </a>
-      <a href="login.html" class="btn-ghost">Sign In</a>
+  <div class="topbar-right">
+    <div class="notif-btn" onclick="toggleNotif()" id="notifBtn">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-badge" id="notifBadge"></div>
     </div>
-    <div class="hero-trust">Firebase powered &middot; Real-time sync &middot; Role-based access</div>
+    <div class="profile-btn owner" id="profileBtn" onclick="openSidebar()"></div>
   </div>
-</section>
+</header>
 
-<!-- APP PREVIEW -->
-<section class="preview-section">
-  <div class="preview-frame">
-    <div class="pf-topbar">
-      <div class="pf-back">&#8592;</div>
-      <div class="pf-dot">&#9889;</div>
-      <div class="tb-sep" style="width:1px;height:14px;background:rgba(255,255,255,.08)"></div>
-      <div class="pf-title">Main Warehouse</div>
-      <button class="pf-add">+ Add</button>
-    </div>
-    <div class="pf-hero">
-      <div class="pf-tag"><span class="pf-tagdot"></span>Warehouse</div>
-      <div class="pf-name">Main Warehouse</div>
-      <div class="pf-loc">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        Mumbai, Maharashtra
+<!-- ══════════ NOTIFICATION PANEL ══════════ -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-head">
+    🔔 Notifications
+    <span class="notif-clear" onclick="clearNotifs()">Clear all</span>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-empty" id="notifEmpty">No notifications yet</div>
+  </div>
+</div>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main">
+  <div class="content">
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsMini" style="animation:fadeUp 0.5s ease both;margin-top:.2rem">
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <span class="stat-tag">TOTAL</span>
+        </div>
+        <div class="stat-val" id="statGodowns">0</div>
+        <div class="stat-label">Godowns</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <span class="stat-tag">ACTIVE</span>
+        </div>
+        <div class="stat-val" id="statStaff">0</div>
+        <div class="stat-label">Staff</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+          <span class="stat-tag">ITEMS</span>
+        </div>
+        <div class="stat-val" id="statProducts">0</div>
+        <div class="stat-label">Products</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/></svg></div>
+          <span class="stat-tag">TODAY</span>
+        </div>
+        <div class="stat-val" id="statEntries">0</div>
+        <div class="stat-label">Entries Today</div>
       </div>
     </div>
-    <div class="pf-stats">
-      <div class="pf-stat"><span class="pf-sv">12</span><div class="pf-sl">Products</div></div>
-      <div class="pf-stat"><span class="pf-sv" style="color:#00D97E">2.4k</span><div class="pf-sl">Total IN</div></div>
-      <div class="pf-stat"><span class="pf-sv" style="color:#FF4D6A">890</span><div class="pf-sl">Total OUT</div></div>
-    </div>
-    <div class="pf-search">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span class="pf-si">Search products...</span>
-    </div>
-    <div class="pf-list">
-      <div class="pf-phdr"><span>Products</span><span class="pf-pill">12</span></div>
-      <div class="pf-item">
-        <div class="pf-ico">&#9878;&#65039;</div>
-        <div><div class="pf-iname">Steel Rods</div><div class="pf-imeta">kg &middot; 28 entries</div></div>
-        <div class="pf-istk"><span class="pf-inum" style="color:#00D97E">450</span><span class="pf-iu">kg</span></div>
+
+    <!-- ── CHARTS ROW ── -->
+    <div class="charts-row" style="animation:fadeUp .5s .08s ease both;">
+      <div class="chart-panel">
+        <div class="chart-hd">
+          <div class="chart-hd-left">
+            <div class="chart-name">Stock Movements — Last 7 Days</div>
+            <div class="chart-desc">Daily IN vs OUT entries</div>
+          </div>
+          <div class="chart-legend">
+            <div class="cleg"><div class="cleg-dot" style="background:#30d158"></div>IN</div>
+            <div class="cleg"><div class="cleg-dot" style="background:#ff453a"></div>OUT</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="weekChart"></canvas></div>
       </div>
-      <div class="pf-item">
-        <div class="pf-ico">&#128230;</div>
-        <div><div class="pf-iname">Cement Bags</div><div class="pf-imeta">bag &middot; 14 entries</div></div>
-        <div class="pf-istk"><span class="pf-inum" style="color:#FFB833">8</span><span class="pf-iu">bag</span></div>
+      <div class="chart-panel">
+        <div class="chart-hd">
+          <div class="chart-hd-left">
+            <div class="chart-name">Products by Godown</div>
+            <div class="chart-desc">Distribution</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
       </div>
-      <div class="pf-item">
-        <div class="pf-ico">&#128230;</div>
-        <div><div class="pf-iname">PVC Pipes</div><div class="pf-imeta">piece &middot; 9 entries</div></div>
-        <div class="pf-istk"><span class="pf-inum" style="color:#00D97E">120</span><span class="pf-iu">piece</span></div>
+    </div>
+
+
+    <!-- Godowns section -->
+    <div class="section-hd" style="animation:fadeUp 0.5s 0.1s ease both;">
+      <div class="section-title">
+        My Godowns
+        <span class="count-pill" id="godownCount">0</span>
+      </div>
+    </div>
+
+    <div class="godowns-list" id="godownsGrid" style="animation:fadeUp 0.5s 0.15s ease both;">
+      <!-- Add row — only for owner/manager -->
+      <div class="add-row" id="addGodownCard" onclick="openCreateGodown()">
+        <div class="add-row-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="add-row-text">New Godown</div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🏗️</div>
+      <div class="empty-title">No godowns yet</div>
+      <div style="font-size:0.85rem;">Create your first godown to start tracking inventory</div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ══════════ PROFILE SIDEBAR ══════════ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<div class="sidebar" id="profileSidebar">
+  <button class="sb-close" onclick="closeSidebar()">✕</button>
+
+  <!-- Photo + name -->
+  <div class="profile-wrap">
+    <div class="photo-ring owner" id="photoRing">
+      <div class="photo-inner" id="photoInner">?</div>
+      <div class="photo-badge" onclick="triggerPhotoUpload()">📷</div>
+    </div>
+    <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)" />
+    <div class="sb-name" id="sbName">Loading…</div>
+    <div class="sb-corp" id="sbCorpId">—</div>
+    <div class="role-badge role-owner" id="sbRoleBadge">Owner</div>
+    <!-- Quick stats row -->
+    <div class="sb-quick-stats">
+      <div class="sb-qstat">
+        <div class="sb-qstat-val" id="qsGodowns">—</div>
+        <div class="sb-qstat-lbl">Godowns</div>
+      </div>
+      <div class="sb-qstat">
+        <div class="sb-qstat-val" id="qsStaff">—</div>
+        <div class="sb-qstat-lbl">Staff</div>
+      </div>
+      <div class="sb-qstat">
+        <div class="sb-qstat-val" id="qsProducts">—</div>
+        <div class="sb-qstat-lbl">Products</div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="sec-label">Why SwiftStock</div>
-  <h2 class="sec-title">Everything your<br>team needs.</h2>
-  <p class="sec-sub">Built for warehouses, godowns, and inventory-heavy businesses that demand real-time visibility.</p>
-  <div class="features-grid">
-    <div class="feat-card">
-      <div class="feat-icon">&#9889;</div>
-      <div class="feat-title">Real-Time Sync</div>
-      <div class="feat-desc">Entries update instantly across all devices. Firebase powers live stock changes the moment they happen.</div>
+  <!-- Tabs — profile + staff/account for owner & manager; only profile for staff -->
+  <div class="sb-tabs" id="sidebarTabs">
+    <div class="sb-tab active" onclick="switchSbTab('profile')">👤 Profile</div>
+    <div class="sb-tab" onclick="switchSbTab('staff')" id="staffTab">👥 Staff</div>
+  </div>
+
+  <div class="sb-body">
+
+    <!-- Profile panel -->
+    <div class="sb-panel active" id="sb-profile">
+      <div class="pf-section-title">Account Information</div>
+      <div class="pf-row">
+        <div><div class="pf-lbl">Full Name</div><div class="pf-val" id="pf-name">—</div></div>
+        <button class="pf-edit" onclick="openEditProfile('name')" title="Edit">✏️</button>
+      </div>
+      <div class="pf-row">
+        <div><div class="pf-lbl">Corporate ID</div><div class="pf-val mono" id="pf-corpid">—</div></div>
+      </div>
+      <div class="pf-row">
+        <div><div class="pf-lbl">Company</div><div class="pf-val" id="pf-company">—</div></div>
+      </div>
+      <div class="pf-row">
+        <div><div class="pf-lbl">Email</div><div class="pf-val" id="pf-email">—</div></div>
+        <button class="pf-edit" onclick="openEditProfile('email')" title="Edit">✏️</button>
+      </div>
+      <div class="pf-section-title">Security</div>
+      <div class="pf-row">
+        <div><div class="pf-lbl">Password</div><div class="pf-val" id="pf-pw">••••••••</div></div>
+        <button class="pf-edit" onclick="openEditProfile('password')" title="Edit">✏️</button>
+      </div>
+      <div class="pf-section-title">Details</div>
+      <div class="pf-row">
+        <div><div class="pf-lbl">Role</div><div class="pf-val" id="pf-role">—</div></div>
+      </div>
+      <div class="pf-row">
+        <div><div class="pf-lbl">Joined</div><div class="pf-val" id="pf-joined">—</div></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">&#127979;</div>
-      <div class="feat-title">Multi-Godown</div>
-      <div class="feat-desc">Manage unlimited godowns from one dashboard. Each with its own products, staff, and stock history.</div>
+
+    <!-- Staff panel -->
+    <div class="sb-panel" id="sb-staff">
+      <div class="staff-search">
+        <input type="text" id="staffSearchInp" placeholder="Search staff…" oninput="filterStaff()" />
+      </div>
+      <div id="staffListEl"></div>
+      <button class="add-staff-btn" id="addStaffBtn" onclick="openAddStaff()">＋ Add Staff Member</button>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">&#128101;</div>
-      <div class="feat-title">Role-Based Access</div>
-      <div class="feat-desc">Owner, Manager, Employee, Viewer. Assign the right access to the right person every time.</div>
+
+  </div>
+</div>
+
+<!-- ══════════ CREATE GODOWN MODAL ══════════ -->
+<div class="modal-overlay" id="createGodownModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">New Godown</div>
+        <div class="modal-sub">Set up a warehouse location</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('createGodownModal')">✕</button>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">&#128260;</div>
-      <div class="feat-title">Unit Conversions</div>
-      <div class="feat-desc">Log entries in any unit. Set up conversions like 1 box = 12 pieces and let SwiftStock do the math.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">&#128203;</div>
-      <div class="feat-title">Audit Trail</div>
-      <div class="feat-desc">Every entry, edit, and deletion is recorded with who did it and when. Full accountability.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">&#128241;</div>
-      <div class="feat-title">Mobile First</div>
-      <div class="feat-desc">Designed from the ground up for phones. Log stock from the warehouse floor, not just the office.</div>
+    <div class="modal-body">
+      <div class="mf">
+        <label>Godown Name</label>
+        <div class="mf-wrap">
+          <span class="mf-icon">🏪</span>
+          <input type="text" id="gd-name" placeholder="e.g. Main Warehouse" />
+        </div>
+      </div>
+      <div class="mf">
+        <label>Location / Address</label>
+        <div class="mf-wrap">
+          <span class="mf-icon">📍</span>
+          <input type="text" id="gd-location" placeholder="e.g. Delhi, Sector 12" />
+        </div>
+      </div>
+
+      <!-- Custom staff toggle -->
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-title">Custom Staff Access</div>
+          <div class="toggle-sub">Choose specific staff for this godown</div>
+        </div>
+        <label class="sw">
+          <input type="checkbox" id="customStaffToggle" onchange="toggleCustomStaff()" />
+          <div class="sw-track"></div>
+        </label>
+      </div>
+
+      <!-- Staff picker -->
+      <div class="staff-picker" id="staffPicker">
+        <div style="font-size:0.78rem;color:var(--text2);margin-bottom:0.5rem;">Select staff who can access this godown:</div>
+        <div class="sp-search">
+          <input type="text" id="spSearchInp" placeholder="Search staff…" oninput="filterStaffPicker()" />
+        </div>
+        <div class="sp-list" id="spList"></div>
+      </div>
+
+      <div class="modal-msg" id="gdMsg"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('createGodownModal')">Cancel</button>
+        <button class="btn-primary" onclick="createGodown()">Create Godown</button>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ROLES -->
-<section class="roles">
-  <div class="sec-label">Access Control</div>
-  <h2 class="sec-title">The right access<br>for every role.</h2>
-  <div class="roles-grid">
-    <div class="role-card owner">
-      <span class="role-emoji">&#128081;</span>
-      <div class="role-name">Owner</div>
-      <ul class="role-list">
-        <li><span class="role-dot"></span>Full platform access</li>
-        <li><span class="role-dot"></span>Add &amp; remove any staff</li>
-        <li><span class="role-dot"></span>Delete products &amp; entries</li>
-        <li><span class="role-dot"></span>View all godowns</li>
-        <li><span class="role-dot"></span>Receive all notifications</li>
-      </ul>
+<!-- ══════════ ADD STAFF MODAL ══════════ -->
+<div class="modal-overlay" id="addStaffModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Add Staff Member</div>
+        <div class="modal-sub">They'll receive a generated Corporate ID</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('addStaffModal')">✕</button>
     </div>
-    <div class="role-card manager">
-      <span class="role-emoji">&#128737;&#65039;</span>
-      <div class="role-name">Manager</div>
-      <ul class="role-list">
-        <li><span class="role-dot"></span>Create &amp; manage staff</li>
-        <li><span class="role-dot"></span>Manage assigned godowns</li>
-        <li><span class="role-dot"></span>Add &amp; delete products</li>
-        <li><span class="role-dot"></span>Log IN/OUT entries</li>
-        <li><span class="role-dot"></span>Cannot remove Owner</li>
-      </ul>
-    </div>
-    <div class="role-card staff">
-      <span class="role-emoji">&#129489;&#8205;&#128188;</span>
-      <div class="role-name">Staff / Viewer</div>
-      <ul class="role-list">
-        <li><span class="role-dot"></span>View assigned godowns</li>
-        <li><span class="role-dot"></span>Log stock entries</li>
-        <li><span class="role-dot"></span>View own profile</li>
-        <li><span class="role-dot"></span>Viewers: read only</li>
-        <li><span class="role-dot"></span>No admin access</li>
-      </ul>
+    <div class="modal-body">
+      <div class="mf">
+        <label>Full Name</label>
+        <div class="mf-wrap">
+          <span class="mf-icon">👤</span>
+          <input type="text" id="sf-name" placeholder="e.g. Priya Mehta" />
+        </div>
+      </div>
+      <div class="mf">
+        <label>Email Address</label>
+        <div class="mf-wrap">
+          <span class="mf-icon">📧</span>
+          <input type="email" id="sf-email" placeholder="priya@company.com" />
+        </div>
+      </div>
+      <div class="mf">
+        <label>Designation</label>
+        <div class="mf-wrap">
+          <span class="mf-icon">🏷️</span>
+          <select id="sf-designation">
+            <option value="">Select role…</option>
+            <option value="manager">Manager</option>
+            <option value="employee">Employee</option>
+            <option value="viewer">Viewer</option>
+          </select>
+        </div>
+      </div>
+      <div class="mf">
+        <label>Password</label>
+        <div class="mf-wrap">
+          <span class="mf-icon">🔒</span>
+          <input type="password" id="sf-password" placeholder="Set their login password" />
+        </div>
+      </div>
+      <div class="modal-msg" id="sfMsg"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('addStaffModal')">Cancel</button>
+        <button class="btn-primary" id="sfSubmitBtn" onclick="createStaff()">Create Staff</button>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- CTA -->
-<section class="cta-section">
-  <h2 class="cta-title">Start managing<br>smarter today.</h2>
-  <p class="cta-sub">No credit card. No setup fee.<br>Your first godown is live in under 2 minutes.</p>
-  <a href="signup.html" class="btn-hero" style="display:inline-flex">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
-    Create Free Account
-  </a>
-</section>
+<!-- ══════════ STAFF CREDENTIAL MODAL ══════════ -->
+<div class="modal-overlay" id="staffCredModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">✅ Staff Created!</div>
+        <div class="modal-sub">Share these credentials with the staff member</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('staffCredModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="sc-card" id="staffCredCard">
+        <div class="sc-row">
+          <div class="sc-lbl">Company</div>
+          <div class="sc-val" id="sc-company">—</div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-lbl">Staff Name</div>
+          <div class="sc-val" id="sc-name">—</div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-lbl">Role</div>
+          <div class="sc-val" id="sc-role">—</div>
+        </div>
+        <div style="height:1px;background:rgba(0,230,118,0.15);margin:0.8rem 0;"></div>
+        <div class="sc-row">
+          <div class="sc-lbl">Corporate ID</div>
+          <div class="sc-val mono" id="sc-corpid">—</div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-lbl">Email</div>
+          <div class="sc-val" id="sc-email" style="font-size:0.85rem;">—</div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-lbl">Password</div>
+          <div class="sc-val mono" id="sc-pw">—</div>
+        </div>
+      </div>
 
-<footer>
-  <div class="foot-brand"><span>Swift</span>Stock</div>
-  <div class="foot-by">Built by <span>Nexus Production</span></div>
-  <div style="font-size:.72rem;color:var(--t3)">&#169; 2025 SwiftStock. All rights reserved.</div>
-</footer>
+      <div class="sc-btns">
+        <button class="sc-btn img" onclick="downloadStaffCard()">⬇ Image</button>
+        <button class="sc-btn wa" onclick="shareWhatsApp()">💬 WhatsApp</button>
+        <button class="sc-btn copy" onclick="copyCredentials()">📋 Copy</button>
+      </div>
 
+      <div style="margin-top:1rem;">
+        <button class="btn-primary" onclick="closeModal('staffCredModal')">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ EDIT PROFILE MODAL ══════════ -->
+<div class="modal-overlay" id="editProfileModal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="editModalTitle">Edit Profile</div>
+        <div class="modal-sub">Changes are saved instantly</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('editProfileModal')">✕</button>
+    </div>
+    <div class="modal-body" id="editModalBody">
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DELETE CONFIRM MODAL ══════════ -->
+<div class="modal-overlay" id="deleteStaffModal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" style="color:var(--red);">Remove Staff?</div>
+        <div class="modal-sub" id="deleteStaffSub">This will revoke their access.</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('deleteStaffModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('deleteStaffModal')">Cancel</button>
+        <button style="flex:1;padding:0.9rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.95rem;color:white;background:var(--red);border:none;border-radius:12px;cursor:pointer;" id="confirmDeleteBtn">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ GODOWN DETAIL MODAL (click godown) ══════════ -->
+<div class="modal-overlay" id="godownDetailModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="gdDetailName">Godown</div>
+        <div class="modal-sub" id="gdDetailLocation">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('godownDetailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:1rem;margin-bottom:1.5rem;" id="gdDetailStats"></div>
+      <div style="margin-bottom:0.8rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.9rem;">Staff Access</div>
+      <div id="gdDetailStaff"></div>
+      <div style="margin-top:1.5rem;">
+        <button class="btn-primary" onclick="openGodown(currentGodownId)">📦 Open Godown →</button>
+      </div>
+      <div id="ownerOnlyGdActions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FIREBASE + LOGIC ══════════ -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const app = initializeApp({apiKey:"AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",authDomain:"store-management-nexus.firebaseapp.com",projectId:"store-management-nexus",storageBucket:"store-management-nexus.firebasestorage.app",messagingSenderId:"263693510395",appId:"1:263693510395:web:47a0485221405dbb6fb25e"});
-const auth = getAuth(app);
-onAuthStateChanged(auth, user => { if (user) window.location.replace("dashboard.html"); });
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut, updatePassword, updateEmail, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",
+    authDomain: "store-management-nexus.firebaseapp.com",
+    projectId: "store-management-nexus",
+    storageBucket: "store-management-nexus.firebasestorage.app",
+    messagingSenderId: "263693510395",
+    appId: "1:263693510395:web:47a0485221405dbb6fb25e",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  let currentUser = null;
+  let companyData = null;
+  let staffList = [];
+  let godownList = [];
+  let notifications = [];
+  let selectedStaffForGodown = new Set();
+  let currentGodownId = null;
+  let staffToDelete = null;
+  let editingField = null;
+
+  // Expose globals needed by non-module handlers
+  window._db = db;
+  window._auth = auth;
+  window._storage = storage;
+  window._getGodownList = () => godownList;
+  window._getStaffList = () => staffList;
+  window._currentUser = () => currentUser;
+  window._companyData = () => companyData;
+  window._selectedStaff = () => selectedStaffForGodown;
+
+  /* ── AUTH GUARD ── */
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    // Load user doc
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) { window.location.href = 'login.html'; return; }
+
+    currentUser = { uid: user.uid, ...userDoc.data(), authEmail: user.email };
+    window._currentUser = () => currentUser;
+
+    // Load company
+    const compId = currentUser.companyId || currentUser.uid;
+    const compDoc = await getDoc(doc(db, 'companies', compId));
+    companyData = compDoc.exists() ? compDoc.data() : { companyName: currentUser.companyName || 'My Company' };
+    window._companyData = () => companyData;
+
+    initDashboard();
+    loadGodowns(compId);
+    loadStaff(compId);
+    loadNotifications(compId);
+    loadTodayEntries(compId);
+    // Sync sidebar quick stats from stat elements
+    const syncQS = () => {
+      const g = document.getElementById('statGodowns'); if(g && document.getElementById('qsGodowns')) document.getElementById('qsGodowns').textContent = g.textContent;
+      const s = document.getElementById('statStaff');   if(s && document.getElementById('qsStaff'))   document.getElementById('qsStaff').textContent   = s.textContent;
+      const p = document.getElementById('statProducts');if(p && document.getElementById('qsProducts')) document.getElementById('qsProducts').textContent = p.textContent;
+    };
+    setTimeout(syncQS, 1500); setTimeout(syncQS, 3000);
+  });
+
+  function initDashboard() {
+    const u = currentUser;
+    const role = u.role;
+
+    // Profile button initials
+    const pb = document.getElementById('profileBtn');
+    pb.textContent = u.name.charAt(0).toUpperCase();
+    pb.className = `profile-btn ${role}`;
+    if (u.photoURL) { pb.innerHTML = `<img src="${u.photoURL}" />`; }
+
+    // Topbar company name
+    const tn = document.getElementById('topbarCompName');
+    if (tn) tn.textContent = companyData.companyName || '';
+
+    // Sidebar profile
+    document.getElementById('sbName').textContent = u.name;
+    document.getElementById('sbRoleBadge').textContent = capitalize(role);
+    document.getElementById('sbRoleBadge').className = `role-badge role-${role}`;
+    if (document.getElementById('sbCorpId')) document.getElementById('sbCorpId').textContent = u.corporateId || '—';
+    document.getElementById('photoRing').className = `photo-ring ${role}`;
+    document.getElementById('photoInner').textContent = u.name.charAt(0).toUpperCase();
+    if (u.photoURL) document.getElementById('photoInner').innerHTML = `<img src="${u.photoURL}" />`;
+
+    // Profile details
+    document.getElementById('pf-name').textContent = u.name;
+    document.getElementById('pf-corpid').textContent = u.corporateId;
+    document.getElementById('pf-company').textContent = companyData.companyName;
+    document.getElementById('pf-email').textContent = u.email;
+    document.getElementById('pf-role').textContent = capitalize(role);
+    document.getElementById('pf-joined').textContent = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+
+    // Hide staff tab and add staff for employee/viewer
+    if (role === 'staff' || role === 'employee' || role === 'viewer') {
+      document.getElementById('staffTab').style.display = 'none';
+      document.getElementById('addGodownCard').style.display = 'none';
+    } else if (role === 'manager') {
+      document.getElementById('staffTab').style.display = '';
+      document.getElementById('addGodownCard').style.display = '';
+    }
+
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+
+  /* ── LOAD GODOWNS ── */
+  function loadGodowns(compId) {
+    const role = currentUser.role;
+    let q;
+    if (role === 'owner' || role === 'manager') {
+      q = query(collection(db, 'godowns'), where('companyId', '==', compId));
+    } else {
+      // Staff only see godowns they're assigned to
+      q = query(collection(db, 'godowns'), where('companyId', '==', compId), where(`staffAccess.${currentUser.uid}`, '==', true));
+    }
+
+    onSnapshot(q, (snap) => {
+      godownList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      window._getGodownList = () => godownList;
+      renderGodowns();
+      document.getElementById('statGodowns').textContent = godownList.length;
+      document.getElementById('godownCount').textContent = godownList.length;
+      // Live total product count across all godowns
+      if (godownList.length > 0) {
+        const compId2 = currentUser.companyId || currentUser.uid;
+        const pq = query(collection(db, 'products'), where('companyId', '==', compId2));
+        getDocs(pq).then(ps => {
+          document.getElementById('statProducts').textContent = ps.size;
+        });
+      }
+      // Load charts after godowns are known (only on first load)
+      if (!window._chartsLoaded) {
+        window._chartsLoaded = true;
+        setTimeout(() => loadChartData(currentUser.companyId || currentUser.uid), 400);
+      }
+    });
+  }
+
+  function renderGodowns() {
+    const grid = document.getElementById('godownsGrid');
+    const role = currentUser.role;
+
+    // Remove old godown rows (keep add row)
+    grid.querySelectorAll('.gd-row').forEach(c => c.remove());
+
+    const empty = document.getElementById('emptyState');
+    if (godownList.length === 0) {
+      empty.classList.add('show');
+    } else {
+      empty.classList.remove('show');
+
+      // Unique SVG icons cycling for each godown
+      const GD_ICONS = [
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 22V11L12 2l11 9v11"/><path d="M9 22V12h6v10"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4"/><path d="M5 21V10.85"/><path d="M19 21V10.85"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><rect x="9" y="14" width="6" height="6"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 20h20M6 20V9m12 11V9M2 9l10-7 10 7"/><path d="M10 20v-5h4v5"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`,
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 22V12H2L12 2l10 10h-3v10"/><path d="M9 22v-4h6v4"/></svg>`,
+      ];
+
+      godownList.forEach((gd, i) => {
+        const row = document.createElement('div');
+        row.className = 'gd-row';
+        row.style.animationDelay = `${i * 0.05}s`;
+        row.onclick = () => window.location.href = `godown.html?id=${gd.id}`;
+
+        const iconSvg = GD_ICONS[i % GD_ICONS.length];
+
+        // Build staff tooltip — "All Staff" if not custom, else list assigned
+        const assignedStaff = staffList.filter(s => gd.staffAccess?.[s.uid]);
+        const staffCount = assignedStaff.length;
+        const isAllStaff = !gd.customStaff;
+
+        let tooltipItems;
+        if (isAllStaff) {
+          tooltipItems = `
+            <div class="tt-label">Access</div>
+            <div class="st-all">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              All Staff Assigned
+            </div>`;
+        } else if (assignedStaff.length) {
+          tooltipItems = `<div class="tt-label">Assigned Staff</div>` + assignedStaff.map(s =>
+            `<div class="st-item">
+              <div class="st-av">${s.name.charAt(0).toUpperCase()}</div>
+              <div>
+                <div class="st-name">${s.name}</div>
+                <div class="st-role">${capitalize(s.role)}</div>
+              </div>
+            </div>`
+          ).join('');
+        } else {
+          tooltipItems = `<div class="tt-label">Access</div><div class="st-all" style="color:var(--text3)">No staff assigned</div>`;
+        }
+
+        const displayCount = isAllStaff
+          ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All`
+          : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>${staffCount}`;
+
+        row.innerHTML = `
+          <div class="gd-row-icon">${iconSvg}</div>
+          <div class="gd-row-info">
+            <div class="gd-row-name">${gd.name}</div>
+            <div class="gd-row-loc">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${gd.location || 'No location'}
+            </div>
+          </div>
+          <div class="gd-row-staff" onclick="event.stopPropagation()">
+            <div class="staff-pill">${displayCount}</div>
+            <div class="staff-tooltip">${tooltipItems}</div>
+          </div>
+          <div class="gd-row-arr">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        `;
+        grid.appendChild(row);
+      });
+    }
+  }
+
+  /* ── LOAD STAFF ── */
+  function loadStaff(compId) {
+    // Query all users in company, exclude owner client-side (avoids composite index)
+    const q = query(collection(db, 'users'), where('companyId', '==', compId));
+    onSnapshot(q, (snap) => {
+      staffList = snap.docs
+        .map(d => ({ ...d.data(), uid: d.id }))
+        .filter(u => u.role !== 'owner');
+      window._getStaffList = () => staffList;
+      renderStaffList();
+      document.getElementById('statStaff').textContent = staffList.length;
+
+      // Notify if new staff was just added (compare with previous count)
+      if (staffList.length > (window._prevStaffCount || 0) && window._prevStaffCount !== undefined) {
+        const newest = staffList[staffList.length - 1];
+        if (newest) addDashNotif(`${newest.name} joined as ${capitalize(newest.role)}.`);
+      }
+      window._prevStaffCount = staffList.length;
+    });
+  }
+
+  function renderStaffList() {
+    const container = document.getElementById('staffListEl');
+    const search = document.getElementById('staffSearchInp').value.toLowerCase();
+    container.innerHTML = '';
+
+    const filtered = staffList.filter(s =>
+      s.name.toLowerCase().includes(search) || s.corporateId?.toLowerCase().includes(search)
+    );
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div style="text-align:center;color:var(--text2);font-size:0.85rem;padding:1rem;">No staff yet</div>';
+      return;
+    }
+
+    filtered.forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'staff-item';
+      const initials = s.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      const canDelete = currentUser.role === 'owner' || (currentUser.role === 'manager' && s.role !== 'manager');
+      el.innerHTML = `
+        <div class="staff-av ${s.role}">${initials}</div>
+        <div class="staff-info">
+          <div class="staff-name">${s.name}</div>
+          <div class="staff-role-chip">${capitalize(s.role)}</div>
+          <div class="staff-id">${s.corporateId || '—'}</div>
+        </div>
+        <div class="staff-actions">
+          ${canDelete ? `<button class="sa-btn del" onclick="confirmDeleteStaff('${s.uid}','${s.name}')" title="Remove">🗑</button>` : ''}
+        </div>
+      `;
+      container.appendChild(el);
+    });
+  }
+
+  /* ── LOAD NOTIFICATIONS ── */
+  function loadNotifications(compId) {
+    // All roles can see notifications for their company
+    const q = query(collection(db, 'notifications'),
+      where('companyId', '==', compId),
+      orderBy('createdAt', 'desc'), limit(30));
+    onSnapshot(q, (snap) => {
+      notifications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderNotifications();
+    });
+  }
+
+  // Helper — add a notification without async requirement
+  function addDashNotif(message) {
+    const compId = currentUser?.companyId || currentUser?.uid;
+    if (!compId) return;
+    addNotification(message, compId);
+  }
+
+  /* ── LOAD TODAY'S ENTRIES COUNT ── */
+  function loadTodayEntries(compId) {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    // Listen to entries with this companyId, filter today client-side
+    const q = query(collection(db, 'entries'), where('companyId', '==', compId));
+    onSnapshot(q, (snap) => {
+      const todayCount = snap.docs.filter(d => {
+        const e = d.data();
+        if (e.deleted) return false;
+        const ts = e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt || 0);
+        return ts >= todayStart;
+      }).length;
+      document.getElementById('statEntries').textContent = todayCount;
+    });
+  }
+
+  function renderNotifications() {
+    const list = document.getElementById('notifList');
+    const badge = document.getElementById('notifBadge');
+    const empty = document.getElementById('notifEmpty');
+
+    if (notifications.length === 0) {
+      empty.style.display = 'block';
+      badge.classList.remove('show');
+      return;
+    }
+
+    empty.style.display = 'none';
+    badge.classList.add('show');
+
+    list.innerHTML = '';
+    notifications.forEach(n => {
+      const el = document.createElement('div');
+      el.className = 'notif-item';
+      const time = n.createdAt?.toDate ? n.createdAt.toDate().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' }) : 'Just now';
+      el.innerHTML = `
+        <div class="notif-dot"></div>
+        <div>
+          <div class="notif-text">${n.message}</div>
+          <div class="notif-time">${time}</div>
+        </div>
+      `;
+      list.appendChild(el);
+    });
+  }
+
+  /* ── CREATE GODOWN ── */
+  window.createGodown = async function() {
+    const name = document.getElementById('gd-name').value.trim();
+    const location = document.getElementById('gd-location').value.trim();
+    const customStaff = document.getElementById('customStaffToggle').checked;
+
+    if (!name) { gdMsg('⚠ Please enter a godown name.', 'error'); return; }
+    if (!location) { gdMsg('⚠ Please enter a location.', 'error'); return; }
+
+    gdMsg('Creating…', '');
+
+    const compId = currentUser.companyId || currentUser.uid;
+    let staffAccess = {};
+
+    if (customStaff) {
+      // Only selected staff + creator
+      selectedStaffForGodown.forEach(uid => staffAccess[uid] = true);
+      staffAccess[currentUser.uid] = true;
+    } else {
+      // All staff
+      staffList.forEach(s => staffAccess[s.uid] = true);
+      staffAccess[currentUser.uid] = true;
+    }
+
+    try {
+      await addDoc(collection(db, 'godowns'), {
+        name, location, customStaff,
+        staffAccess,
+        companyId: compId,
+        createdBy: currentUser.uid,
+        createdByName: currentUser.name,
+        createdAt: new Date().toISOString(),
+        productCount: 0,
+      });
+      closeModal('createGodownModal');
+      document.getElementById('gd-name').value = '';
+      document.getElementById('gd-location').value = '';
+      document.getElementById('customStaffToggle').checked = false;
+      selectedStaffForGodown.clear();
+      gdMsg('', '');
+    } catch (e) {
+      gdMsg('❌ Failed to create. Try again.', 'error');
+    }
+  };
+
+  function gdMsg(msg, type) {
+    const el = document.getElementById('gdMsg');
+    el.textContent = msg;
+    el.style.color = type === 'error' ? 'var(--red)' : 'var(--text2)';
+  }
+
+  /* ── CREATE STAFF ── */
+  window.createStaff = async function() {
+    // Only owner and manager can add staff
+    if (!['owner', 'manager'].includes(currentUser?.role)) {
+      sfMsg('⚠ You do not have permission to add staff.', 'error'); return;
+    }
+    const name = document.getElementById('sf-name').value.trim();
+    const email = document.getElementById('sf-email').value.trim();
+    const role = document.getElementById('sf-designation').value;
+    const password = document.getElementById('sf-password').value;
+    const btn = document.getElementById('sfSubmitBtn');
+
+    if (!name || !email || !role || !password) { sfMsg('⚠ Fill in all fields.', 'error'); return; }
+    if (password.length < 6) { sfMsg('⚠ Password must be 6+ characters.', 'error'); return; }
+
+    btn.disabled = true; btn.textContent = 'Creating…';
+
+    try {
+      // Generate unique corporate ID
+      const corpId = await generateCorpId();
+      const compId = currentUser.companyId || currentUser.uid;
+
+      // We use a secondary Firebase auth call trick:
+      // Create user via REST API to avoid logging out current user
+      const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, returnSecureToken: true })
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message);
+
+      const uid = d.localId;
+      const staffData = {
+        uid, name, email, role,
+        corporateId: corpId,
+        companyId: compId,
+        companyName: companyData.companyName,
+        createdAt: new Date().toISOString(),
+        createdBy: currentUser.uid,
+        photoURL: null,
+      };
+      await setDoc(doc(db, 'users', uid), staffData);
+
+      // Notify owner
+      await addNotification(`${currentUser.name} added ${name} as ${role}.`, compId);
+
+      // Show credential card
+      closeModal('addStaffModal');
+      document.getElementById('sf-name').value = '';
+      document.getElementById('sf-email').value = '';
+      document.getElementById('sf-designation').value = '';
+      document.getElementById('sf-password').value = '';
+
+      window._lastStaffCred = { ...staffData, password };
+      document.getElementById('sc-company').textContent = companyData.companyName;
+      document.getElementById('sc-name').textContent = name;
+      document.getElementById('sc-role').textContent = capitalize(role);
+      document.getElementById('sc-corpid').textContent = corpId;
+      document.getElementById('sc-email').textContent = email;
+      document.getElementById('sc-pw').textContent = password;
+      openModal('staffCredModal');
+
+    } catch (e) {
+      let msg = 'Failed. Try again.';
+      if (e.message.includes('EMAIL_EXISTS')) msg = 'This email is already registered.';
+      sfMsg('❌ ' + msg, 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Create Staff';
+  };
+
+  function sfMsg(msg, type) {
+    const el = document.getElementById('sfMsg');
+    el.textContent = msg;
+    el.style.color = type === 'error' ? 'var(--red)' : 'var(--text2)';
+  }
+
+  /* ── GENERATE UNIQUE CORP ID ── */
+  async function generateCorpId() {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, orderBy('corporateId', 'desc'), limit(1));
+    const snap = await getDocs(q);
+    let nextNum = 1;
+    if (!snap.empty) {
+      const lastId = snap.docs[0].data().corporateId || 'SWFT0000000';
+      const lastNum = parseInt(lastId.replace('SWFT', '')) || 0;
+      nextNum = lastNum + 1;
+    }
+    let candidate, exists = true;
+    while (exists) {
+      candidate = 'SWFT' + String(nextNum).padStart(7, '0');
+      const chk = await getDocs(query(usersRef, where('corporateId', '==', candidate)));
+      exists = !chk.empty;
+      if (exists) nextNum++;
+    }
+    return candidate;
+  }
+
+  /* ── DELETE STAFF ── */
+  window._doDeleteStaff = async function() {
+    if (!staffToDelete) return;
+    try {
+      await deleteDoc(doc(db, 'users', staffToDelete.uid));
+      const compId = currentUser.companyId || currentUser.uid;
+      await addNotification(`${currentUser.name} removed ${staffToDelete.name} from the team.`, compId);
+      closeModal('deleteStaffModal');
+    } catch (e) { alert('Failed to remove staff.'); }
+  };
+
+  /* ── NOTIFICATIONS ── */
+  async function addNotification(message, compId) {
+    try {
+      await addDoc(collection(db, 'notifications'), {
+        message, companyId: compId,
+        createdAt: serverTimestamp(),
+        read: false,
+      });
+    } catch (e) {}
+  }
+
+  /* ── PHOTO UPLOAD ── */
+  window.handlePhotoUpload = async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const storageRef = ref(storage, `profile-photos/${currentUser.uid}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      await updateDoc(doc(db, 'users', currentUser.uid), { photoURL: url });
+      currentUser.photoURL = url;
+      document.getElementById('photoInner').innerHTML = `<img src="${url}" />`;
+      document.getElementById('profileBtn').innerHTML = `<img src="${url}" />`;
+    } catch (e) { alert('Photo upload failed. Check Firebase Storage is enabled.'); }
+  };
+
+  /* ── EDIT PROFILE ── */
+  window.saveEditProfile = async function() {
+    const field = editingField;
+    const compId = currentUser.companyId || currentUser.uid;
+
+    if (field === 'name') {
+      const val = document.getElementById('ep-name').value.trim();
+      if (!val) return;
+      await updateDoc(doc(db, 'users', currentUser.uid), { name: val });
+      currentUser.name = val;
+      document.getElementById('pf-name').textContent = val;
+      document.getElementById('sbName').textContent = val;
+      document.getElementById('profileBtn').textContent = val.charAt(0);
+      await addNotification(`${val} updated their name.`, compId);
+    } else if (field === 'email') {
+      const val = document.getElementById('ep-email').value.trim();
+      const pw = document.getElementById('ep-current-pw').value;
+      if (!val || !pw) { alert('Enter new email and current password.'); return; }
+      try {
+        const cred = EmailAuthProvider.credential(auth.currentUser.email, pw);
+        await reauthenticateWithCredential(auth.currentUser, cred);
+        await updateEmail(auth.currentUser, val);
+        await updateDoc(doc(db, 'users', currentUser.uid), { email: val });
+        currentUser.email = val;
+        document.getElementById('pf-email').textContent = val;
+        await addNotification(`${currentUser.name} changed their email.`, compId);
+      } catch (e) { alert('Failed: ' + e.message); return; }
+    } else if (field === 'password') {
+      const newPw = document.getElementById('ep-new-pw').value;
+      const currPw = document.getElementById('ep-current-pw2').value;
+      if (!newPw || !currPw || newPw.length < 6) { alert('Enter current and new password (min 6 chars).'); return; }
+      try {
+        const cred = EmailAuthProvider.credential(auth.currentUser.email, currPw);
+        await reauthenticateWithCredential(auth.currentUser, cred);
+        await updatePassword(auth.currentUser, newPw);
+        await addNotification(`${currentUser.name} changed their password.`, compId);
+      } catch (e) { alert('Failed: ' + e.message); return; }
+    }
+
+    closeModal('editProfileModal');
+  };
+
+  /* ── LOGOUT ── */
+  window.doLogout = async function() {
+    await signOut(auth);
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+  };
+
+  /* ── SHOW GODOWN DETAIL ── */
+  window.showGodownDetail = function(gdId) {
+    currentGodownId = gdId;
+    window.currentGodownId = gdId;
+    const gd = godownList.find(g => g.id === gdId);
+    if (!gd) return;
+
+    document.getElementById('gdDetailName').textContent = gd.name;
+    document.getElementById('gdDetailLocation').textContent = '📍 ' + gd.location;
+
+    // Staff list
+    const staffEl = document.getElementById('gdDetailStaff');
+    const assignedStaff = staffList.filter(s => gd.staffAccess?.[s.uid]);
+    staffEl.innerHTML = assignedStaff.length ? assignedStaff.map(s =>
+      `<div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem;background:var(--surface2);border-radius:8px;margin-bottom:0.4rem;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--green-dim);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:var(--green);">${s.name.charAt(0)}</div>
+        <div><div style="font-weight:600;font-size:0.85rem;">${s.name}</div><div style="font-size:0.72rem;color:var(--text2);">${capitalize(s.role)}</div></div>
+      </div>`
+    ).join('') : '<div style="color:var(--text2);font-size:0.85rem;">No staff assigned</div>';
+
+    // Owner-only delete button
+    const ownerActs = document.getElementById('ownerOnlyGdActions');
+    if (currentUser.role === 'owner') {
+      ownerActs.innerHTML = `<button onclick="deleteGodown('${gdId}')" style="width:100%;margin-top:0.8rem;padding:0.75rem;border:1.5px solid var(--red);color:var(--red);background:rgba(255,82,82,0.07);border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.9rem;">🗑 Delete Godown</button>`;
+    } else {
+      ownerActs.innerHTML = '';
+    }
+
+    openModal('godownDetailModal');
+  };
+
+  window.openGodown = function(gdId) {
+    if (!gdId) return;
+    window.location.href = `godown.html?id=${gdId}`;
+  };
+
+  window.deleteGodown = async function(gdId) {
+    if (!confirm('Delete this godown and all its data?')) return;
+    await deleteDoc(doc(db, 'godowns', gdId));
+    closeModal('godownDetailModal');
+  };
+
+
+  /* ── LOAD CHART DATA ── */
+  async function loadChartData(compId) {
+    try {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+
+      const q = query(collection(db, 'entries'),
+        where('companyId', '==', compId)
+      );
+      const snap = await getDocs(q);
+
+      const inCounts = [0,0,0,0,0,0,0];
+      const outCounts = [0,0,0,0,0,0,0];
+
+      snap.docs.forEach(d => {
+        const e = d.data();
+        if (e.deleted) return;
+        const ts = e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt || 0);
+        const diffDays = Math.floor((Date.now() - ts.getTime()) / 86400000);
+        if (diffDays >= 0 && diffDays <= 6) {
+          const idx = 6 - diffDays;
+          if (e.type === 'in') inCounts[idx]++;
+          else outCounts[idx]++;
+        }
+      });
+
+      // Donut: products per godown
+      const donutLabels = [];
+      const donutVals = [];
+      for (const gd of godownList.slice(0, 6)) {
+        const pq = query(collection(db, 'products'), where('godownId', '==', gd.id));
+        const ps = await getDocs(pq);
+        if (ps.size > 0) {
+          donutLabels.push(gd.name.length > 10 ? gd.name.slice(0, 10) + '…' : gd.name);
+          donutVals.push(ps.size);
+        }
+      }
+
+      if (window._initCharts) {
+        window._initCharts(
+          { in: inCounts, out: outCounts },
+          { labels: donutLabels, values: donutVals }
+        );
+      }
+    } catch (e) {
+      console.log('Chart data load failed (non-critical):', e.message);
+    }
+  }
+
+  /* ── MAKE KEY FUNCTIONS ACCESSIBLE ── */
+  window._generateCorpId = generateCorpId;
+  window._addNotification = addNotification;
+  window._confirmDeleteStaff_internal = function(uid, name) {
+    staffToDelete = { uid, name };
+    document.getElementById('deleteStaffSub').textContent = `Remove ${name} from your team? This revokes their access.`;
+    document.getElementById('confirmDeleteBtn').onclick = window._doDeleteStaff;
+    openModal('deleteStaffModal');
+  };
+  window.confirmDeleteStaff = window._confirmDeleteStaff_internal;
+</script>
+
+<!-- NON-MODULE HELPERS -->
+<script>
+  /* ── THEME: Dark only ── */
+  document.documentElement.setAttribute('data-theme', 'dark');
+
+  /* ── MODAL HELPERS ── */
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  // Close on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) closeModal(o.id); });
+  });
+
+  /* ── SIDEBAR ── */
+  function openSidebar() {
+    document.getElementById('profileSidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('profileSidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function switchSbTab(tab) {
+    document.querySelectorAll('.sb-tab').forEach((t, i) => {
+      t.classList.toggle('active', ['profile','staff'][i] === tab);
+    });
+    document.querySelectorAll('.sb-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`sb-${tab}`).classList.add('active');
+  }
+
+  /* ── NOTIFICATION PANEL ── */
+  function toggleNotif() {
+    document.getElementById('notifPanel').classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#notifPanel') && !e.target.closest('#notifBtn')) {
+      document.getElementById('notifPanel').classList.remove('open');
+    }
+  });
+  function clearNotifs() {
+    document.getElementById('notifList').innerHTML = '<div class="notif-empty" id="notifEmpty">No notifications yet</div>';
+    document.getElementById('notifBadge').classList.remove('show');
+  }
+
+  /* ── CREATE GODOWN MODAL ── */
+  function openCreateGodown() {
+    openModal('createGodownModal');
+    renderStaffPicker();
+  }
+
+  function toggleCustomStaff() {
+    const on = document.getElementById('customStaffToggle').checked;
+    document.getElementById('staffPicker').classList.toggle('show', on);
+  }
+
+  function renderStaffPicker() {
+    const list = document.getElementById('spList');
+    list.innerHTML = '';
+    const staff = window._getStaffList ? window._getStaffList() : [];
+    const u = window._currentUser ? window._currentUser() : null;
+    const selected = window._selectedStaff ? window._selectedStaff() : new Set();
+
+    staff.forEach(s => {
+      const isCreator = u && s.uid === u.uid;
+      const isSelected = selected.has(s.uid) || isCreator;
+      const el = document.createElement('div');
+      el.className = `sp-item ${isSelected ? 'selected' : ''}`;
+      el.dataset.uid = s.uid;
+      el.innerHTML = `
+        <div class="sp-item-left">
+          <div class="sp-av">${s.name.charAt(0)}</div>
+          <div>
+            <div class="sp-name">${s.name}</div>
+            <div class="sp-role">${capitalize(s.role)}</div>
+          </div>
+        </div>
+        ${isCreator
+          ? '<span class="sp-locked">Default ✓</span>'
+          : `<div class="sp-check">${isSelected ? '✓' : ''}</div>`
+        }
+      `;
+      if (!isCreator) {
+        el.onclick = () => {
+          const sel = window._selectedStaff();
+          if (sel.has(s.uid)) { sel.delete(s.uid); el.classList.remove('selected'); el.querySelector('.sp-check').textContent = ''; }
+          else { sel.add(s.uid); el.classList.add('selected'); el.querySelector('.sp-check').textContent = '✓'; }
+        };
+      }
+      list.appendChild(el);
+    });
+  }
+
+  function filterStaffPicker() {
+    const q = document.getElementById('spSearchInp').value.toLowerCase();
+    document.querySelectorAll('#spList .sp-item').forEach(el => {
+      el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+
+  /* ── ADD STAFF ── */
+  function openAddStaff() {
+    openModal('addStaffModal');
+  }
+
+  function filterStaff() {
+    if (window._renderStaffList) window._renderStaffList();
+    else {
+      const q = document.getElementById('staffSearchInp').value.toLowerCase();
+      document.querySelectorAll('#staffListEl .staff-item').forEach(el => {
+        el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    }
+  }
+
+  /* ── EDIT PROFILE ── */
+  function openEditProfile(field) {
+    editingField = field;
+    const titles = { name: 'Change Name', email: 'Change Email', password: 'Change Password' };
+    document.getElementById('editModalTitle').textContent = titles[field];
+    let body = '';
+    if (field === 'name') {
+      body = `<div class="ep-field"><input id="ep-name" placeholder="New name" /></div>
+        <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+        <button class="btn-primary" onclick="saveEditProfile()">Save</button></div>`;
+    } else if (field === 'email') {
+      body = `<div class="ep-field"><input id="ep-email" type="email" placeholder="New email" /></div>
+        <div class="ep-field"><input id="ep-current-pw" type="password" placeholder="Current password (to confirm)" /></div>
+        <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+        <button class="btn-primary" onclick="saveEditProfile()">Save</button></div>`;
+    } else if (field === 'password') {
+      body = `<div class="ep-field"><input id="ep-current-pw2" type="password" placeholder="Current password" /></div>
+        <div class="ep-field"><input id="ep-new-pw" type="password" placeholder="New password (min 6 chars)" /></div>
+        <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+        <button class="btn-primary" onclick="saveEditProfile()">Save</button></div>`;
+    }
+    document.getElementById('editModalBody').innerHTML = body;
+    openModal('editProfileModal');
+  }
+  window.openEditProfile = openEditProfile;
+
+  /* ── STAFF CRED SHARE ── */
+  function downloadStaffCard() {
+    const card = document.getElementById('staffCredCard');
+    html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true }).then(canvas => {
+      const link = document.createElement('a');
+      const name = document.getElementById('sc-name').textContent;
+      link.download = `SwiftStock-Staff-${name}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+
+  function shareWhatsApp() {
+    const cred = window._lastStaffCred;
+    if (!cred) return;
+    const msg = encodeURIComponent(
+      `*SwiftStock Login Credentials* 🏪\n\n` +
+      `*Company:* ${cred.companyName}\n` +
+      `*Name:* ${cred.name}\n` +
+      `*Role:* ${capitalize(cred.role)}\n` +
+      `*Corporate ID:* ${cred.corporateId}\n` +
+      `*Email:* ${cred.email}\n` +
+      `*Password:* ${cred.password}\n\n` +
+      `Login at: ${window.location.origin}/login.html`
+    );
+    window.open(`https://wa.me/?text=${msg}`, '_blank');
+  }
+
+  function copyCredentials() {
+    const cred = window._lastStaffCred;
+    if (!cred) return;
+    const text = `SwiftStock Login\nCompany: ${cred.companyName}\nName: ${cred.name}\nRole: ${capitalize(cred.role)}\nCorporate ID: ${cred.corporateId}\nEmail: ${cred.email}\nPassword: ${cred.password}`;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.target;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy', 2000);
+    });
+  }
+
+  /* ── PHOTO UPLOAD ── */
+  function triggerPhotoUpload() {
+    document.getElementById('photoInput').click();
+  }
+
+  /* ── GODOWN MENU ── */
+  function showGodownMenu(e, gdId) {
+    e.stopPropagation();
+    showGodownDetail(gdId);
+  }
+
+  /* ── OPEN GODOWN ── */
+  window.currentGodownId = null;
+
+  /* ── UTILS ── */
+  function capitalize(s) {
+    if (!s) return '';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+
+  /* ── CHARTS ── */
+  let weekChartInst = null;
+  let donutChartInst = null;
+
+  window._initCharts = function(weekData, donutData) {
+    // Destroy existing
+    if (weekChartInst) { try { weekChartInst.destroy(); } catch(e){} weekChartInst = null; }
+    if (donutChartInst) { try { donutChartInst.destroy(); } catch(e){} donutChartInst = null; }
+
+    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const labels = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      labels.push(i === 0 ? 'Today' : days[(d.getDay() + 6) % 7]);
+    }
+
+    const wCtx = document.getElementById('weekChart');
+    if (!wCtx) return;
+    try {
+      weekChartInst = new Chart(wCtx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'IN', data: weekData.in || [0,0,0,0,0,0,0],
+              backgroundColor: 'rgba(48,209,88,0.7)',
+              borderRadius: 5, borderSkipped: false,
+            },
+            {
+              label: 'OUT', data: weekData.out || [0,0,0,0,0,0,0],
+              backgroundColor: 'rgba(255,69,58,0.65)',
+              borderRadius: 5, borderSkipped: false,
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 600, easing: 'easeOutQuart' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
+              bodyColor: '#aeaeb2', borderColor: '#2c2c2e', borderWidth: 1,
+              padding: 10, cornerRadius: 8,
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { display: false },
+              ticks: { color: '#636366', font: { size: 11, family: "'Inter',sans-serif" } }
+            },
+            y: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              border: { display: false, dash: [4,4] },
+              ticks: { color: '#636366', font: { size: 11 }, maxTicksLimit: 5, precision: 0 },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    } catch(e) { console.log('Bar chart error:', e.message); }
+
+    const dCtx = document.getElementById('donutChart');
+    if (!dCtx) return;
+    const dColors = ['#30d158','#0a84ff','#ff9f0a','#bf5af2','#ff453a','#64d2ff'];
+    const dLabels = donutData.labels?.length ? donutData.labels : ['No data'];
+    const dVals   = donutData.values?.length ? donutData.values : [1];
+    const dBg     = dLabels.map((_, i) => dColors[i % dColors.length]);
+    try {
+      donutChartInst = new Chart(dCtx, {
+        type: 'doughnut',
+        data: {
+          labels: dLabels,
+          datasets: [{ data: dVals, backgroundColor: dBg, borderColor: '#111', borderWidth: 2, hoverOffset: 6 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          cutout: '68%',
+          animation: { duration: 600, easing: 'easeOutQuart' },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#aeaeb2', font: { size: 11, family: "'Inter',sans-serif" },
+                padding: 10, boxWidth: 9, boxHeight: 9, usePointStyle: true
+              }
+            },
+            tooltip: {
+              backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
+              bodyColor: '#aeaeb2', borderColor: '#2c2c2e', borderWidth: 1,
+              padding: 10, cornerRadius: 8,
+            }
+          }
+        }
+      });
+    } catch(e) { console.log('Donut chart error:', e.message); }
+  };
+
+  // Called from module after data loads
+  window._updateCharts = window._initCharts;
+
+  /* ── KEY SHORTCUTS ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
+      closeSidebar();
+    }
+  });
+
+  // Expose for module
+  window.filterStaff = filterStaff;
+  window.openAddStaff = openAddStaff;
+  window.openGodown = window.openGodown || ((id) => { window.location.href = `godown.html?id=${id}`; });
 </script>
 </body>
 </html>
