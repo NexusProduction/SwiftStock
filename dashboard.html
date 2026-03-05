@@ -33,8 +33,6 @@
     .topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 1.4rem;background:var(--topbar-bg);border-bottom:1px solid var(--border);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
     .topbar-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:-.02em;color:var(--text);display:flex;align-items:center;gap:.45rem;text-decoration:none}
     .topbar-logo svg{color:var(--green)}
-    .topbar-name{display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--text2);margin-left:.6rem;padding-left:.7rem;border-left:1px solid var(--border)}
-    .topbar-name-val{color:var(--text);font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .topbar-right{display:flex;align-items:center;gap:.4rem}
     .notif-btn{position:relative;width:34px;height:34px;border-radius:9px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .15s}
     .notif-btn:hover{background:var(--card2);color:var(--text)}
@@ -107,11 +105,12 @@
     .count-pill{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:.12rem .5rem;font-size:.7rem;color:var(--text2);font-weight:700}
 
     /* ── GODOWN LIST ── */
-    .godowns-list{border:1px solid var(--border2);border-radius:14px;overflow:hidden;background:var(--card)}
+    .godowns-list{border:1px solid var(--border2);border-radius:14px;overflow:visible;background:var(--card)}
     .add-row{
       display:flex;align-items:center;gap:.88rem;padding:1rem 1.2rem;
       cursor:pointer;transition:background .15s;
       border-bottom:1px solid var(--border);
+      border-radius:14px 14px 0 0;
     }
     .add-row:hover{background:var(--card2)}
     .add-row-icon{
@@ -130,19 +129,19 @@
       grid-template-columns:38px 1fr auto auto;
       align-items:center;gap:.88rem;
       padding:1rem 1.2rem;
-      cursor:pointer;position:relative;
+      cursor:pointer;position:relative;z-index:1;
       border-bottom:1px solid var(--border);
       transition:background .15s;
       animation:fadeUp .3s ease both;
     }
-    .gd-row:last-child{border-bottom:none}
+    .gd-row:last-child{border-bottom:none;border-radius:0 0 14px 14px}
     .gd-row::before{
       content:'';position:absolute;left:0;top:12%;bottom:12%;
       width:2.5px;border-radius:0 2px 2px 0;
       background:var(--green);opacity:0;
       transition:opacity .18s;
     }
-    .gd-row:hover{background:rgba(255,255,255,.03)}
+    .gd-row:hover{background:rgba(255,255,255,.03);z-index:100}
     .gd-row:hover::before{opacity:1}
 
     .gd-row-icon{
@@ -165,7 +164,8 @@
     }
 
     /* Staff pill with tooltip */
-    .gd-row-staff{position:relative;flex-shrink:0}
+    .gd-row-staff{position:relative;flex-shrink:0;z-index:10}
+    .gd-row-staff:hover{z-index:999}
     .staff-pill{
       display:flex;align-items:center;gap:.38rem;
       padding:.3rem .7rem;border-radius:999px;
@@ -177,22 +177,25 @@
     .gd-row-staff:hover .staff-pill{background:var(--card3);border-color:var(--border2);color:var(--text)}
     /* Tooltip */
     .staff-tooltip{
-      position:absolute;right:0;top:calc(100% + 7px);
-      min-width:160px;max-width:220px;
-      background:#1a1a1a;border:1px solid var(--border2);border-radius:10px;
-      padding:.55rem .7rem;
+      position:absolute;right:0;top:calc(100% + 8px);
+      min-width:180px;max-width:240px;
+      background:#1c1c1c;border:1px solid var(--border2);border-radius:12px;
+      padding:.6rem .75rem;
       opacity:0;pointer-events:none;
-      transform:translateY(-4px);
+      transform:translateY(-6px) scale(.97);
       transition:opacity .18s,transform .18s;
-      z-index:50;box-shadow:0 12px 36px rgba(0,0,0,.75);
+      z-index:9999;
+      box-shadow:0 16px 48px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.04);
     }
-    .gd-row-staff:hover .staff-tooltip{opacity:1;transform:translateY(0)}
-    .st-item{display:flex;align-items:center;gap:.55rem;padding:.3rem 0}
+    .gd-row-staff:hover .staff-tooltip{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+    .tt-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.4rem}
+    .st-item{display:flex;align-items:center;gap:.55rem;padding:.28rem 0}
     .st-item+.st-item{border-top:1px solid var(--border)}
     .st-av{width:22px;height:22px;border-radius:50%;background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.2);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--green);flex-shrink:0}
-    .st-name{font-size:.75rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .st-name{font-size:.76rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .st-role{font-size:.64rem;color:var(--text3)}
-    .st-empty{font-size:.75rem;color:var(--text3);padding:.2rem 0}
+    .st-all{display:flex;align-items:center;gap:.45rem;font-size:.76rem;color:var(--text2);padding:.2rem 0}
+    .st-all svg{color:var(--green);flex-shrink:0}
 
     /* Chevron */
     .gd-row-arr{flex-shrink:0;color:var(--text3);display:flex;align-items:center;transition:transform .18s,color .18s}
@@ -399,10 +402,8 @@
       <path d="M18 4L8 18h8l-2 10 14-16h-9z" fill="#000"/>
     </svg>
     SwiftStock
+    <span style="font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#30d158;background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.25);padding:.18rem .45rem;border-radius:5px;margin-left:.1rem;vertical-align:middle">beta</span>
   </a>
-  <div class="topbar-name">
-    <span class="topbar-name-val" id="topbarCompName"></span>
-  </div>
   <div class="topbar-right">
     <div class="notif-btn" onclick="toggleNotif()" id="notifBtn">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -1004,22 +1005,36 @@
 
         const iconSvg = GD_ICONS[i % GD_ICONS.length];
 
-        // Build staff tooltip content (only known staff, no ?)
+        // Build staff tooltip — "All Staff" if not custom, else list assigned
         const assignedStaff = staffList.filter(s => gd.staffAccess?.[s.uid]);
         const staffCount = assignedStaff.length;
+        const isAllStaff = !gd.customStaff;
 
-        const tooltipItems = assignedStaff.length
-          ? assignedStaff.map(s => {
-              const init = s.name.charAt(0).toUpperCase();
-              return `<div class="st-item">
-                <div class="st-av">${init}</div>
-                <div>
-                  <div class="st-name">${s.name}</div>
-                  <div class="st-role">${capitalize(s.role)}</div>
-                </div>
-              </div>`;
-            }).join('')
-          : `<div class="st-empty">No staff assigned</div>`;
+        let tooltipItems;
+        if (isAllStaff) {
+          tooltipItems = `
+            <div class="tt-label">Access</div>
+            <div class="st-all">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              All Staff Assigned
+            </div>`;
+        } else if (assignedStaff.length) {
+          tooltipItems = `<div class="tt-label">Assigned Staff</div>` + assignedStaff.map(s =>
+            `<div class="st-item">
+              <div class="st-av">${s.name.charAt(0).toUpperCase()}</div>
+              <div>
+                <div class="st-name">${s.name}</div>
+                <div class="st-role">${capitalize(s.role)}</div>
+              </div>
+            </div>`
+          ).join('');
+        } else {
+          tooltipItems = `<div class="tt-label">Access</div><div class="st-all" style="color:var(--text3)">No staff assigned</div>`;
+        }
+
+        const displayCount = isAllStaff
+          ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All`
+          : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>${staffCount}`;
 
         row.innerHTML = `
           <div class="gd-row-icon">${iconSvg}</div>
@@ -1031,10 +1046,7 @@
             </div>
           </div>
           <div class="gd-row-staff" onclick="event.stopPropagation()">
-            <div class="staff-pill">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              ${staffCount}
-            </div>
+            <div class="staff-pill">${displayCount}</div>
             <div class="staff-tooltip">${tooltipItems}</div>
           </div>
           <div class="gd-row-arr">
