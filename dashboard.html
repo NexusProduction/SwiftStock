@@ -1409,8 +1409,9 @@
 
   /* ── LOGOUT ── */
   window.doLogout = async function() {
-    await signOut(auth);
+    try { await signOut(auth); } catch(e) {}
     sessionStorage.clear();
+    sessionStorage.setItem('sw_logout', '1'); // tells login/index NOT to auto-redirect back
     window.location.href = 'login.html';
   };
 
