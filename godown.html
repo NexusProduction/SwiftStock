@@ -350,7 +350,8 @@ const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app);
 let cu=null,gdId=null,gdData=null;
 let products=[],curPid=null,curP=null;
 let entries=[],eType="in",editMode=false;
-let eUnsub=null;
+let eUnsub=null,pUnsub=null;
+let _initialized=false; // guard against onAuthStateChanged re-fires
 
 const params=new URLSearchParams(window.location.search);
 gdId=params.get("id");
@@ -358,6 +359,9 @@ if(!gdId)window.location.href="dashboard.html";
 
 onAuthStateChanged(auth,async user=>{
   if(!user){window.location.href="login.html";return;}
+  // Guard: only run full setup ONCE — onAuthStateChanged fires on every token refresh
+  if(_initialized) return;
+  _initialized=true;
   const uDoc=await getDoc(doc(db,"users",user.uid));
   if(!uDoc.exists()){window.location.href="login.html";return;}
   cu={uid:user.uid,...uDoc.data()};window._cu=()=>cu;
@@ -377,8 +381,10 @@ onAuthStateChanged(auth,async user=>{
 });
 
 function loadProducts(){
+  // Unsubscribe previous listener if any (prevents stacking on re-init)
+  if(pUnsub){pUnsub();pUnsub=null;}
   const q=query(collection(db,"products"),where("godownId","==",gdId));
-  onSnapshot(q,snap=>{
+  pUnsub=onSnapshot(q,snap=>{
     products=snap.docs.map(d=>({id:d.id,...d.data()}));window._products=products;
     renderProducts();
     if(curPid){const cp=products.find(p=>p.id===curPid);if(cp){curP=cp;renderDetail();}}
