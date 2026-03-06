@@ -372,7 +372,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 const app = initializeApp({apiKey:"AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",authDomain:"store-management-nexus.firebaseapp.com",projectId:"store-management-nexus",storageBucket:"store-management-nexus.firebasestorage.app",messagingSenderId:"263693510395",appId:"1:263693510395:web:47a0485221405dbb6fb25e"});
 const auth = getAuth(app);
-onAuthStateChanged(auth, user => { if (user) window.location.replace("dashboard.html"); });
+onAuthStateChanged(auth, user => {
+  if (user) {
+    // If user just logged out, clear the flag and stay on landing page
+    if (sessionStorage.getItem('sw_logout')) {
+      sessionStorage.removeItem('sw_logout');
+    } else {
+      // Genuinely logged-in user visiting homepage → go to dashboard
+      window.location.replace("dashboard.html");
+    }
+  }
+});
 </script>
 </body>
 </html>
