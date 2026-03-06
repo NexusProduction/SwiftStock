@@ -362,22 +362,30 @@ onAuthStateChanged(auth,async user=>{
   // Guard: only run full setup ONCE — onAuthStateChanged fires on every token refresh
   if(_initialized) return;
   _initialized=true;
-  const uDoc=await getDoc(doc(db,"users",user.uid));
-  if(!uDoc.exists()){window.location.href="login.html";return;}
-  cu={uid:user.uid,...uDoc.data()};window._cu=()=>cu;
-  const gdDoc=await getDoc(doc(db,"godowns",gdId));
-  if(!gdDoc.exists()){window.location.href="dashboard.html";return;}
-  gdData=gdDoc.data();
-  const ok=cu.role==="owner"||(gdData.staffAccess?.[cu.uid]);
-  if(!ok){window.location.href="dashboard.html";return;}
-  txt("heroName",gdData.name||"Godown");txt("heroLoc",gdData.location||"No location set");txt("tbTitle",gdData.name||"Godown");
-  const canM=cu.role==="owner"||cu.role==="manager";
-  if(!canM){
-    const b=document.getElementById("tbAddBtn");if(b)b.style.display="none";
-    const f=document.getElementById("fabBtn");if(f)f.style.display="none";
-    const d=document.getElementById("pdFloats");if(d)d.style.display="none";
+  try{
+    const uDoc=await getDoc(doc(db,"users",user.uid));
+    if(!uDoc.exists()){window.location.href="login.html";return;}
+    cu={uid:user.uid,...uDoc.data()};window._cu=()=>cu;
+    const gdDoc=await getDoc(doc(db,"godowns",gdId));
+    if(!gdDoc.exists()){window.location.href="dashboard.html";return;}
+    gdData=gdDoc.data();
+    const ok=cu.role==="owner"||(gdData.staffAccess?.[cu.uid]);
+    if(!ok){window.location.href="dashboard.html";return;}
+    txt("heroName",gdData.name||"Godown");txt("heroLoc",gdData.location||"No location set");txt("tbTitle",gdData.name||"Godown");
+    const canM=cu.role==="owner"||cu.role==="manager";
+    if(!canM){
+      const b=document.getElementById("tbAddBtn");if(b)b.style.display="none";
+      const f=document.getElementById("fabBtn");if(f)f.style.display="none";
+      const d=document.getElementById("pdFloats");if(d)d.style.display="none";
+    }
+    loadProducts();
+  }catch(err){
+    // Reset so a future auth refresh can retry
+    _initialized=false;
+    console.error("Godown init error:",err);
+    txt("tbTitle","Error loading");
+    showToast("Failed to load godown. Please refresh.","error");
   }
-  loadProducts();
 });
 
 function loadProducts(){
@@ -542,7 +550,7 @@ window.saveProduct=async function(){
     }
     if(!convs.length){pmsg("Add at least one conversion.","error");return;}
   }
-  btn.disabled=true;btn.innerHTML="<span class="spin"></span>Saving...";
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Saving...';
   try{
     if(editMode&&curPid){
       await updateDoc(doc(db,"products",curPid),{name,description:desc,unit,conversions:convs,conversionsEnabled:cen,updatedAt:serverTimestamp(),updatedBy:cu.uid,updatedByName:cu.name});
@@ -610,7 +618,7 @@ window.saveEntry=async function(){
   if(!qty||qty<=0){emsg("Enter a valid quantity.","error");return;}
   const bq=cvt(qty,unit,p);
   if(eType==="out"&&bq>(p.currentStock||0)){emsg(`Only ${fmt(p.currentStock)} ${p.unit} in stock.`,"error");return;}
-  btn.disabled=true;btn.innerHTML="<span class="spin"></span>Saving...";
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Saving...';
   try{
     await addDoc(collection(db,"entries"),{productId:curPid,godownId:gdId,type:eType,enteredQty:qty,enteredUnit:unit,qtyInBase:bq,note,staffId:cu.uid,staffName:cu.name,companyId:cu.companyId||cu.uid,createdAt:serverTimestamp()});
     const delta=eType==="in"?bq:-bq;
