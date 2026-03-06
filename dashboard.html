@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -85,19 +84,9 @@
     }
 
     /* ── CHART ROW ── */
-    .charts-row{display:grid;grid-template-columns:1fr 260px;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.6rem}
-    @media(max-width:660px){.charts-row{grid-template-columns:1fr}}
-    .chart-panel{background:var(--card);padding:1.3rem 1.4rem}
-    .chart-panel+.chart-panel{border-left:1px solid var(--border)}
-    @media(max-width:660px){.chart-panel+.chart-panel{border-left:none;border-top:1px solid var(--border)}}
-    .chart-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.1rem}
-    .chart-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;color:var(--text)}
-    .chart-desc{font-size:.75rem;color:var(--text2);margin-top:.18rem}
-    .chart-legend{display:flex;gap:.7rem;flex-wrap:wrap;padding-top:.1rem}
-    .cleg{display:flex;align-items:center;gap:.32rem;font-size:.72rem;color:var(--text2);font-weight:500}
+
     .cleg-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
-    .chart-wrap{position:relative;height:145px}
-    .chart-wrap canvas{width:100%!important;height:100%!important}
+
 
     /* ── SECTION ── */
     .section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
@@ -385,8 +374,7 @@
       .gd-row-loc{font-size:.72rem}
       .stats-grid{grid-template-columns:repeat(2,1fr)}
       .stat-val{font-size:2rem}
-      .charts-row{grid-template-columns:1fr}
-      .chart-panel+.chart-panel{border-left:none;border-top:1px solid var(--border)}
+
     }
 
   </style>
@@ -464,31 +452,7 @@
       </div>
     </div>
 
-    <!-- ── CHARTS ROW ── -->
-    <div class="charts-row" style="animation:fadeUp .5s .08s ease both;">
-      <div class="chart-panel">
-        <div class="chart-hd">
-          <div class="chart-hd-left">
-            <div class="chart-name">Stock Movements — Last 7 Days</div>
-            <div class="chart-desc">Daily IN vs OUT entries</div>
-          </div>
-          <div class="chart-legend">
-            <div class="cleg"><div class="cleg-dot" style="background:#30d158"></div>IN</div>
-            <div class="cleg"><div class="cleg-dot" style="background:#ff453a"></div>OUT</div>
-          </div>
-        </div>
-        <div class="chart-wrap"><canvas id="weekChart"></canvas></div>
-      </div>
-      <div class="chart-panel">
-        <div class="chart-hd">
-          <div class="chart-hd-left">
-            <div class="chart-name">Products by Godown</div>
-            <div class="chart-desc">Distribution</div>
-          </div>
-        </div>
-        <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
-      </div>
-    </div>
+
 
 
     <!-- Godowns section -->
@@ -803,6 +767,41 @@
 </div>
 
 <!-- ══════════ GODOWN DETAIL MODAL (click godown) ══════════ -->
+<!-- ══ DELETE GODOWN MODAL ══ -->
+<div class="modal-overlay" id="deleteGodownModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" style="color:var(--red)">Delete Godown</div>
+        <div class="modal-sub" id="dgdSub">This will permanently delete all products and entries.</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('deleteGodownModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:rgba(255,69,58,.07);border:1px solid rgba(255,69,58,.22);border-radius:12px;padding:.9rem 1rem;margin-bottom:1.2rem;font-size:.84rem;color:var(--red);line-height:1.55;">
+        ⚠️ This action <b>cannot be undone</b>. All products, stock entries and history inside this godown will be deleted forever.
+      </div>
+      <div style="margin-bottom:.8rem;">
+        <label style="display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);margin-bottom:.4rem;">Confirm your password</label>
+        <div style="position:relative;">
+          <input type="password" id="dgdPassword" placeholder="Enter your password to confirm"
+            style="width:100%;height:46px;padding:0 1rem;background:var(--surface2);border:1.5px solid var(--border2);border-radius:12px;font-family:inherit;font-size:.9rem;color:var(--text);outline:none;transition:border-color .15s;"
+            oninput="document.getElementById('dgdPassword').style.borderColor=''"
+          />
+        </div>
+        <div id="dgdError" style="font-size:.76rem;color:var(--red);margin-top:.4rem;min-height:1em;"></div>
+      </div>
+      <div style="display:flex;gap:.7rem;">
+        <button onclick="closeModal('deleteGodownModal')" style="flex:1;height:46px;border-radius:12px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:inherit;font-weight:600;font-size:.88rem;cursor:pointer;">Cancel</button>
+        <button id="dgdConfirmBtn" onclick="confirmDeleteGodownWithPassword()"
+          style="flex:1;height:46px;border-radius:12px;border:none;background:var(--red);color:#fff;font-family:inherit;font-weight:700;font-size:.88rem;cursor:pointer;transition:opacity .15s;">
+          Delete Forever
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="godownDetailModal">
   <div class="modal" style="max-width:480px;">
     <div class="modal-head">
@@ -828,7 +827,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut, updatePassword, updateEmail, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp, orderBy, limit, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
   const firebaseConfig = {
@@ -968,11 +967,7 @@
           document.getElementById('statProducts').textContent = ps.size;
         });
       }
-      // Load charts after godowns are known (only on first load)
-      if (!window._chartsLoaded) {
-        window._chartsLoaded = true;
-        setTimeout(() => loadChartData(currentUser.companyId || currentUser.uid), 400);
-      }
+
     });
   }
 
@@ -1442,7 +1437,10 @@
     // Owner-only delete button
     const ownerActs = document.getElementById('ownerOnlyGdActions');
     if (currentUser.role === 'owner') {
-      ownerActs.innerHTML = `<button onclick="deleteGodown('${gdId}')" style="width:100%;margin-top:0.8rem;padding:0.75rem;border:1.5px solid var(--red);color:var(--red);background:rgba(255,82,82,0.07);border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.9rem;">🗑 Delete Godown</button>`;
+      ownerActs.innerHTML = `<button onclick="openDeleteGodownModal('${gdId}')" style="width:100%;margin-top:0.8rem;padding:0.75rem;border:1.5px solid var(--red);color:var(--red);background:rgba(255,82,82,0.07);border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.9rem;transition:background .15s;" onmouseover="this.style.background='rgba(255,82,82,0.14)'" onmouseout="this.style.background='rgba(255,82,82,0.07)'">🗑 Delete Godown</button>`;
+
+    } else if (currentUser.role === 'manager') {
+      ownerActs.innerHTML = `<button onclick="openDeleteGodownModal('${gdId}')" style="width:100%;margin-top:0.8rem;padding:0.75rem;border:1.5px solid var(--red);color:var(--red);background:rgba(255,82,82,0.07);border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.9rem;transition:background .15s;" onmouseover="this.style.background='rgba(255,82,82,0.14)'" onmouseout="this.style.background='rgba(255,82,82,0.07)'">🗑 Delete Godown</button>`;
     } else {
       ownerActs.innerHTML = '';
     }
@@ -1455,92 +1453,71 @@
     window.location.href = `godown.html?id=${gdId}`;
   };
 
-  window.deleteGodown = async function(gdId) {
-    if (!confirm('Delete this godown and all its data?')) return;
-    await deleteDoc(doc(db, 'godowns', gdId));
-    closeModal('godownDetailModal');
+  let _gdToDelete = null;
+
+  window.openDeleteGodownModal = function(gdId) {
+    _gdToDelete = gdId;
+    const gd = godownList.find(g => g.id === gdId);
+    document.getElementById('dgdSub').textContent =
+      `Delete "${gd ? gd.name : 'this godown'}"? All products and stock history will be lost.`;
+    document.getElementById('dgdPassword').value = '';
+    document.getElementById('dgdError').textContent = '';
+    document.getElementById('dgdPassword').style.borderColor = '';
+    openModal('deleteGodownModal');
   };
 
-
-  /* ── LOAD CHART DATA ── */
-  async function loadChartData(compId) {
-    try {
-      // Build last-7-days buckets keyed by date string "YYYY-MM-DD"
-      const buckets = {};
-      const dayLabels = [];
-      const now = new Date();
-      for (let i = 6; i >= 0; i--) {
-        const d2 = new Date(now);
-        d2.setDate(d2.getDate() - i);
-        const key = d2.toISOString().slice(0, 10); // "2025-03-01"
-        buckets[key] = { in: 0, out: 0 };
-        dayLabels.push(key);
-      }
-
-      // Fetch entries for this company - use Firestore Timestamp filter for efficiency
-      const sevenDaysAgo = new Date(now);
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-      sevenDaysAgo.setHours(0, 0, 0, 0);
-
-      const q = query(
-        collection(db, 'entries'),
-        where('companyId', '==', compId),
-        where('deleted', '!=', true)
-      );
-      const snap = await getDocs(q);
-
-      snap.docs.forEach(doc2 => {
-        const e = doc2.data();
-        if (e.deleted) return;
-        // Handle serverTimestamp() pending sentinel safely
-        let ts;
-        if (e.createdAt && typeof e.createdAt.toDate === 'function') {
-          ts = e.createdAt.toDate();
-        } else if (e.createdAt && e.createdAt._seconds) {
-          ts = new Date(e.createdAt._seconds * 1000);
-        } else {
-          ts = new Date(); // pending sentinel → count as today
-        }
-        const key = ts.toISOString().slice(0, 10);
-        if (buckets[key]) {
-          // Use actual quantity moved, not entry count
-          const qty = parseFloat(e.qtyInBase) || 1;
-          if (e.type === 'in') buckets[key].in += qty;
-          else buckets[key].out += qty;
-        }
-      });
-
-      const inVals  = dayLabels.map(k => Math.round(buckets[k].in  * 100) / 100);
-      const outVals = dayLabels.map(k => Math.round(buckets[k].out * 100) / 100);
-
-      // Donut: total current stock per godown (more meaningful than product count)
-      const donutLabels = [];
-      const donutVals = [];
-      for (const gd of godownList.slice(0, 6)) {
-        const pq = query(collection(db, 'products'), where('godownId', '==', gd.id));
-        const ps = await getDocs(pq);
-        if (ps.size > 0) {
-          // Sum current stock across all products in this godown
-          let totalStock = 0;
-          ps.docs.forEach(pd => { totalStock += pd.data().currentStock || 0; });
-          const lbl = gd.name.length > 11 ? gd.name.slice(0, 11) + '…' : gd.name;
-          donutLabels.push(lbl);
-          donutVals.push(Math.round(totalStock * 10) / 10);
-        }
-      }
-
-      // If all donut values are 0, show product counts as fallback
-      const donutFinal = donutVals.some(v => v > 0)
-        ? { labels: donutLabels, values: donutVals, mode: 'stock' }
-        : { labels: ['No stock data'], values: [1], mode: 'empty' };
-
-      if (window._initCharts) {
-        window._initCharts({ in: inVals, out: outVals }, donutFinal);
-      }
-    } catch (e) {
-      console.log('Chart data load failed (non-critical):', e.message);
+  window.confirmDeleteGodownWithPassword = async function() {
+    const pw = document.getElementById('dgdPassword').value.trim();
+    const errEl = document.getElementById('dgdError');
+    const btn = document.getElementById('dgdConfirmBtn');
+    if (!pw) {
+      errEl.textContent = 'Please enter your password.';
+      document.getElementById('dgdPassword').style.borderColor = 'var(--red)';
+      return;
     }
-  }
+    btn.disabled = true;
+    btn.textContent = 'Deleting...';
+    errEl.textContent = '';
+    try {
+      // Re-authenticate with current password
+      const { EmailAuthProvider, reauthenticateWithCredential } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+      const credential = EmailAuthProvider.credential(auth.currentUser.email, pw);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+
+      // Password correct — delete godown + all products + entries
+      const gdId = _gdToDelete;
+      const batch = writeBatch(db);
+
+      // Delete all products
+      const pSnap = await getDocs(query(collection(db, 'products'), where('godownId', '==', gdId)));
+      pSnap.forEach(pd => batch.delete(pd.ref));
+
+      // Delete all entries
+      const eSnap = await getDocs(query(collection(db, 'entries'), where('godownId', '==', gdId)));
+      eSnap.forEach(ed => batch.delete(ed.ref));
+
+      // Delete the godown itself
+      batch.delete(doc(db, 'godowns', gdId));
+      await batch.commit();
+
+      closeModal('deleteGodownModal');
+      closeModal('godownDetailModal');
+      _gdToDelete = null;
+    } catch (err) {
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        errEl.textContent = 'Incorrect password. Please try again.';
+        document.getElementById('dgdPassword').style.borderColor = 'var(--red)';
+      } else {
+        errEl.textContent = 'Error: ' + (err.message || 'Delete failed.');
+      }
+    }
+    btn.disabled = false;
+    btn.textContent = 'Delete Forever';
+  };
+
+  window.deleteGodown = window.openDeleteGodownModal; // legacy alias
+
+
 
   /* ── MAKE KEY FUNCTIONS ACCESSIBLE ── */
   window._generateCorpId = generateCorpId;
@@ -1763,117 +1740,6 @@
   }
 
 
-  /* ── CHARTS ── */
-  let weekChartInst = null;
-  let donutChartInst = null;
-
-  window._initCharts = function(weekData, donutData) {
-    // Destroy existing
-    if (weekChartInst) { try { weekChartInst.destroy(); } catch(e){} weekChartInst = null; }
-    if (donutChartInst) { try { donutChartInst.destroy(); } catch(e){} donutChartInst = null; }
-
-    // Build day labels: actual day names for last 7 days
-    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const labels = [];
-    for (let i = 6; i >= 0; i--) {
-      const day = new Date(); day.setDate(day.getDate() - i);
-      if (i === 0) labels.push('Today');
-      else if (i === 1) labels.push('Yesterday');
-      else labels.push(dayNames[day.getDay()]);
-    }
-
-    const wCtx = document.getElementById('weekChart');
-    if (!wCtx) return;
-    try {
-      weekChartInst = new Chart(wCtx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: 'IN', data: weekData.in || [0,0,0,0,0,0,0],
-              backgroundColor: 'rgba(48,209,88,0.7)',
-              borderRadius: 5, borderSkipped: false,
-            },
-            {
-              label: 'OUT', data: weekData.out || [0,0,0,0,0,0,0],
-              backgroundColor: 'rgba(255,69,58,0.65)',
-              borderRadius: 5, borderSkipped: false,
-            }
-          ]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          animation: { duration: 600, easing: 'easeOutQuart' },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
-              bodyColor: '#aeaeb2', borderColor: '#2c2c2e', borderWidth: 1,
-              padding: 10, cornerRadius: 8,
-              callbacks: {
-                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} units`
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { display: false },
-              border: { display: false },
-              ticks: { color: '#636366', font: { size: 11, family: "'Inter',sans-serif" } }
-            },
-            y: {
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              border: { display: false, dash: [4,4] },
-              ticks: { color: '#636366', font: { size: 11 }, maxTicksLimit: 5, precision: 0 },
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    } catch(e) { console.log('Bar chart error:', e.message); }
-
-    const dCtx = document.getElementById('donutChart');
-    if (!dCtx) return;
-    const dColors = ['#30d158','#0a84ff','#ff9f0a','#bf5af2','#ff453a','#64d2ff'];
-    const dLabels = donutData.labels?.length ? donutData.labels : ['No data'];
-    const dVals   = donutData.values?.length ? donutData.values : [1];
-    const dBg     = dLabels.map((_, i) => dColors[i % dColors.length]);
-    try {
-      donutChartInst = new Chart(dCtx, {
-        type: 'doughnut',
-        data: {
-          labels: dLabels,
-          datasets: [{ data: dVals, backgroundColor: dBg, borderColor: '#111', borderWidth: 2, hoverOffset: 6 }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          cutout: '68%',
-          animation: { duration: 600, easing: 'easeOutQuart' },
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#aeaeb2', font: { size: 11, family: "'Inter',sans-serif" },
-                padding: 10, boxWidth: 9, boxHeight: 9, usePointStyle: true
-              }
-            },
-            tooltip: {
-              backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
-              bodyColor: '#aeaeb2', borderColor: '#2c2c2e', borderWidth: 1,
-              padding: 10, cornerRadius: 8,
-              callbacks: {
-                label: ctx => ` ${ctx.label}: ${ctx.parsed} units`
-              }
-            }
-          }
-        }
-      });
-    } catch(e) { console.log('Donut chart error:', e.message); }
-  };
-
-  // Called from module after data loads
-  window._updateCharts = window._initCharts;
 
   /* ── KEY SHORTCUTS ── */
   document.addEventListener('keydown', e => {
