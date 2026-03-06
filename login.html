@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SwiftStock — Login</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23000'/><path d='M18 4L8 18h8l-2 10 14-16h-9z' fill='%2330d158'/></svg>"/>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -18,8 +19,8 @@
 
     [data-theme="dark"] {
       --bg: #060c10; --surface: #0d1a21; --card: #0f1e28;
-      --card-border: rgba(0,230,118,0.15); --text: #e8f5ef; --text2: #7aad97;
-      --text3: #3d6655; --input-bg: #081520; --input-border: rgba(0,230,118,0.18);
+      --card-border: rgba(0,230,118,0.15); --text: #e8f5ef; --text2: #94c9b2;
+      --text3: #5a8f7a; --input-bg: #081520; --input-border: rgba(0,230,118,0.18);
       --green: #00e676; --green-dim: rgba(0,230,118,0.08); --green-glow: rgba(0,230,118,0.25);
       --red: #ff5252; --shadow: rgba(0,0,0,0.7);
     }
@@ -274,9 +275,15 @@ function togglePw() {
   b.textContent = i.type==='password'?'👁️':'🙈';
 }
 
-// Already logged in? Go to dashboard immediately (no sessionStorage check needed)
+// Already logged in? Go to dashboard - BUT not if user just logged out
 auth.onAuthStateChanged(u => {
-  if (u) window.location.href = 'dashboard.html';
+  if (u) {
+    if (sessionStorage.getItem('sw_logout')) {
+      sessionStorage.removeItem('sw_logout'); // clear flag, stay on login page
+    } else {
+      window.location.href = 'dashboard.html'; // genuinely logged in, redirect
+    }
+  }
 });
 
 // ═══════ BACKGROUND ═══════
