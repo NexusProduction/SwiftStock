@@ -276,12 +276,11 @@ body{min-height:100dvh;background:var(--bg);color:var(--t1);font-family:'Plus Ja
       <span class="entries-lbl">Stock History</span>
       <span class="entries-tag" id="eCount">0 entries</span>
     </div>
-    <div id="entriesList">
-      <div class="empty-entries" id="emptyEntries">
-        <div class="empty-entries-ico">&#128203;</div>
-        <div class="empty-entries-txt">No entries yet. Use Stock IN or OUT above to record movement.</div>
-      </div>
+    <div class="empty-entries" id="emptyEntries">
+      <div class="empty-entries-ico">&#128203;</div>
+      <div class="empty-entries-txt">No entries yet. Use Stock IN or OUT above to record stock movement.</div>
     </div>
+    <div id="entriesList"></div>
   </div>
   <div class="pd-floats" id="pdFloats">
     <button class="pd-btn edit" onclick="openEditProduct()">&#9999;&#65039;</button>
@@ -428,21 +427,45 @@ function loadEntries(pid){
   if(eUnsub){eUnsub();eUnsub=null;}
   eUnsub=onSnapshot(query(collection(db,"entries"),where("productId","==",pid)),
     snap=>{entries=snap.docs.map(d=>({id:d.id,...d.data()}));entries.sort((a,b)=>ms(b)-ms(a));renderEntries();},
-    err=>{console.error(err);showToast("Failed to load entries.","error");}
+    err=>{
+      // Firestore error - could be permissions or network. Show error state cleanly.
+      const empty=document.getElementById("emptyEntries");
+      const errTxt=document.querySelector(".empty-entries-txt");
+      if(empty){empty.style.display="flex";}
+      if(errTxt){errTxt.textContent="Could not load entries. Check your connection or permissions.";}
+    }
   );
 }
-function ms(e){if(!e.createdAt)return 0;return e.createdAt.toDate?e.createdAt.toDate().getTime():new Date(e.createdAt).getTime();}
+function ms(e){
+  if(!e.createdAt) return 0;
+  if(typeof e.createdAt.toDate==="function") return e.createdAt.toDate().getTime();
+  if(e.createdAt._seconds) return e.createdAt._seconds*1000;
+  return 0;
+}
 
 function renderEntries(){
   const list=document.getElementById("entriesList"),empty=document.getElementById("emptyEntries");
-  Array.from(list.children).forEach(c=>{if(c.id!=="emptyEntries")c.remove();});
+  list.innerHTML="";
   const vis=entries.filter(e=>!e.deleted).length;
   txt("eCount",`${vis} entr${vis===1?"y":"ies"}`);
-  if(!entries.length){empty.style.display="";return;}empty.style.display="none";
+  if(!entries.length){
+    empty.style.display="flex";
+    return;
+  }
+  empty.style.display="none";
   const canD=cu?.role==="owner"||cu?.role==="manager";
   const groups={};
   entries.forEach(e=>{
-    const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||Date.now());
+    // Safe date: handle serverTimestamp() pending sentinels (no .toDate, not a real date)
+    let d;
+    if(e.createdAt && typeof e.createdAt.toDate === "function") {
+      d = e.createdAt.toDate();
+    } else if(e.createdAt && e.createdAt._seconds) {
+      d = new Date(e.createdAt._seconds * 1000);
+    } else {
+      d = new Date(); // fallback: treat as now
+    }
+    if(isNaN(d.getTime())) d = new Date();
     const now=new Date();
     let k;
     if(d.toDateString()===now.toDateString())k="Today";
