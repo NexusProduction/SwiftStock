@@ -191,7 +191,118 @@ body{min-height:100dvh;background:var(--bg);color:var(--t1);font-family:'Plus Ja
 .toast.success{border-color:rgba(0,217,126,.3);color:var(--g)}.toast.error{border-color:rgba(255,77,106,.3);color:var(--r)}
 .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:doSpin .65s linear infinite;vertical-align:middle;margin-right:.3rem;}
 @keyframes doSpin{to{transform:rotate(360deg)}}
-@media(min-width:600px){.stock-hero{padding:2.6rem 2rem 2rem}.gd-hero{padding:1.8rem 1.6rem 1.2rem}.stats-row,.prod-wrap,.entries-wrap{padding-left:1.5rem;padding-right:1.5rem}.sh-stock{font-size:5rem}.search-wrap{padding-left:1.5rem;padding-right:1.5rem}}
+/* ── Hide "Current Stock" label — shown nowhere ─────────────────── */
+.sh-tag{display:none}
+
+/* ── Tablet tweaks (600px+) ─────────────────────────────────────── */
+@media(min-width:600px){
+  .gd-hero{padding:1.8rem 1.6rem 1.2rem}
+  .stats-row,.prod-wrap,.entries-wrap{padding-left:1.6rem;padding-right:1.6rem}
+  .search-wrap{padding-left:1.6rem;padding-right:1.6rem}
+  .sh-emoji{font-size:2.4rem}
+  .sh-stock{font-size:4.4rem}
+  .stock-hero{padding:2.4rem 2rem 1.8rem}
+}
+
+/* ── Desktop layout (860px+) ─────────────────────────────────────── */
+@media(min-width:860px){
+  /* ── Products list view: centred max-width container ── */
+  #productsView{max-width:980px;margin:0 auto}
+
+  /* ── Product detail view: two-column grid ── */
+  /* Override .view.active{display:block} */
+  #productView.active{
+    display:grid !important;
+    grid-template-columns:360px 1fr;
+    grid-template-areas:"hero entries";
+    padding-top:0; /* topbar offset handled per-child */
+    min-height:100dvh;
+    align-items:start;
+  }
+
+  /* Left column — sticky product card */
+  #productView .stock-hero{
+    grid-area:hero;
+    position:sticky;
+    top:54px;
+    height:calc(100dvh - 54px);
+    overflow-y:auto;
+    overflow-x:hidden;
+    margin-top:54px;
+    border-bottom:none;
+    border-right:1px solid var(--b1);
+    padding:2.4rem 2rem 2rem;
+    text-align:left; /* left-align on desktop */
+  }
+
+  /* Adjust hero text alignment on desktop */
+  #productView .sh-emoji{font-size:2rem;text-align:left}
+  #productView .sh-name{font-size:1.3rem;text-align:left}
+  #productView .sh-desc{text-align:left}
+  #productView .sh-stock{
+    font-size:3.4rem;
+    letter-spacing:-.06em;
+    text-align:left;
+  }
+  #productView .sh-unit{text-align:left}
+  #productView .sh-chips{justify-content:flex-start}
+  #productView .sh-stock::before{
+    content:'Stock';
+    display:block;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:.6rem;
+    font-weight:700;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--t3);
+    margin-bottom:.5rem;
+  }
+
+  /* Right column — entries scroll with page */
+  #productView .entries-wrap{
+    grid-area:entries;
+    margin-top:54px;
+    padding:0 2.5rem 4rem;
+    min-height:calc(100dvh - 54px);
+  }
+
+  /* entries-top sticky: now top:0 relative to right panel flow */
+  #productView .entries-top{
+    top:0;
+    padding-top:1.2rem;
+  }
+
+  /* pd-floats: shift left so it clears the fixed left column */
+  .pd-floats{
+    right:2rem;
+    bottom:2rem;
+  }
+
+  /* Buttons look better constrained on desktop */
+  #productView .act-row{
+    flex-direction:column;
+    display:flex;
+    gap:.55rem;
+  }
+  #productView .btn-in,
+  #productView .btn-out{
+    height:48px;
+    font-size:.9rem;
+  }
+  #productView .mini-stats{margin-top:.85rem}
+  #productView .ms{padding:.6rem .7rem}
+  #productView .ms-val{font-size:.95rem}
+
+  /* Entries list wider on desktop */
+  .e-who{font-size:.92rem}
+  .e-num{font-size:1rem}
+}
+
+/* ── Large desktop (1100px+) ─────────────────────────────────────── */
+@media(min-width:1100px){
+  #productView.active{grid-template-columns:400px 1fr}
+  #productView .sh-stock{font-size:3.8rem}
+}
 </style>
 </head>
 <body>
