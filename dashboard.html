@@ -866,8 +866,12 @@
   window._selectedStaff = () => selectedStaffForGodown;
 
   /* ── AUTH GUARD ── */
+  let _dashInitialized = false;
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'login.html'; return; }
+    // Guard: Firebase re-fires onAuthStateChanged on token refresh — only init once
+    if (_dashInitialized) return;
+    _dashInitialized = true;
 
     // Load user doc
     const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -1461,47 +1465,77 @@
   /* ── LOAD CHART DATA ── */
   async function loadChartData(compId) {
     try {
-      const sevenDaysAgo = new Date();
+      // Build last-7-days buckets keyed by date string "YYYY-MM-DD"
+      const buckets = {};
+      const dayLabels = [];
+      const now = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const d2 = new Date(now);
+        d2.setDate(d2.getDate() - i);
+        const key = d2.toISOString().slice(0, 10); // "2025-03-01"
+        buckets[key] = { in: 0, out: 0 };
+        dayLabels.push(key);
+      }
+
+      // Fetch entries for this company - use Firestore Timestamp filter for efficiency
+      const sevenDaysAgo = new Date(now);
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
       sevenDaysAgo.setHours(0, 0, 0, 0);
 
-      const q = query(collection(db, 'entries'),
-        where('companyId', '==', compId)
+      const q = query(
+        collection(db, 'entries'),
+        where('companyId', '==', compId),
+        where('deleted', '!=', true)
       );
       const snap = await getDocs(q);
 
-      const inCounts = [0,0,0,0,0,0,0];
-      const outCounts = [0,0,0,0,0,0,0];
-
-      snap.docs.forEach(d => {
-        const e = d.data();
+      snap.docs.forEach(doc2 => {
+        const e = doc2.data();
         if (e.deleted) return;
-        const ts = e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt || 0);
-        const diffDays = Math.floor((Date.now() - ts.getTime()) / 86400000);
-        if (diffDays >= 0 && diffDays <= 6) {
-          const idx = 6 - diffDays;
-          if (e.type === 'in') inCounts[idx]++;
-          else outCounts[idx]++;
+        // Handle serverTimestamp() pending sentinel safely
+        let ts;
+        if (e.createdAt && typeof e.createdAt.toDate === 'function') {
+          ts = e.createdAt.toDate();
+        } else if (e.createdAt && e.createdAt._seconds) {
+          ts = new Date(e.createdAt._seconds * 1000);
+        } else {
+          ts = new Date(); // pending sentinel → count as today
+        }
+        const key = ts.toISOString().slice(0, 10);
+        if (buckets[key]) {
+          // Use actual quantity moved, not entry count
+          const qty = parseFloat(e.qtyInBase) || 1;
+          if (e.type === 'in') buckets[key].in += qty;
+          else buckets[key].out += qty;
         }
       });
 
-      // Donut: products per godown
+      const inVals  = dayLabels.map(k => Math.round(buckets[k].in  * 100) / 100);
+      const outVals = dayLabels.map(k => Math.round(buckets[k].out * 100) / 100);
+
+      // Donut: total current stock per godown (more meaningful than product count)
       const donutLabels = [];
       const donutVals = [];
       for (const gd of godownList.slice(0, 6)) {
         const pq = query(collection(db, 'products'), where('godownId', '==', gd.id));
         const ps = await getDocs(pq);
         if (ps.size > 0) {
-          donutLabels.push(gd.name.length > 10 ? gd.name.slice(0, 10) + '…' : gd.name);
-          donutVals.push(ps.size);
+          // Sum current stock across all products in this godown
+          let totalStock = 0;
+          ps.docs.forEach(pd => { totalStock += pd.data().currentStock || 0; });
+          const lbl = gd.name.length > 11 ? gd.name.slice(0, 11) + '…' : gd.name;
+          donutLabels.push(lbl);
+          donutVals.push(Math.round(totalStock * 10) / 10);
         }
       }
 
+      // If all donut values are 0, show product counts as fallback
+      const donutFinal = donutVals.some(v => v > 0)
+        ? { labels: donutLabels, values: donutVals, mode: 'stock' }
+        : { labels: ['No stock data'], values: [1], mode: 'empty' };
+
       if (window._initCharts) {
-        window._initCharts(
-          { in: inCounts, out: outCounts },
-          { labels: donutLabels, values: donutVals }
-        );
+        window._initCharts({ in: inVals, out: outVals }, donutFinal);
       }
     } catch (e) {
       console.log('Chart data load failed (non-critical):', e.message);
@@ -1738,11 +1772,14 @@
     if (weekChartInst) { try { weekChartInst.destroy(); } catch(e){} weekChartInst = null; }
     if (donutChartInst) { try { donutChartInst.destroy(); } catch(e){} donutChartInst = null; }
 
-    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    // Build day labels: actual day names for last 7 days
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const labels = [];
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      labels.push(i === 0 ? 'Today' : days[(d.getDay() + 6) % 7]);
+      const day = new Date(); day.setDate(day.getDate() - i);
+      if (i === 0) labels.push('Today');
+      else if (i === 1) labels.push('Yesterday');
+      else labels.push(dayNames[day.getDay()]);
     }
 
     const wCtx = document.getElementById('weekChart');
@@ -1774,6 +1811,9 @@
               backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
               bodyColor: '#aeaeb2', borderColor: '#2c2c2e', borderWidth: 1,
               padding: 10, cornerRadius: 8,
+              callbacks: {
+                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} units`
+              }
             }
           },
           scales: {
@@ -1822,6 +1862,9 @@
               backgroundColor: '#1c1c1e', titleColor: '#f5f5f7',
               bodyColor: '#aeaeb2', borderColor: '#2c2c2e', borderWidth: 1,
               padding: 10, cornerRadius: 8,
+              callbacks: {
+                label: ctx => ` ${ctx.label}: ${ctx.parsed} units`
+              }
             }
           }
         }
