@@ -1353,57 +1353,104 @@
   window.handlePhotoUpload = async function(e) {
     const file = e.target.files[0];
     if (!file) return;
+    // Show loading state on photo badge
+    const badge = document.querySelector('.photo-badge');
+    const origBadge = badge ? badge.textContent : '📷';
+    if (badge) badge.textContent = '⏳';
     try {
       const storageRef = ref(storage, `profile-photos/${currentUser.uid}`);
       await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);
       await updateDoc(doc(db, 'users', currentUser.uid), { photoURL: url });
       currentUser.photoURL = url;
-      document.getElementById('photoInner').innerHTML = `<img src="${url}" />`;
-      document.getElementById('profileBtn').innerHTML = `<img src="${url}" />`;
-    } catch (e) { alert('Photo upload failed. Check Firebase Storage is enabled.'); }
+      // Update sidebar photo
+      document.getElementById('photoInner').innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      // Update topbar avatar
+      const pb = document.getElementById('profileBtn');
+      pb.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      if (window.dashToast) dashToast('Profile photo updated ✓', 'success');
+    } catch (err) {
+      if (window.dashToast) dashToast('Photo upload failed. Enable Firebase Storage.', 'error');
+      else alert('Photo upload failed. Check Firebase Storage is enabled.');
+    } finally {
+      if (badge) badge.textContent = origBadge;
+      // Reset file input so same file can be re-selected
+      e.target.value = '';
+    }
   };
 
   /* ── EDIT PROFILE ── */
   window.saveEditProfile = async function() {
     const field = editingField;
     const compId = currentUser.companyId || currentUser.uid;
+    const errEl = document.getElementById('ep-error');
+    const saveBtn = document.getElementById('ep-save-btn');
+    if (errEl) errEl.textContent = '';
 
-    if (field === 'name') {
-      const val = document.getElementById('ep-name').value.trim();
-      if (!val) return;
-      await updateDoc(doc(db, 'users', currentUser.uid), { name: val });
-      currentUser.name = val;
-      document.getElementById('pf-name').textContent = val;
-      document.getElementById('sbName').textContent = val;
-      document.getElementById('profileBtn').textContent = val.charAt(0);
-      await addNotification(`${val} updated their name.`, compId);
-    } else if (field === 'email') {
-      const val = document.getElementById('ep-email').value.trim();
-      const pw = document.getElementById('ep-current-pw').value;
-      if (!val || !pw) { alert('Enter new email and current password.'); return; }
-      try {
-        const cred = EmailAuthProvider.credential(auth.currentUser.email, pw);
-        await reauthenticateWithCredential(auth.currentUser, cred);
-        await updateEmail(auth.currentUser, val);
-        await updateDoc(doc(db, 'users', currentUser.uid), { email: val });
-        currentUser.email = val;
-        document.getElementById('pf-email').textContent = val;
-        await addNotification(`${currentUser.name} changed their email.`, compId);
-      } catch (e) { alert('Failed: ' + e.message); return; }
-    } else if (field === 'password') {
-      const newPw = document.getElementById('ep-new-pw').value;
-      const currPw = document.getElementById('ep-current-pw2').value;
-      if (!newPw || !currPw || newPw.length < 6) { alert('Enter current and new password (min 6 chars).'); return; }
-      try {
-        const cred = EmailAuthProvider.credential(auth.currentUser.email, currPw);
-        await reauthenticateWithCredential(auth.currentUser, cred);
-        await updatePassword(auth.currentUser, newPw);
-        await addNotification(`${currentUser.name} changed their password.`, compId);
-      } catch (e) { alert('Failed: ' + e.message); return; }
+    const setErr = (msg) => { if (errEl) { errEl.textContent = msg; errEl.style.color = 'var(--red)'; } };
+    const setBusy = (busy) => { if (saveBtn) { saveBtn.disabled = busy; saveBtn.textContent = busy ? 'Saving…' : 'Save'; } };
+
+    setBusy(true);
+
+    try {
+      if (field === 'name') {
+        const val = document.getElementById('ep-name').value.trim();
+        if (!val) { setErr('Name cannot be empty.'); setBusy(false); return; }
+        await updateDoc(doc(db, 'users', currentUser.uid), { name: val });
+        currentUser.name = val;
+        // Update all name places
+        document.getElementById('pf-name').textContent = val;
+        document.getElementById('sbName').textContent = val;
+        // Update topbar avatar initial (only if no photo)
+        const pb = document.getElementById('profileBtn');
+        if (!currentUser.photoURL) pb.textContent = val.charAt(0).toUpperCase();
+        // Update sidebar photo initial
+        if (!currentUser.photoURL) document.getElementById('photoInner').textContent = val.charAt(0).toUpperCase();
+        await addNotification(`${val} updated their name.`, compId);
+        closeModal('editProfileModal');
+        if (window.dashToast) dashToast('Name updated ✓', 'success');
+
+      } else if (field === 'email') {
+        const val = document.getElementById('ep-email').value.trim();
+        const pw = document.getElementById('ep-current-pw').value;
+        if (!val) { setErr('Enter a new email address.'); setBusy(false); return; }
+        if (!pw) { setErr('Enter your current password to confirm.'); setBusy(false); return; }
+        try {
+          const cred = EmailAuthProvider.credential(auth.currentUser.email, pw);
+          await reauthenticateWithCredential(auth.currentUser, cred);
+          await updateEmail(auth.currentUser, val);
+          await updateDoc(doc(db, 'users', currentUser.uid), { email: val });
+          currentUser.email = val;
+          document.getElementById('pf-email').textContent = val;
+          await addNotification(`${currentUser.name} changed their email.`, compId);
+          closeModal('editProfileModal');
+          if (window.dashToast) dashToast('Email updated ✓', 'success');
+        } catch (err) {
+          if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') setErr('Incorrect password.');
+          else if (err.code === 'auth/email-already-in-use') setErr('This email is already in use.');
+          else setErr(err.message || 'Failed to update email.');
+        }
+
+      } else if (field === 'password') {
+        const currPw = document.getElementById('ep-current-pw2').value;
+        const newPw = document.getElementById('ep-new-pw').value;
+        if (!currPw) { setErr('Enter your current password.'); setBusy(false); return; }
+        if (!newPw || newPw.length < 6) { setErr('New password must be at least 6 characters.'); setBusy(false); return; }
+        try {
+          const cred = EmailAuthProvider.credential(auth.currentUser.email, currPw);
+          await reauthenticateWithCredential(auth.currentUser, cred);
+          await updatePassword(auth.currentUser, newPw);
+          await addNotification(`${currentUser.name} changed their password.`, compId);
+          closeModal('editProfileModal');
+          if (window.dashToast) dashToast('Password updated ✓', 'success');
+        } catch (err) {
+          if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') setErr('Current password is incorrect.');
+          else setErr(err.message || 'Failed to update password.');
+        }
+      }
+    } finally {
+      setBusy(false);
     }
-
-    closeModal('editProfileModal');
   };
 
   /* ── LOGOUT ── */
@@ -1658,24 +1705,40 @@
   function openEditProfile(field) {
     editingField = field;
     const titles = { name: 'Change Name', email: 'Change Email', password: 'Change Password' };
-    document.getElementById('editModalTitle').textContent = titles[field];
+    document.getElementById('editModalTitle').textContent = titles[field] || 'Edit';
     let body = '';
+    // Shared error + actions footer
+    const footer = `
+      <div id="ep-error" style="font-size:.76rem;color:var(--red);min-height:1.1em;margin-bottom:.5rem;text-align:center;"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+        <button class="btn-primary" id="ep-save-btn" onclick="saveEditProfile()">Save</button>
+      </div>`;
     if (field === 'name') {
-      body = `<div class="ep-field"><input id="ep-name" placeholder="New name" /></div>
-        <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
-        <button class="btn-primary" onclick="saveEditProfile()">Save</button></div>`;
+      const cur = currentUser.name || '';
+      body = `<div class="ep-field"><input id="ep-name" placeholder="Your name" value="${cur}" /></div>${footer}`;
     } else if (field === 'email') {
-      body = `<div class="ep-field"><input id="ep-email" type="email" placeholder="New email" /></div>
-        <div class="ep-field"><input id="ep-current-pw" type="password" placeholder="Current password (to confirm)" /></div>
-        <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
-        <button class="btn-primary" onclick="saveEditProfile()">Save</button></div>`;
+      const cur = currentUser.email || '';
+      body = `
+        <div class="ep-field"><input id="ep-email" type="email" placeholder="New email address" value="${cur}" /></div>
+        <div class="ep-field"><input id="ep-current-pw" type="password" placeholder="Current password to confirm" /></div>
+        ${footer}`;
     } else if (field === 'password') {
-      body = `<div class="ep-field"><input id="ep-current-pw2" type="password" placeholder="Current password" /></div>
+      body = `
+        <div class="ep-field"><input id="ep-current-pw2" type="password" placeholder="Current password" /></div>
         <div class="ep-field"><input id="ep-new-pw" type="password" placeholder="New password (min 6 chars)" /></div>
-        <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
-        <button class="btn-primary" onclick="saveEditProfile()">Save</button></div>`;
+        ${footer}`;
     }
     document.getElementById('editModalBody').innerHTML = body;
+    // Auto-focus first input
+    setTimeout(() => {
+      const inp = document.querySelector('#editModalBody input');
+      if (inp) inp.focus();
+    }, 120);
+    // Allow Enter key to save
+    document.getElementById('editModalBody').onkeydown = (e) => {
+      if (e.key === 'Enter') saveEditProfile();
+    };
     openModal('editProfileModal');
   }
   window.openEditProfile = openEditProfile;
@@ -1720,9 +1783,9 @@
   }
 
   /* ── PHOTO UPLOAD ── */
-  function triggerPhotoUpload() {
+  window.triggerPhotoUpload = function() {
     document.getElementById('photoInput').click();
-  }
+  };
 
   /* ── GODOWN MENU ── */
   function showGodownMenu(e, gdId) {
@@ -1741,6 +1804,22 @@
 
 
 
+  /* ── TOAST ── */
+  window.dashToast = function(msg, type) {
+    const t = document.getElementById('dashToast');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.borderColor = type === 'error' ? 'rgba(255,69,58,.35)' : type === 'success' ? 'rgba(48,209,88,.3)' : 'rgba(255,255,255,.1)';
+    t.style.color = type === 'error' ? '#ff453a' : type === 'success' ? '#30d158' : '#f5f5f7';
+    t.style.opacity = '1';
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(window._dashToastTimer);
+    window._dashToastTimer = setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(-50%) translateY(16px)';
+    }, 2800);
+  };
+
   /* ── KEY SHORTCUTS ── */
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
@@ -1754,5 +1833,8 @@
   window.openAddStaff = openAddStaff;
   window.openGodown = window.openGodown || ((id) => { window.location.href = `godown.html?id=${id}`; });
 </script>
+<!-- ══ TOAST ══ -->
+<div id="dashToast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(16px);background:#1a1d2e;color:#f5f5f7;font-size:.84rem;font-weight:600;padding:.65rem 1.2rem;border-radius:12px;border:1px solid rgba(255,255,255,.1);white-space:nowrap;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 8px 30px rgba(0,0,0,.5);"></div>
+
 </body>
 </html>
