@@ -459,7 +459,7 @@ body{min-height:100dvh;background:var(--bg);color:var(--t1);font-family:'Plus Ja
 <script type="module">
 import { initializeApp }     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, addDoc, updateDoc, collection, query, where, onSnapshot, getDocs, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, addDoc, updateDoc, deleteDoc, collection, query, where, onSnapshot, getDocs, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const cfg={apiKey:"AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",authDomain:"store-management-nexus.firebaseapp.com",projectId:"store-management-nexus",storageBucket:"store-management-nexus.firebasestorage.app",messagingSenderId:"263693510395",appId:"1:263693510395:web:47a0485221405dbb6fb25e"};
 const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app);
