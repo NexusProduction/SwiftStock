@@ -43,6 +43,9 @@ body{min-height:100dvh;background:var(--bg);color:var(--t1);font-family:'Plus Ja
 
 /* ── Godown hero (products list view) ── */
 .gd-hero{padding:1.4rem 1.15rem .9rem;}
+.gd-hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;}
+.gd-del-btn{width:38px;height:38px;min-width:38px;border-radius:11px;background:var(--r2);border:1px solid rgba(255,77,106,.22);color:var(--r);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.2rem;transition:opacity .15s,background .15s;}
+.gd-del-btn:hover{opacity:1;background:rgba(255,77,106,.2)}.gd-del-btn:active{opacity:.7}
 .gd-tag{display:inline-flex;align-items:center;gap:.32rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:.5rem;}
 .gd-dot{width:5px;height:5px;border-radius:50%;background:var(--g);opacity:.8}
 .gd-name{font-weight:800;font-size:1.55rem;letter-spacing:-.04em;color:var(--t1);line-height:1.1;margin-bottom:.3rem;}
@@ -146,8 +149,8 @@ body{min-height:100dvh;background:var(--bg);color:var(--t1);font-family:'Plus Ja
 .e-row.in .e-num{color:var(--g)}.e-row.out .e-num{color:var(--r)}.e-row.deleted .e-num{color:var(--t3);text-decoration:line-through}
 .e-eu{font-size:.6rem;color:var(--t3);display:block;margin-top:.09rem}
 .e-cv{font-size:.59rem;color:var(--t3);margin-top:.04rem;font-family:'JetBrains Mono',monospace}
-.e-del{width:30px;height:30px;min-width:30px;border-radius:8px;align-self:center;background:transparent;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .12s,color .12s;flex-shrink:0;}
-.e-row:hover .e-del{opacity:.6}.e-del:hover{opacity:1;color:var(--r)}
+.e-del{width:36px;height:36px;min-width:36px;border-radius:9px;align-self:center;background:var(--r2);border:1px solid rgba(255,77,106,.2);cursor:pointer;color:var(--r);display:flex;align-items:center;justify-content:center;opacity:.7;transition:opacity .12s,background .12s;flex-shrink:0;}
+.e-del:hover,.e-del:active{opacity:1;background:rgba(255,77,106,.22)}
 .empty-entries{display:flex;flex-direction:column;align-items:center;padding:3.5rem 1rem;gap:.55rem;text-align:center;}
 .empty-entries-ico{font-size:2rem;opacity:.08}.empty-entries-txt{font-size:.82rem;color:var(--t3);line-height:1.6;max-width:210px}
 
@@ -286,11 +289,18 @@ body{min-height:100dvh;background:var(--bg);color:var(--t1);font-family:'Plus Ja
 </header>
 <div id="productsView" class="view active">
   <div class="gd-hero">
-    <div class="gd-tag"><span class="gd-dot"></span>Warehouse</div>
-    <div class="gd-name" id="heroName">—</div>
-    <div class="gd-loc">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span id="heroLoc">—</span>
+    <div class="gd-hero-top">
+      <div>
+        <div class="gd-tag"><span class="gd-dot"></span>Warehouse</div>
+        <div class="gd-name" id="heroName">—</div>
+        <div class="gd-loc">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="heroLoc">—</span>
+        </div>
+      </div>
+      <button class="gd-del-btn" id="gdDelBtn" onclick="openDeleteGodownModal()" style="display:none" title="Delete Godown">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
     </div>
   </div>
   <div class="stats-row">
@@ -363,6 +373,38 @@ body{min-height:100dvh;background:var(--bg);color:var(--t1);font-family:'Plus Ja
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- DELETE GODOWN MODAL -->
+<div class="modal-overlay" id="deleteGodownModal">
+  <div class="modal" style="max-width:420px">
+    <div class="mhandle"></div>
+    <div class="mhd">
+      <div>
+        <div class="mttl" style="color:var(--r)">Delete Godown</div>
+        <div class="msub" id="dgdSub">This cannot be undone.</div>
+      </div>
+      <button class="mclose" onclick="closeModal('deleteGodownModal')">&#10005;</button>
+    </div>
+    <div class="mbody">
+      <div style="background:var(--out-bg);border:1px solid var(--out-b);border-radius:11px;padding:.85rem 1rem;margin-bottom:1.1rem;font-size:.82rem;color:var(--r);line-height:1.6;">
+        &#9888;&#65039; All products and stock history in this godown will be <b>permanently deleted</b>.
+      </div>
+      <div class="mf">
+        <div class="mf-lbl">Confirm your password</div>
+        <div class="mf-row">
+          <span class="mf-ico">&#128274;</span>
+          <input type="password" id="dgdPw" placeholder="Enter your password" autocomplete="current-password"/>
+        </div>
+        <div id="dgdErr" style="font-size:.73rem;color:var(--r);margin-top:.35rem;min-height:1em;"></div>
+      </div>
+      <div class="macts">
+        <button class="btn-s" onclick="closeModal('deleteGodownModal')">Cancel</button>
+        <button class="btn-d" id="dgdConfirmBtn" onclick="doDeleteGodown()">Delete Forever</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="productModal">
   <div class="modal">
@@ -416,7 +458,7 @@ body{min-height:100dvh;background:var(--bg);color:var(--t1);font-family:'Plus Ja
 </div>
 <script type="module">
 import { initializeApp }     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, addDoc, updateDoc, collection, query, where, onSnapshot, getDocs, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const cfg={apiKey:"AIzaSyB0eMJQLfsBEkFaoxDMIscSfJ-VlK5Rrk4",authDomain:"store-management-nexus.firebaseapp.com",projectId:"store-management-nexus",storageBucket:"store-management-nexus.firebasestorage.app",messagingSenderId:"263693510395",appId:"1:263693510395:web:47a0485221405dbb6fb25e"};
@@ -452,6 +494,11 @@ onAuthStateChanged(auth,async user=>{
       const b=document.getElementById("tbAddBtn");if(b)b.style.display="none";
       const f=document.getElementById("fabBtn");if(f)f.style.display="none";
       const d=document.getElementById("pdFloats");if(d)d.style.display="none";
+    }
+    // Show delete godown button for owner only
+    if(cu.role==="owner"){
+      const gdDelBtn=document.getElementById("gdDelBtn");
+      if(gdDelBtn)gdDelBtn.style.display="flex";
     }
     loadProducts();
   }catch(err){
@@ -652,6 +699,63 @@ window.confirmDeleteProduct=function(){
     }catch(e){showToast("Delete failed.","error");}
   };
   openModal("deleteModal");
+};
+
+window.openDeleteGodownModal=function(){
+  document.getElementById("dgdSub").textContent=`Delete "${gdData?.name||"this godown"}"? All products and entries will be gone.`;
+  document.getElementById("dgdPw").value="";
+  document.getElementById("dgdErr").textContent="";
+  document.getElementById("dgdConfirmBtn").disabled=false;
+  document.getElementById("dgdConfirmBtn").textContent="Delete Forever";
+  document.getElementById("dgdPw").style.borderColor="";
+  openModal("deleteGodownModal");
+  setTimeout(()=>{const i=document.getElementById("dgdPw");if(i)i.focus();},150);
+};
+
+window.doDeleteGodown=async function(){
+  const pw=document.getElementById("dgdPw").value.trim();
+  const errEl=document.getElementById("dgdErr");
+  const btn=document.getElementById("dgdConfirmBtn");
+  errEl.textContent="";
+  if(!pw){
+    errEl.textContent="Please enter your password.";
+    document.getElementById("dgdPw").style.borderColor="var(--r)";
+    return;
+  }
+  btn.disabled=true;btn.textContent="Deleting…";
+  try{
+    // Re-authenticate first
+    const credential=EmailAuthProvider.credential(auth.currentUser.email,pw);
+    await reauthenticateWithCredential(auth.currentUser,credential);
+    // Delete all entries, products, then godown atomically
+    const batchSize=490; // Firestore batch limit is 500
+    let ops=[];
+    const doFlush=async()=>{
+      if(!ops.length)return;
+      const b=writeBatch(db);
+      ops.forEach(r=>b.delete(r));
+      await b.commit();
+      ops=[];
+    };
+    const eSnap=await getDocs(query(collection(db,"entries"),where("godownId","==",gdId)));
+    for(const ed of eSnap.docs){ops.push(ed.ref);if(ops.length>=batchSize)await doFlush();}
+    await doFlush();
+    const pSnap=await getDocs(query(collection(db,"products"),where("godownId","==",gdId)));
+    for(const pd of pSnap.docs){ops.push(pd.ref);if(ops.length>=batchSize)await doFlush();}
+    await doFlush();
+    await deleteDoc(doc(db,"godowns",gdId));
+    closeModal("deleteGodownModal");
+    showToast("Godown deleted.","success");
+    setTimeout(()=>{window.location.href="dashboard.html";},1200);
+  }catch(err){
+    if(err.code==="auth/wrong-password"||err.code==="auth/invalid-credential"){
+      errEl.textContent="Incorrect password. Try again.";
+      document.getElementById("dgdPw").style.borderColor="var(--r)";
+    }else{
+      errEl.textContent="Error: "+(err.message||"Delete failed.");
+    }
+    btn.disabled=false;btn.textContent="Delete Forever";
+  }
 };
 
 window.openEntry=function(type){
