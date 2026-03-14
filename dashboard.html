@@ -1380,6 +1380,46 @@
   };
 
   /* ── EDIT PROFILE ── */
+  window.openEditProfile = function(field) {
+    editingField = field;
+    const titles = { name: 'Change Name', email: 'Change Email', password: 'Change Password' };
+    document.getElementById('editModalTitle').textContent = titles[field] || 'Edit';
+
+    const footer = `
+      <div id="ep-error" style="font-size:.76rem;color:var(--red);min-height:1.1em;margin-bottom:.5rem;text-align:center;"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+        <button class="btn-primary" id="ep-save-btn" onclick="window.saveEditProfile()">Save</button>
+      </div>`;
+
+    let body = '';
+    if (field === 'name') {
+      const cur = (currentUser && currentUser.name) ? currentUser.name.replace(/"/g,'&quot;') : '';
+      body = `<div class="ep-field"><input id="ep-name" placeholder="Your full name" value="${cur}" /></div>${footer}`;
+    } else if (field === 'email') {
+      const cur = (currentUser && currentUser.email) ? currentUser.email.replace(/"/g,'&quot;') : '';
+      body = `
+        <div class="ep-field"><input id="ep-email" type="email" placeholder="New email address" value="${cur}" /></div>
+        <div class="ep-field"><input id="ep-current-pw" type="password" placeholder="Current password to confirm" /></div>
+        ${footer}`;
+    } else if (field === 'password') {
+      body = `
+        <div class="ep-field"><input id="ep-current-pw2" type="password" placeholder="Current password" /></div>
+        <div class="ep-field"><input id="ep-new-pw" type="password" placeholder="New password (min 6 chars)" /></div>
+        ${footer}`;
+    }
+
+    document.getElementById('editModalBody').innerHTML = body;
+    setTimeout(() => {
+      const inp = document.querySelector('#editModalBody input');
+      if (inp) { inp.focus(); inp.select(); }
+    }, 120);
+    document.getElementById('editModalBody').onkeydown = (e) => {
+      if (e.key === 'Enter') window.saveEditProfile();
+    };
+    openModal('editProfileModal');
+  };
+
   window.saveEditProfile = async function() {
     const field = editingField;
     const compId = currentUser.companyId || currentUser.uid;
@@ -1702,46 +1742,7 @@
   }
 
   /* ── EDIT PROFILE ── */
-  function openEditProfile(field) {
-    editingField = field;
-    const titles = { name: 'Change Name', email: 'Change Email', password: 'Change Password' };
-    document.getElementById('editModalTitle').textContent = titles[field] || 'Edit';
-    let body = '';
-    // Shared error + actions footer
-    const footer = `
-      <div id="ep-error" style="font-size:.76rem;color:var(--red);min-height:1.1em;margin-bottom:.5rem;text-align:center;"></div>
-      <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
-        <button class="btn-primary" id="ep-save-btn" onclick="saveEditProfile()">Save</button>
-      </div>`;
-    if (field === 'name') {
-      const cur = currentUser.name || '';
-      body = `<div class="ep-field"><input id="ep-name" placeholder="Your name" value="${cur}" /></div>${footer}`;
-    } else if (field === 'email') {
-      const cur = currentUser.email || '';
-      body = `
-        <div class="ep-field"><input id="ep-email" type="email" placeholder="New email address" value="${cur}" /></div>
-        <div class="ep-field"><input id="ep-current-pw" type="password" placeholder="Current password to confirm" /></div>
-        ${footer}`;
-    } else if (field === 'password') {
-      body = `
-        <div class="ep-field"><input id="ep-current-pw2" type="password" placeholder="Current password" /></div>
-        <div class="ep-field"><input id="ep-new-pw" type="password" placeholder="New password (min 6 chars)" /></div>
-        ${footer}`;
-    }
-    document.getElementById('editModalBody').innerHTML = body;
-    // Auto-focus first input
-    setTimeout(() => {
-      const inp = document.querySelector('#editModalBody input');
-      if (inp) inp.focus();
-    }, 120);
-    // Allow Enter key to save
-    document.getElementById('editModalBody').onkeydown = (e) => {
-      if (e.key === 'Enter') saveEditProfile();
-    };
-    openModal('editProfileModal');
-  }
-  window.openEditProfile = openEditProfile;
+  // openEditProfile moved into module script
 
   /* ── STAFF CRED SHARE ── */
   function downloadStaffCard() {
